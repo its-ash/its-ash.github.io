@@ -1,910 +1,192 @@
 <!DOCTYPE html>
-<html >
+<html>
+
 <head>
-<meta charset="UTF-8">
-      <link rel="icon" href="/icon.png"/>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/icon.png" />
 
   <meta name="description" content="Ash Homepage">
   <meta name="keywords" content="HTML,CSS,XML,JavaScript">
   <meta name="author" content="Ashvini Jangid">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ash</title>
-<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+  <title>Ash</title>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 
   <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css'>
-<link rel='stylesheet prefetch' href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic'>
-<link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
-<link rel='stylesheet prefetch' href='https://cdn.rawgit.com/konpa/devicon/df6431e323547add1b4cf45992913f15286456d3/devicon.min.css'>
-<link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css'>
-<link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css'>
-
-<style>
-
-
-html {
-	color: #222;
-	font-size: 1em;
-	line-height: 1.4;
-}
-
-
-::-moz-selection {
-	background: #06D7D9;
-	text-shadow: none;
-}
-
-::selection {
-	background: #06D7D9;
-	text-shadow: none;
-}
-
-::-webkit-scrollbar {
-  display: none;
-}
-
-/*
- * A better looking default horizontal rule
- */
-
-hr {
-	display: block;
-	height: 1px;
-	border: 0;
-	border-top: 1px solid #ccc;
-	margin: 1em 0;
-	padding: 0;
-}
-
-
-/*
- * Remove the gap between audio, canvas, iframes,
- * images, videos and the bottom of their containers:
- * https://github.com/h5bp/html5-boilerplate/issues/440
- */
-
-audio,
-canvas,
-iframe,
-img,
-svg,
-video {
-	vertical-align: middle;
-}
-
-
-/*
- * Remove default fieldset styles.
- */
-
-fieldset {
-	border: 0;
-	margin: 0;
-	padding: 0;
-}
-
-
-/*
- * Allow only vertical resizing of textareas.
- */
-
-textarea {
-	resize: vertical;
-}
-
-
-/* ==========================================================================
-   Browser Upgrade Prompt
-   ========================================================================== */
-
-.browserupgrade {
-	margin: 0.2em 0;
-	background: #ccc;
-	color: #000;
-	padding: 0.2em 0;
-}
-
-
-/* ==========================================================================
-   Author's custom styles
-   ========================================================================== */
-
-
-/* portfolio color palette (Belize Hole)*/
-
-.color-primary-0 {
-	color: #06D7D9;
-}
-
-
-/* Main Primary color */
-
-.rgba-primary-0 {
-	color: rgb(0,191,255,1);
-}
-
-
-/* Main Primary color */
-
-
-/* General setup and overrides */
-
-* {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
-}
-
-.row {
-	margin-left: 0 !important;
-	margin-right: 0 !important;
-}
-
-html,
-body {
-	font-family: 'Lato', sans-serif !important;
-}
-
-.glyphicon,
-.fa
-.devicons {
-	color: #06D7D9;
-}
-
-
-/* Landing page */
-
-header {
-	background-image: linear-gradient(rgba(6, 215 ,217, 0.7), rgba(6, 215 ,217, 0.7)), url('http://insights.dice.com/wp-content/uploads/2015/03/shutterstock_230705539.jpg');
-	background-size: cover;
-	background-position: center;
-	height: 100vh;
-}
-
-.navbar,
-.navbar-default {
-	background-color: transparent !important;
-	border: none !important;
-	padding: 1rem 1rem !important;
-}
-
-.navbar-nav > li > a:link,
-.navbar-nav > li > a:visited {
-	color: white !important;
-	text-transform: uppercase !important;
-	font-size: 1.2rem;
-	border-bottom: 1px solid transparent !important;
-	padding: 0;
-	margin: 15px;
-}
-
-.navbar-brand {
-	color: white !important;
-	font-size: 1.2rem;
-}
-
-.navbar-brand .glyphicon {
-	color: white !important;
-	margin-left: 1rem;
-	font-size: 2rem;
-}
-
-.navbar-nav > li > a:hover,
-.navbar-nav > li > a:active {
-	color: white !important;
-	text-transform: uppercase !important;
-	border-bottom: 1px solid white !important;
-	transition: border-bottom 1s;
-	padding: 0;
-	margin: 15px;
-}
-
-.navbar-scrolled {
-  background-color: #06D7D9 !important;
-  transition: background-color 0.4s;
-}
-
-#main-heading {
-    color: black;
-	font-size: 6rem;
-	font-weight: 300;
-	text-transform: uppercase;
-}
-
-#main-subheading {
-    width: 100%;
-    color: gold;
-	font-size: 6rem;
-	font-weight: 300;
-}
-
-@media (max-width:1024px) {
-	#main-heading {
-		font-size: 5rem;
-	}
-	#main-subheading {
-		font-size: 4rem;
-	}
-}
-
-@media (max-width:768px) {
-	#main-subheading {
-		font-size: 3rem;
-	}
-}
-
-.navbar-default .navbar-toggle:hover {
-	background-color: #00CAD9 !important;
-	transition: all 0.4s;
-}
-
-.navbar-default .navbar-toggle .icon-bar {
-	background-color: white !important;
-}
-
-.hero-text-box {
-	position: absolute;
-	text-align: center;
-	color: #FFF;
-	top: 50%;
-	left: 50%;
-    width: 100%;
-	transform: translate(-50%, -50%);
-}
-
-.hero-text-box a {
-	position: relative;
-	top: 100px;
-}
-
-.hero-text-box .btn,
-.hero-text-box .btn-default,
-.hero-text-box .btn-default:visited,
-.hero-text-box .btn-default:active:hover,
-.hero-text-box .btn-default:active:focus {
-	color: white;
-	background: none;
-	border: 1px solid;
-	transition: all 0.4s;
-}
-
-.hero-text-box .btn:hover,
-.hero-text-box .btn-default:hover {
-	background-color: #00CAD9;
-	transition: all 0.4s;
-}
-
-
-/* Intro section */
-
-#intro .glyphicon {
-	font-size: 50px;
-	margin: 2rem;
-}
-
-#intro h3 {
-	margin: 2rem;
-}
-
-#intro p {
-	padding: 1rem 2rem;
-	font-size: 1.8rem;
-	text-align: center;
-}
-
-@media (max-width: 1024px) {
-	#intro p {
-		font-size: 1.5rem;
-	}
-	#intro h3 {
-		padding: 0;
-		margin-bottom: 1rem;
-	}
-}
-
-@media (max-width: 768px) {
-	#intro p {
-		font-size: 1.4rem;
-		padding: 10px;
-	}
-}
-
-@media (max-width: 425px) {
-	#intro .glyphicon {
-		margin: 0;
-	}
-}
-
-#intro {
-	padding-top: 5rem;
-	padding-bottom: 3rem;
-	border-bottom: 1px solid #e7e7e7;
-}
-
-
-
-/* Latest projects */
-
-#projects {
-	background-color: #f8f8f8;
-	padding: 3rem 0;
-	border-bottom: 1px solid #e7e7e7;
-}
-
-h3 {
-	padding-bottom: 2rem;
-}
-
-#projects img {
-	object-fit: cover;
-	object-position: top;
-}
-
-
-/* Skills */
-
-#skills {
-	padding: 3rem 0;
-}
-
-.devicons {
-	font-size: 6rem;
-	color: #06D7D9;
-}
-
-#skills i {
-	padding: 0 10px;
-}
-
-#skills p {
-	font-size: 1.8rem;
-}
-
-@media (max-width: 1024px) {
-	#skills p {
-		font-size: 1.5rem;
-	}
-}
-
-@media (max-width: 768px) {
-	#skills p {
-		font-size: 1.4rem;
-	}
-}
-
-
-/* Contact */
-
-#contact {
-	color: #ff3086;
-	background-color: black;
-	padding: 3rem 0;
-}
-
-#contact i,
-#contact .glyphicon,
-#contact .fi-social-treehouse,
-#contact img {
-	padding: 10px 10px;
-	font-size: 30px;
-	margin-bottom: 30px;
-}
-
-#contact p {
-	font-size: 1.8rem;
-	margin-bottom: 2rem;
-}
-
-@media (max-width: 1024px) {
-	#contact p {
-		font-size: 1.5rem;
-	}
-}
-
-@media (max-width: 768px) {
-	#contact p {
-		font-size: 1.4rem;
-	}
-}
-
-#contact .glyphicon,
-#contact .fa,
-#contact .fi-social-treehouse {
-	color: white;
-}
-
-#contact .glyphicon:hover {
-	color: #C9C9C9;
-	transition: all 0.4s;
-}
-
-/* ==========================================================================
-   Helper classes
-   ========================================================================== */
-
-
-/*
- * Hide visually and from screen readers
- */
-
-.hidden {
-	display: none !important;
-}
-
-
-/*
- * Hide only visually, but have it available for screen readers:
- * http://snook.ca/archives/html_and_css/hiding-content-for-accessibility
- */
-
-.visuallyhidden {
-	border: 0;
-	clip: rect(0 0 0 0);
-	height: 1px;
-	margin: -1px;
-	overflow: hidden;
-	padding: 0;
-	position: absolute;
-	width: 1px;
-}
-
-
-/*
- * Extends the .visuallyhidden class to allow the element
- * to be focusable when navigated to via the keyboard:
- * https://www.drupal.org/node/897638
- */
-
-.visuallyhidden.focusable:active,
-.visuallyhidden.focusable:focus {
-	clip: auto;
-	height: auto;
-	margin: 0;
-	overflow: visible;
-	position: static;
-	width: auto;
-}
-
-
-/*
- * Hide visually and from screen readers, but maintain layout
- */
-
-.invisible {
-	visibility: hidden;
-}
-
-
-/*
- * Clearfix: contain floats
- *
- * For modern browsers
- * 1. The space content is one way to avoid an Opera bug when the
- *    `contenteditable` attribute is included anywhere else in the document.
- *    Otherwise it causes space to appear at the top and bottom of elements
- *    that receive the `clearfix` class.
- * 2. The use of `table` rather than `block` is only necessary if using
- *    `:before` to contain the top-margins of child elements.
- */
-
-.clearfix:before,
-.clearfix:after {
-	content: " ";
-	/* 1 */
-	display: table;
-	/* 2 */
-}
-
-.clearfix:after {
-	clear: both;
-}
-
-
-/* ==========================================================================
-   EXAMPLE Media Queries for Responsive Design.
-   These examples override the primary ('mobile first') styles.
-   Modify as content requires.
-   ========================================================================== */
-
-@media only screen and (min-width: 35em) {
-	/* Style adjustments for viewports that meet the condition */
-}
-
-@media print,
-(-webkit-min-device-pixel-ratio: 1.25),
-(min-resolution: 1.25dppx),
-(min-resolution: 120dpi) {
-	/* Style adjustments for high resolution devices */
-}
-
-
-/* ==========================================================================
-   Print styles.
-   Inlined to avoid the additional HTTP request:
-   https://www.phpied.com/delay-loading-your-print-css/
-   ========================================================================== */
-
-@media print {
-	*,
-	*:before,
-	*:after,
-	*:first-letter,
-	*:first-line {
-		background: transparent !important;
-		color: #000 !important;
-		/* Black prints faster:
-                                   http://www.sanbeiji.com/archives/953 */
-		box-shadow: none !important;
-		text-shadow: none !important;
-	}
-	a,
-	a:visited {
-		text-decoration: underline;
-	}
-	a[href]:after {
-		content: " (" attr(href) ")";
-	}
-	abbr[title]:after {
-		content: " (" attr(title) ")";
-	}
-	/*
-     * Don't show links that are fragment identifiers,
-     * or use the `javascript:` pseudo protocol
-     */
-	a[href^="#"]:after,
-	a[href^="javascript:"]:after {
-		content: "";
-	}
-	pre,
-	blockquote {
-		border: 1px solid #999;
-		page-break-inside: avoid;
-	}
-	/*
-     * Printing Tables:
-     * http://css-discuss.incutio.com/wiki/Printing_Tables
-     */
-	thead {
-		display: table-header-group;
-	}
-	tr,
-	img {
-		page-break-inside: avoid;
-	}
-	img {
-		max-width: 100% !important;
-	}
-	p,
-	h2,
-	h3 {
-		orphans: 3;
-		widows: 3;
-	}
-	h2,
-	h3 {
-		page-break-after: avoid;
-	}
-}
-
-@-moz-keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    -moz-transform: translateY(0);
-    transform: translateY(0);
-  }
-  40% {
-    -moz-transform: translateY(-30px);
-    transform: translateY(-30px);
-  }
-  60% {
-    -moz-transform: translateY(-15px);
-    transform: translateY(-15px);
-  }
-}
-@-webkit-keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    -webkit-transform: translateY(0);
-    transform: translateY(0);
-  }
-  40% {
-    -webkit-transform: translateY(-30px);
-    transform: translateY(-30px);
-  }
-  60% {
-    -webkit-transform: translateY(-15px);
-    transform: translateY(-15px);
-  }
-}
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    -moz-transform: translateY(0);
-    -ms-transform: translateY(0);
-    -webkit-transform: translateY(0);
-    transform: translateY(0);
-  }
-  40% {
-    -moz-transform: translateY(-30px);
-    -ms-transform: translateY(-30px);
-    -webkit-transform: translateY(-30px);
-    transform: translateY(-30px);
-  }
-  60% {
-    -moz-transform: translateY(-15px);
-    -ms-transform: translateY(-15px);
-    -webkit-transform: translateY(-15px);
-    transform: translateY(-15px);
-  }
-}
-
-.scroll-down-btn {
-    color: #fff;
-    position: absolute;
-    bottom: 5%;
-    left: 49.5%;
-  -moz-animation: bounce 2s infinite;
-  -webkit-animation: bounce 2s infinite;
-  animation: bounce 2s infinite;
-  font-size: 3em;
-  padding-top: 5px;
-}
-
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    -webkit-transform: translate3d(0, -100%, 0);
-    transform: translate3d(0, -100%, 0);
-  }
-
-  to {
-    opacity: 1;
-    -webkit-transform: none;
-    transform: none;
-  }
-}
-
-.fadeInDown {
-  -webkit-animation-name: fadeInDown;
-  animation-name: fadeInDown;
-}
-
-#pad-up {
-  padding-top: 50px;
-}
-
-#contact .fa-linkedin:hover {
-	color: #3277B0;
-	transition: all 0.4s;
-}
-
-#contact .fa-twitter:hover {
-	color: #55ACEE;
-	transition: all 0.4s;
-}
-
-#contact .fa-github:hover {
-	color: #25292E;
-	transition: all 0.4s;
-}
-
-#contact .fa-free-code-camp:hover {
-	color: #2A6218;
-	transition: all 0.4s;
-}
-
-#contact .fa-globe:hover {
-	color: #00BFFF;
-	transition: all 0.4s;
-}
-
-#contact .fa-file-pdf-o:hover {
-  color: #E03A3E;
-  transition: all 0.4s;
-}
-
-#contact .glyphicon-envelope:hover {
-  color: #6638F0;
-  transition: all 0.4s;
-}
-
-#contact .fi-social-treehouse:hover {
-	color: #69C673;
-	transition: all 0.4s;
-}
-
-.text-muted {
-  text-align: center;
-}
-
-
-    </style>
+  <link rel='stylesheet prefetch' href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic'>
+  <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <link rel='stylesheet prefetch' href='https://cdn.rawgit.com/konpa/devicon/df6431e323547add1b4cf45992913f15286456d3/devicon.min.css'>
+  <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css'>
+  <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css'>
+  <link rel='stylesheet prefetch' href='style.css'>
 
 
 </head>
 
 <body>
-      <body>
-      <header id="landing">
-        <nav class="navbar navbar-default navbar-fixed-top">
-          <div class="container-fluid">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu-items" aria-expanded="false">
+  <video autoplay muted loop id="myVideo">
+  <source src="background.mp4" type="video/mp4">
+</video>
+  <header id="landing">
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu-items" aria-expanded="false">
           <span class="sr-only">Toggle navigation</span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-              <a class="navbar-brand" href="#landing"><span class="glyphicon glyphicon-home" aria-label="Home" aria-hidden="true"></span></a>
-            </div>
-            <div class="collapse navbar-collapse navbar-right" id="main-menu-items">
-              <ul class="nav navbar-nav">
-                <li><a href="http://ashvinijangid.github.io/about" class="about">About</a></li>
-                <li><a href="http://ashvinijangid.pythonanywhere.com" class="projects">Projects</a></li>
-                <li><a href="#skills" class="skills">Skills</a></li>
-                <li><a href="#contact" class="contact">Contact</a></li>
-              </ul>
-            </div>
-          </div>
-        </nav>
-        <div class="hero-text-box">
-          <h1 id="main-heading">Ashvini Jangid</h1>
-
-          <p class="text-center" style="font-size:25px">For every complex problem there is an answer that is clear,simple and simple.</p><br/>
-          <h2 id="main-subheading">Developer <span style="font-size:50px;color:red">&</span> Programmer</h2>
-          </div>
-      <a class="js--scroll-next-page" href="#"><i class="ion-chevron-down icon-big scroll-down-btn fadeInDown"></i></a>
-      </header>
-<!--
-      <section id="intro" class="row js--about-me">
-        <div class="col-sm-4 col-md-4 col-lg-4">
-          <h3 class="text-center"><span class="glyphicon glyphicon-blackboard" aria-hidden="true"></span><br>Projects</h3>
-          <p>
-            I am using current technologies to build robust web applications and sites using JavaScript (ES6), Node, and Express. I am also building small apps with Angular, React, and Swift.
-          </p>
+          <a class="navbar-brand" href="#landing"><span class="glyphicon glyphicon-home" aria-label="Home" aria-hidden="true"></span></a>
         </div>
-        <div class="col-sm-4 col-md-4 col-lg-4">
-          <h3 class="text-center"><span class="glyphicon glyphicon-education" aria-hidden="true"></span><br>Experience</h3>
-          <p>
-            Formerly a student at the University of Pittsburgh's undergraduate Computer Science program and enthusiastic auto-didact learning with freeCodeCamp, Treehouse, Swift with Ray Wenderlich, and a plethora of Udemy courses.
-          </p>
+        <div class="collapse navbar-collapse navbar-right" id="main-menu-items">
+          <ul class="nav navbar-nav">
+            <li><a href="http://ashvinijangid.github.io/about" class="about">About</a></li>
+            <li><a href="http://ashvinijangid.pythonanywhere.com" class="projects">Projects</a></li>
+            <li><a href="#skills" class="skills">Skills</a></li>
+            <li><a href="#contact" class="contact">Contact</a></li>
+          </ul>
         </div>
-        <div class="col-sm-4 col-md-4 col-lg-4">
-          <h3 class="text-center"><span class="glyphicon glyphicon-time" aria-hidden="true"></span><br>Future</h3>
-          <p>
-            I'm currently sharpening my ES6 skills and learning back-end with Node. I'm also learning other JavaScript frameworks and hope to become competent with Swift.
-          </p>
+      </div>
+    </nav>
+    <div class="hero-text-box">
+      <h1 id="main-heading">Ashvini Jangid</h1>
+
+      <p class="text-center" style="font-size:25px">For every complex problem there is an answer that is clear,simple and simple.</p><br/>
+      <h2 id="main-subheading">Developer <span style="font-size:50px;color:red">&</span> Programmer</h2>
+    </div>
+    <a class="js--scroll-next-page" href="#"><i class="ion-chevron-down icon-big scroll-down-btn fadeInDown"></i></a>
+  </header>
+  <section id="skills" class="row js-skills">
+    <div class="col-xs-10 col-xs-offset-1">
+      <h3 class="text-center">Can Help In</h3>
+
+      <div class="row text-center">
+        <i class="devicons devicon-css3-plain colored"></i>
+        <i class="devicons devicon-javascript-plain colored"></i>
+        <i class="devicons devicon-python-plain colored"></i>
+        <i class="devicons devicon-pycharm-plain colored"></i>
+        <i class="devicons devicon-html5-plain colored"></i>
+        <i class="devicons devicon-c-plain colored"></i>
+        <i class="devicons devicon-jquery-plain colored"></i>
+        <i class="devicons devicon-ruby-plain colored"></i>
+        <i class="devicons devicon-django-plain colored"></i>
+        <i class="devicons devicon-ubuntu-plain colored"></i>
+        <i class="devicons devicon-webstorm-plain colored"></i>
+        <i class="devicons"><img src="https://www.scala-lang.org/resources/img/frontpage/scala-spiral.png" width="60px" style="margin-top:-50px"> </i>
+        <i class="devicons"><img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Official_unity_logo.png" width="150px" style="margin-top:-50px"> </i>
+        <i class="devicons"><img src="http://content.arduino.cc/website/Arduino_logo_teal.svg" width="100px" style="margin-top:-50px"> </i>
+        <i class="devicons"><img src="https://www.raspberrypi.org/app/uploads/2015/08/raspberry-pi-logo.png" width="80px" style="margin-top:-50px"> </i>
+
+        <i class="devicons"><img src="https://d30y9cdsu7xlg0.cloudfront.net/png/1974-200.png" width="80px" style="margin-top:-50px"> </i>
+
+        <i class="devicons"><img src="http://www.environmentalsciencesmagnet.org/sites/default/files/google-apps-admin-panel-icon.png" width="90px" style="margin-top:-50px"> </i>
+
+
+
+        <i class="devicons devicon-mysql-plain colored"></i>
+        <i class="devicons devicon-github-plain colored"></i>
+        <i class="devicons devicon-amazonwebservices-original colored"></i>
+        <i class="devicons devicon-photoshop-plain colored"></i>
+
+
+
+        <div class="row text-center" id="pad-up">
+          <h3 class="text-center">In progress...<br /></h3>
+          <i class="devicons devicon-docker-plain colored"></i>
+          <i class="devicons devicon-java-plain colored"></i>
+          <i class="devicons devicon-drupal-plain colored"></i>
+          <i class="devicons"><img src="https://spark.apache.org/docs/0.9.0/img/spark-logo-hd.png" width="110px" style="margin-top:-60px"> </i>
+          <i class="devicons"><img src="https://avatars3.githubusercontent.com/u/7388996?v=4&s=400" width="90px" style="margin-top:-40px"> </i>
+          <i class="devicons"><img src="https://www.raspberrypi.org/app/uploads/2015/08/raspberry-pi-logo.png" width="70px" style="margin-top:-50px"> </i>
+
+          <i class="devicons devicon-rails-plain colored"></i>
+
+
         </div>
-      </section>
--->
 
-      <section id="skills" class="row js-skills">
-        <div class="col-xs-10 col-xs-offset-1">
-          <h3 class="text-center">Can Help In</h3>
-
-          <div class="row text-center">
-            <i class="devicons devicon-css3-plain colored"></i>
-            <i class="devicons devicon-javascript-plain colored"></i>
-            <i class="devicons devicon-python-plain colored"></i>
-            <i class="devicons devicon-pycharm-plain colored"></i>
-            <i class="devicons devicon-html5-plain colored"></i>
-            <i class="devicons devicon-c-plain colored"></i>
-            <i class="devicons devicon-jquery-plain colored"></i>
-            <i class="devicons devicon-ruby-plain colored"></i>
-            <i class="devicons devicon-django-plain colored"></i>
-            <i class="devicons devicon-ubuntu-plain colored"></i>
-            <i class="devicons devicon-webstorm-plain colored"></i>
-            <i class="devicons"><img src="https://www.scala-lang.org/resources/img/frontpage/scala-spiral.png" width="60px" style="margin-top:-50px"> </i>
-            <i class="devicons"><img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Official_unity_logo.png" width="150px" style="margin-top:-50px"> </i>
-            <i class="devicons"><img src="http://content.arduino.cc/website/Arduino_logo_teal.svg" width="100px" style="margin-top:-50px"> </i>
-            <i class="devicons"><img src="https://www.raspberrypi.org/app/uploads/2015/08/raspberry-pi-logo.png" width="80px" style="margin-top:-50px"> </i>
-
-            <i class="devicons"><img src="https://d30y9cdsu7xlg0.cloudfront.net/png/1974-200.png" width="80px" style="margin-top:-50px"> </i>
-
-            <i class="devicons"><img src="http://www.environmentalsciencesmagnet.org/sites/default/files/google-apps-admin-panel-icon.png" width="90px" style="margin-top:-50px"> </i>
-
-
-
-            <i class="devicons devicon-mysql-plain colored"></i>
-            <i class="devicons devicon-github-plain colored"></i>
-            <i class="devicons devicon-amazonwebservices-original colored"></i>
-            <i class="devicons devicon-photoshop-plain colored"></i>
-
-
-
-            <div class="row text-center" id="pad-up">
-              <h3 class="text-center">In progress...<br /></h3>
-                  <i class="devicons devicon-docker-plain colored"></i>
-                  <i class="devicons devicon-java-plain colored"></i>
-                  <i class="devicons devicon-drupal-plain colored"></i>
-                  <i class="devicons"><img src="https://spark.apache.org/docs/0.9.0/img/spark-logo-hd.png" width="110px" style="margin-top:-60px"> </i>
-                  <i class="devicons"><img src="https://avatars3.githubusercontent.com/u/7388996?v=4&s=400" width="90px" style="margin-top:-40px"> </i>
-                  <i class="devicons"><img src="https://www.raspberrypi.org/app/uploads/2015/08/raspberry-pi-logo.png" width="70px" style="margin-top:-50px"> </i>
-
-                  <i class="devicons devicon-rails-plain colored"></i>
-
-
-            </div>
-
-          </div>
-        </div>
-      </section>
-      <footer id="contact" class="row js-contact">
-        <h3 class="text-center">Contact</h3>
-        <div class="col-xs-10 col-xs-offset-1 text-center">
-          <p>
-            I'd be happy to answer any questions you might have. Please feel free to contact me.
-          </p>
-          <a href="mailto:ashvinijangid@gmail.com" target="_blank">
+      </div>
+    </div>
+  </section>
+  <footer id="contact" class="row js-contact">
+    <h3 class="text-center">Contact</h3>
+    <div class="col-xs-10 col-xs-offset-1 text-center">
+      <p>
+        I'd be happy to answer any questions you might have. Please feel free to contact me.
+      </p>
+      <a href="mailto:ashvinijangid@gmail.com" target="_blank">
       <span class="glyphicon glyphicon-envelope"></span></a>
-          <a href="https://www.facebook.com/ashvinikumarjangid" target="_blank">
+      <a href="https://www.facebook.com/ashvinikumarjangid" target="_blank">
       <i class="fa fa-facebook" aria-hidden="true"></i></a>
-          <a href="https://www.linkedin.com/in/ashvinijangid" target="_blank">
+      <a href="https://www.linkedin.com/in/ashvinijangid" target="_blank">
       <i class="fa fa-linkedin" aria-hidden="true"></i></a>
-          <a href="https://github.com/ashvinijangid" target="_blank">
+      <a href="https://github.com/ashvinijangid" target="_blank">
       <i class="fa fa-github" aria-hidden="true"></i></a>
 
 
 
-        </div><br></footer>
+    </div><br></footer>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js'></script>
 
-          <script>
-          // Select all links with hashes
-$('a[href*="#"]')
-  // Remove links that don't actually link to anything
-  .not('[href="#"]')
-  .not('[href="#0"]')
-  .click(function(event) {
-    // On-page links
-    if (
-      location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '')
-      &&
-      location.hostname == this.hostname
-    ) {
-      // Figure out element to scroll to
-      var target = $(this.hash);
-      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-      // Does a scroll target exist?
-      if (target.length) {
-        // Only prevent default if animation is actually gonna happen
-        event.preventDefault();
-        $('html, body').animate({
-          scrollTop: target.offset().top
-        }, 1000, function() {
-          // Callback after animation
-          // Must change focus!
-          var $target = $(target);
-          $target.focus();
-          if ($target.is(":focus")) { // Checking if the target was focused
-            return false;
-          } else {
-            $target.attr('tabindex','-1'); // Adding tabindex for elements not focusable
-            $target.focus(); // Set focus again
-          };
-        });
+  <script>
+    // Select all links with hashes
+    $('a[href*="#"]')
+      // Remove links that don't actually link to anything
+      .not('[href="#"]')
+      .not('[href="#0"]')
+      .click(function(event) {
+        // On-page links
+        if (
+          location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') &&
+          location.hostname == this.hostname
+        ) {
+          // Figure out element to scroll to
+          var target = $(this.hash);
+          target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+          // Does a scroll target exist?
+          if (target.length) {
+            // Only prevent default if animation is actually gonna happen
+            event.preventDefault();
+            $('html, body').animate({
+              scrollTop: target.offset().top
+            }, 1000, function() {
+              // Callback after animation
+              // Must change focus!
+              var $target = $(target);
+              $target.focus();
+              if ($target.is(":focus")) { // Checking if the target was focused
+                return false;
+              } else {
+                $target.attr('tabindex', '-1'); // Adding tabindex for elements not focusable
+                $target.focus(); // Set focus again
+              };
+            });
+          }
+        }
+      });
+
+    /* scroll on btn */
+    $(".js--scroll-next-page").click(function() {
+      $("html, body").animate({
+          scrollTop: $(".js--about-me").offset().top
+        },
+        1000
+      );
+    });
+    /* Change menu background on scrolling */
+    $(document).scroll(function() {
+      if ($(document).scrollTop() > 100) {
+        $("nav").addClass("navbar-scrolled");
+      } else {
+        $("nav").removeClass("navbar-scrolled");
       }
-    }
-  });
+    });
+  </script>
 
-  /* scroll on btn */
-  $(".js--scroll-next-page").click(function() {
-    $("html, body").animate(
-      {
-        scrollTop: $(".js--about-me").offset().top
-      },
-      1000
-    );
-  });
-  /* Change menu background on scrolling */
-  $(document).scroll(function() {
-    if ($(document).scrollTop() > 100) {
-      $("nav").addClass("navbar-scrolled");
-    } else {
-      $("nav").removeClass("navbar-scrolled");
-    }
-  });
+</body>
+</body>
 
-          </script>
-
-    </body></body>
 </html>
