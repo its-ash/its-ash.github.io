@@ -199,22 +199,26 @@
         $("nav").removeClass("navbar-scrolled");
       }
     });
-    onload = checkLoad;
+    // onload = checkLoad;
+    var video = document.getElementById("myVideo");
     $(document).ready(function(){
     $(this).scrollTop(0);});
     function remove(){
       $("#back").remove();
       $("body").css("overflow-y","scroll");
     }
-    function checkLoad() {
-        var video = document.getElementById("myVideo");
-         if (video.readyState === 4) {
-              console.log(video.readyState);
-             remove();
-         } else {
-             setTimeout(checkLoad, 100);
-         }
-     }
+    video.onloadeddata = function() {
+  remove();
+};
+    // function checkLoad() {
+    //
+    //      if (video.readyState === 4) {
+    //           console.log(video.readyState);
+    //          remove();
+    //      } else {
+    //          setTimeout(checkLoad, 100);
+    //      }
+    //  }
 
 
 
