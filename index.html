@@ -200,6 +200,8 @@
       }
     });
     onload = checkLoad;
+    $(document).ready(function(){
+    $(this).scrollTop(0);});
     function remove(){
       $("#back").remove();
       $("body").css("overflow-y","scroll");
@@ -207,7 +209,7 @@
     function checkLoad() {
         var video = document.getElementById("myVideo");
          if (video.readyState === 4) {
-              console.log("loaded");
+              console.log(video.readyState);
              remove();
          } else {
              setTimeout(checkLoad, 100);
