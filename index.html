@@ -13,17 +13,32 @@
   <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 
   <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css'>
-  <link rel='stylesheet prefetch' href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic'>
+  <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic'>
   <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet prefetch' href='https://cdn.rawgit.com/konpa/devicon/df6431e323547add1b4cf45992913f15286456d3/devicon.min.css'>
   <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css'>
   <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css'>
   <link rel='stylesheet prefetch' href='style.css'>
+  <link rel='stylesheet prefetch' href='loading.css'>
 
 
 </head>
 
 <body>
+  <div id="back">
+<div id="load">
+
+  <div>G</div>
+  <div>N</div>
+  <div>I</div>
+  <div>D</div>
+  <div>A</div>
+  <div>O</div>
+  <div>L</div>
+  </div>
+</div>
+
+
   <video autoplay muted loop id="myVideo">
   <source src="background.mp4" type="video/mp4">
 </video>
@@ -184,6 +199,16 @@
         $("nav").removeClass("navbar-scrolled");
       }
     });
+    onload = runtime;
+    function runtime(){
+      $("#back").remove();
+      $("body").css("overflow-y","scroll");
+    }
+
+
+
+
+
   </script>
 
 </body>
