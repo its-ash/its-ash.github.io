@@ -199,13 +199,20 @@
         $("nav").removeClass("navbar-scrolled");
       }
     });
-    onload = runtime;
-    function runtime(){
+    onload = checkLoad;
+    function remove(){
       $("#back").remove();
       $("body").css("overflow-y","scroll");
     }
-
-
+    function checkLoad() {
+        var video = document.getElementById("myVideo");
+         if (video.readyState === 4) {
+              console.log("loaded");
+             remove();
+         } else {
+             setTimeout(checkLoad, 100);
+         }
+     }
 
 
 
