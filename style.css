@@ -158,21 +158,24 @@ video{
 .navbar-nav > li > a:visited {
 	color: white !important;
 	/* text-transform: uppercase !important; */
-	font-size: 20px;
+	font-size: 1vw;
 	border-bottom: 1px solid transparent !important;
 	padding: 0;
 	margin: 10px;
+  -webkit-text-size-adjust:none;
 }
 
 .navbar-brand {
 	color: white !important;
 	font-size: 1.2rem;
+  -webkit-text-size-adjust:none;
 }
 
 .navbar-brand .glyphicon {
 	color: white !important;
 	margin-left: 1rem;
 	font-size: 2rem;
+  /* -webkit-text-size-adjust:none; */
 }
 
 .navbar-nav > li > a:hover,
@@ -193,7 +196,7 @@ video{
 
 #main-heading {
     color: black;
-	font-size: 6rem;
+	font-size: 10vw;
 	font-weight: 300;
 	text-transform: uppercase;
 }
@@ -201,24 +204,10 @@ video{
 #main-subheading {
     width: 100%;
     color: gold;
-	font-size: 6rem;
+	font-size: 5vw;
 	font-weight: 300;
 }
 
-@media (max-width:1024px) {
-	#main-heading {
-		font-size: 5rem;
-	}
-	#main-subheading {
-		font-size: 4rem;
-	}
-}
-
-@media (max-width:768px) {
-	#main-subheading {
-		font-size: 3rem;
-	}
-}
 
 .navbar-default .navbar-toggle:hover {
 	background-color: #00CAD9 !important;
@@ -275,31 +264,8 @@ video{
 
 #intro p {
 	padding: 1rem 2rem;
-	font-size: 1.8rem;
+	font-size: 2vw;
 	text-align: center;
-}
-
-@media (max-width: 1024px) {
-	#intro p {
-		font-size: 1.5rem;
-	}
-	#intro h3 {
-		padding: 0;
-		margin-bottom: 1rem;
-	}
-}
-
-@media (max-width: 768px) {
-	#intro p {
-		font-size: 1.4rem;
-		padding: 10px;
-	}
-}
-
-@media (max-width: 425px) {
-	#intro .glyphicon {
-		margin: 0;
-	}
 }
 
 #intro {
@@ -347,20 +313,6 @@ h3 {
 	font-size: 1.8rem;
 }
 
-@media (max-width: 1024px) {
-	#skills p {
-		font-size: 1.5rem;
-	}
-}
-
-@media (max-width: 768px) {
-	#skills p {
-		font-size: 1.4rem;
-	}
-}
-
-
-/* Contact */
 
 #contact {
 	color: #ff3086;
@@ -380,18 +332,6 @@ h3 {
 #contact p {
 	font-size: 1.8rem;
 	margin-bottom: 2rem;
-}
-
-@media (max-width: 1024px) {
-	#contact p {
-		font-size: 1.5rem;
-	}
-}
-
-@media (max-width: 768px) {
-	#contact p {
-		font-size: 1.4rem;
-	}
 }
 
 #contact .glyphicon,
