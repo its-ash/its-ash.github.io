@@ -39,7 +39,7 @@
 </div>
 
 
-  <video autoplay muted loop id="myVideo">
+  <video autoplay muted loop id="myVideo"  preload="auto">
   <source src="background.mp4" type="video/mp4">
 </video>
   <header id="landing">
@@ -101,8 +101,6 @@
           <i class="devicons"><img src="https://www.raspberrypi.org/app/uploads/2015/08/raspberry-pi-logo.png" width="70px" style="margin-top:-50px"> </i>
 
           <i class="devicons devicon-rails-plain colored"></i>
-
-
         </div>
 
       </div>
@@ -192,7 +190,8 @@
       $("#back").remove();
       $("body").css("overflow-y","scroll");
     }
-    video.onloadeddata = function() {
+
+    onload = function() {
   remove();
 };
     // function checkLoad() {
