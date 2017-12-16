@@ -20,26 +20,27 @@
   <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css'>
   <link rel='stylesheet prefetch' href='style.css'>
   <link rel='stylesheet prefetch' href='loading.css'>
+  <link rel='stylesheet prefetch' href='social.css'>
 
 
 </head>
 
 <body>
   <div id="back">
-<div id="load">
+    <div id="load">
 
-  <div>G</div>
-  <div>N</div>
-  <div>I</div>
-  <div>D</div>
-  <div>A</div>
-  <div>O</div>
-  <div>L</div>
+      <div>G</div>
+      <div>N</div>
+      <div>I</div>
+      <div>D</div>
+      <div>A</div>
+      <div>O</div>
+      <div>L</div>
+    </div>
   </div>
-</div>
 
 
-  <video autoplay muted loop id="myVideo"  preload="auto">
+  <video autoplay muted loop id="myVideo" preload="auto">
   <source src="background.mp4" type="video/mp4">
 </video>
   <header id="landing">
@@ -106,22 +107,33 @@
       </div>
     </div>
   </section>
+
+  <div class="center">
+    <ul class="social-nav model-3">
+      <li><a class="twitter" href="https://twitter.com/vineethtrv"><i class="fa fa-twitter"></i></a></li>
+      <li><a class="facebook" href="https://www.facebook.com/theAshviniJangid"><i class="fa fa-facebook"></i></a></li>
+      <li><a class="google-plus" href="https://plus.google.com/+AshviniJangid"><i class="fa fa-google-plus"></i></a></li>
+      <li><a class="linkedin" href="https://www.linkedin.com/in/ashvinijangid"><i class="fa fa-linkedin"></i></a></li>
+      <li><a class="pinterest"><i class="fa fa-pinterest-p"></i></a></li>
+      <li><a class="github" href="https://github.com/ashvinijangid"><i class="fa fa-github"></i></a></li>
+    </ul>
+
+
+    <div class="logo">
+      <div></div>
+      <div></div>
+      <img src="https://ashvinijangid.github.io/icon.png">
+      <div></div>
+    </div>
+  </div>
+
+
   <footer id="contact" class="row js-contact">
     <h3 class="text-center">Contact</h3>
     <div class="col-xs-10 col-xs-offset-1 text-center">
       <p>
         I'd be happy to answer any questions you might have. Please feel free to contact me.
       </p>
-      <a href="mailto:ashvinijangid@gmail.com" target="_blank">
-      <span class="glyphicon glyphicon-envelope"></span></a>
-      <a href="https://www.facebook.com/ashvinikumarjangid" target="_blank">
-      <i class="fa fa-facebook" aria-hidden="true"></i></a>
-      <a href="https://www.linkedin.com/in/ashvinijangid" target="_blank">
-      <i class="fa fa-linkedin" aria-hidden="true"></i></a>
-      <a href="https://github.com/ashvinijangid" target="_blank">
-      <i class="fa fa-github" aria-hidden="true"></i></a>
-
-
 
     </div><br></footer>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js'></script>
@@ -184,16 +196,18 @@
     });
     // onload = checkLoad;
     var video = document.getElementById("myVideo");
-    $(document).ready(function(){
-    $(this).scrollTop(0);});
-    function remove(){
+    $(document).ready(function() {
+      $(this).scrollTop(0);
+    });
+
+    function remove() {
       $("#back").remove();
-      $("body").css("overflow-y","scroll");
+      $("body").css("overflow-y", "visible");
     }
 
     onload = function() {
-  remove();
-};
+      remove();
+    };
     // function checkLoad() {
     //
     //      if (video.readyState === 4) {
@@ -205,7 +219,15 @@
     //  }
 
 
+    $('body').bind('mousewheel', function(evt) {
+      var delta = evt.originalEvent.wheelDelta
+      console.log(delta)
+    })
 
+    // window.onscroll = function() {
+    //
+    //   console.log(window.scrollY);
+    // }
   </script>
 
 </body>
