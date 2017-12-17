@@ -1,165 +1,177 @@
-.center{
+.center {
   width: 100%;
 }
-
 
 /*=====================*/
 
 .social-nav {
-    padding: 0;
-    list-style: none;
-    display: inline-block;
-    margin: auto auto;
-    width: 100%;
-    height: 100%;
+  padding: 0;
+  list-style: none;
+  display: inline-block;
+  margin: auto auto;
+  width: 100%;
+  height: 100%;
 }
 
 .social-nav li {
-    display: inline-block;
-    width: 5vw;
+  display: inline-block;
+  width: 5vw;
 }
 
 .social-nav a {
-    display: inline-block;
-    width: 30%;
-    height: 100%;
-    font-size: 2.5vw;
-    color: #FFF;
-    text-decoration: none;
-    cursor: pointer;
-    text-align: center;
-    line-height: 2vw;
-    background: #000;
-    position: relative;
-    transition: 0.5s;
+  display: inline-block;
+  width: 30%;
+  height: 100%;
+  font-size: 2.5vw;
+  color: #FFF;
+  text-decoration: none;
+  cursor: pointer;
+  text-align: center;
+  line-height: 2vw;
+  background: #000;
+  position: relative;
+  transition: 0.5s;
 }
+
 .model-3 {
-    margin-bottom: 1vw;
+  margin-bottom: 1vw;
 }
 
 .model-3 a {
-    background: #fff;
-    transition: padding 0.4s;
-    width: 100%;
-    /* padding-left: 0.5vw; */
+  background: #fff;
+  transition: padding 0.4s;
+  width: 100%;
+  /* padding-left: 0.5vw; */
 }
 
 .model-3 a:after {
-    content: '';
-    position: absolute;
-    border: 2.5vw solid #fff;
-    z-index: -1;
-    border-bottom-color: transparent !important;
-    left: 0;
-    top: 50%;
-    transition: transform 0.4s;
+  content: '';
+  position: absolute;
+  border: 2.5vw solid #fff;
+  z-index: -1;
+  border-bottom-color: transparent !important;
+  left: 0;
+  top: 50%;
+  transition: transform 0.4s;
 }
 
 .model-3 a:hover {
-    color: #fff;
-    padding-top: 1vw;
-    /* padding-bottom: 1vw; */
-    z-index: 1000000;
+  color: #fff;
+  padding-top: 1vw;
+  /* padding-bottom: 1vw; */
+  z-index: 1000000;
 }
 
 .model-3 a:hover:after {
-    transform: translateY(10px);
+  transform: translateY(10px);
 }
 
 .model-3 .twitter {
-    color: #00ACED;
+  color: #00ACED;
 }
 
 .model-3 .twitter:hover {
-    background: #00ACED;
+  background: #00ACED;
 }
 
 .model-3 .twitter:hover:after {
-    border-color: #00ACED;
+  border-color: #00ACED;
 }
 
 .model-3 .facebook {
-    color: #3B579D;
+  color: #3B579D;
 }
 
 .model-3 .facebook:hover {
-    background: #3B579D;
+  background: #3B579D;
 }
 
 .model-3 .facebook:hover:after {
-    border-color: #3B579D;
+  border-color: #3B579D;
 }
 
 .model-3 .google-plus {
-    color: #DD4A3A;
+  color: #DD4A3A;
 }
 
 .model-3 .google-plus:hover {
-    background: #DD4A3A;
+  background: #DD4A3A;
 }
 
 .model-3 .google-plus:hover:after {
-    border-color: #DD4A3A;
+  border-color: #DD4A3A;
 }
 
 .model-3 .linkedin {
-    color: #007BB6;
+  color: #007BB6;
 }
 
 .model-3 .linkedin:hover {
-    background: #007BB6;
+  background: #007BB6;
 }
 
 .model-3 .linkedin:hover:after {
-    border-color: #007BB6;
+  border-color: #007BB6;
 }
 
 .model-3 .pinterest {
-    color: #CB2026;
+  color: #CB2026;
 }
 
 .model-3 .pinterest:hover {
-    background: #CB2026;
+  background: #CB2026;
 }
 
 .model-3 .pinterest:hover:after {
-    border-color: #CB2026;
+  border-color: #CB2026;
 }
 
-
 .model-3 .github {
-    color: #292d35;
+  color: #292d35;
 }
 
 .model-3 .github:hover {
-    background: #292d35;
+  background: #292d35;
 }
 
 .model-3 .github:hover:after {
-    border-color:  #292d35;
+  border-color: #292d35;
 }
+
 .model-3 .instagram {
-    color: #bc296b;
+  color: #bc296b;
 }
 
 .model-3 .instagram:hover {
-    background: #bc296b;
+  background: #bc296b;
 }
 
 .model-3 .instagram:hover:after {
-    border-color:  #bc296b;
+  border-color: #bc296b;
+}
+
+.model-3 .gmail {
+  color: #ff5470;
+}
+
+.model-3 .gmail:hover {
+  background: #ff5470;
+}
+
+.model-3 .gmail:hover:after {
+  border-color: #ff5470;
 }
 
 @keyframes icon-move {
-    49% {
-        transform: translateX(-40px);
-        opacity: 0;
-    }
-    50% {
-        transform: translateX(40px);
-        opacity: 1;
-    }
-    80% {
-        transform: translateX(0);
-    }
+  49% {
+    transform: translateX(-40px);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(40px);
+    opacity: 1;
+  }
+  80% {
+    transform: translateX(0);
+  }
 }
