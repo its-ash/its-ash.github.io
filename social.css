@@ -138,7 +138,17 @@
 .model-3 .github:hover:after {
     border-color:  #292d35;
 }
+.model-3 .instagram {
+    color: #bc296b;
+}
 
+.model-3 .instagram:hover {
+    background: #bc296b;
+}
+
+.model-3 .instagram:hover:after {
+    border-color:  #bc296b;
+}
 
 @keyframes icon-move {
     49% {
