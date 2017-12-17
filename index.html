@@ -122,26 +122,26 @@
   <script>
 
     /* scroll on btn */
-    $(".js--scroll-next-page").click(function() {
-      $("html, body").animate({
-          scrollTop: $(".js--about-me").offset().top
-        },
-        1000
-      );
-    });
-    /* Change menu background on scrolling */
-    $(document).scroll(function() {
-      if ($(document).scrollTop() > 100) {
-        $("nav").addClass("navbar-scrolled");
-      } else {
-        $("nav").removeClass("navbar-scrolled");
-      }
-    });
-    // onload = checkLoad;
-    var video = document.getElementById("myVideo");
-    $(document).ready(function() {
-      $(this).scrollTop(0);
-    });
+    // $(".js--scroll-next-page").click(function() {
+    //   $("html, body").animate({
+    //       scrollTop: $(".js--about-me").offset().top
+    //     },
+    //     1000
+    //   );
+    // });
+    // /* Change menu background on scrolling */
+    // $(document).scroll(function() {
+    //   if ($(document).scrollTop() > 100) {
+    //     $("nav").addClass("navbar-scrolled");
+    //   } else {
+    //     $("nav").removeClass("navbar-scrolled");
+    //   }
+    // });
+    // // onload = checkLoad;
+    // var video = document.getElementById("myVideo");
+    // $(document).ready(function() {
+    //   $(this).scrollTop(0);
+    // });
 
     function remove() {
       $("#back").remove();
@@ -161,11 +161,11 @@
     //      }
     //  }
 
-
-    $('body').bind('mousewheel', function(evt) {
-      var delta = evt.originalEvent.wheelDelta
-      console.log(delta)
-    })
+    // 
+    // $('body').bind('mousewheel', function(evt) {
+    //   var delta = evt.originalEvent.wheelDelta
+    //   console.log(delta)
+    // })
 
     // window.onscroll = function() {
     //
