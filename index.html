@@ -44,19 +44,19 @@
   <source src="background.mp4" type="video/mp4">
 </video>
 
-    <div class="hero-text-box">
-      <h1 id="main-heading">Ashvini Jangid</h1>
+  <div class="hero-text-box">
+    <h1 id="main-heading">Ashvini Jangid</h1>
 
-      <p class="text-center" style="font-size:3vw;top:20vw;bottom:0vw;color:#ff1969;font-family: 'Dosis', sans-serif;">I can do,But my way</p><br/>
-      <h2 id="main-subheading">Developer <span style="font-size:3vw;color:red;top:10%">&</span> Programmer</h2>
-    </div>
-    <a class="js--scroll-next-page" href="#"><i class="ion-chevron-down icon-big scroll-down-btn fadeInDown" style="font-size:2vw"></i></a>
+    <p class="text-center" style="font-size:3vw;top:20vw;bottom:0vw;color:#ff1969;font-family: 'Dosis', sans-serif;">I can do,But my way</p><br/>
+    <h2 id="main-subheading">Developer <span style="font-size:3vw;color:red;top:10%">&</span> Programmer</h2>
+  </div>
+  <a class="js--scroll-next-page" href="#"><i class="ion-chevron-down icon-big scroll-down-btn fadeInDown" style="font-size:2vw"></i></a>
   </header>
   <section id="skills" class="row js-skills">
     <div class="col-xs-10 col-xs-offset-1">
       <h3 class="text-center" style="font-size:2vw">Can Help In</h3>
 
-      <div class="row text-center" style="z-index:-1">
+      <div class="row text-center">
         <i class="devicons"><img src="ubuntu.png" width="10%" ></i>
         <i class="devicons"><img src="aws.png" width="10%" ></i>
         <i class="devicons"><img src="python.png" width="10%" ></i>
@@ -80,7 +80,7 @@
           <i class="devicons"><img src="spark.png" width="10%" style="margin-top:-60px"> </i>
 
         </div>
-              <i class="devicons devicon-java-plain colored"></i>
+        <i class="devicons devicon-java-plain colored"></i>
 
       </div>
     </div>
@@ -120,57 +120,27 @@
   <script src='https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js'></script>
 
   <script>
-
-    /* scroll on btn */
-    // $(".js--scroll-next-page").click(function() {
-    //   $("html, body").animate({
-    //       scrollTop: $(".js--about-me").offset().top
-    //     },
-    //     1000
-    //   );
-    // });
-    // /* Change menu background on scrolling */
-    // $(document).scroll(function() {
-    //   if ($(document).scrollTop() > 100) {
-    //     $("nav").addClass("navbar-scrolled");
-    //   } else {
-    //     $("nav").removeClass("navbar-scrolled");
-    //   }
-    // });
-    // // onload = checkLoad;
-    // var video = document.getElementById("myVideo");
-    // $(document).ready(function() {
-    //   $(this).scrollTop(0);
-    // });
+    $(document).ready(function() {
+      $(this).scrollTop(0);
+    });
 
     function remove() {
       $("#back").remove();
       $("body").css("overflow-y", "visible");
     }
-
+    var video = document.getElementById("myVideo");
     onload = function() {
-      remove();
+      checkLoad();
     };
-    // function checkLoad() {
-    //
-    //      if (video.readyState === 4) {
-    //           console.log(video.readyState);
-    //          remove();
-    //      } else {
-    //          setTimeout(checkLoad, 100);
-    //      }
-    //  }
 
-    // 
-    // $('body').bind('mousewheel', function(evt) {
-    //   var delta = evt.originalEvent.wheelDelta
-    //   console.log(delta)
-    // })
+    function checkLoad() {
 
-    // window.onscroll = function() {
-    //
-    //   console.log(window.scrollY);
-    // }
+      if (video.readyState === 4) {
+        remove();
+      } else {
+        setTimeout(checkLoad, 100);
+      }
+    }
   </script>
 
 </body>
