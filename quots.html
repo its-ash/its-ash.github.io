@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>FCC random quots</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'>
+  <style>
+    .quote-wrapper {
+      margin-top: 9%;
+    }
+
+    .quote-container {
+      border: 2px solid #f8c68b;
+      border-radius: 5px;
+      background-color: #FFCCBC;
+      color: black;
+    }
+
+    blockquote {
+      border: none;
+    }
+
+    blockquote footer {
+      padding: 15px 0;
+    }
+
+
+
+    .fa-quote-right,
+    .fa-quote-left {
+      color: #b9cfdc;
+    }
+
+    .author {
+      color: #7e99aa;
+    }
+
+    #new-quote {
+      background-color: #55acee;
+      border: none;
+      opacity: 1;
+    }
+
+    #new-quote:hover {
+      opacity: 0.8;
+    }
+
+    #quoteText {
+      text-shadow: 2px 2px 4px #F57C00;
+      font-size: 5rem;
+    }
+  </style>
+
+</head>
+
+<body>
+  <!-- partial:index.partial.html -->
+  <div class="container-fluid">
+    <div class="row quote-wrapper">
+      <div class="col-md-4">
+        <i class="fa fa-quote-left fa-5x pull-right"></i>
+      </div>
+      <div class="col-md-4 quote-container">
+        <blockquote id="quote">
+          <div id="quoteText"></div>
+          <footer class="author">
+            <cite title="Author"></cite>
+          </footer>
+        </blockquote>
+        </a>
+        <button class="btn btn-primary pull-right" id="new-quote">New quote</button>
+      </div>
+      <div class="col-md-4">
+        <i class="fa fa-quote-right fa-5x pull-left"></i>
+      </div>
+    </div>
+  </div>
+  <!-- partial -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js'></script>
+  <script>
+    var effects = ["blind", "bounce", "clip", "drop", "fade", "fold", "puff", "pulsate", "slide"];
+
+    function getQuote() {
+
+      $.ajax({
+        url: "https://api.quotable.io/random",
+        success: function (data) {
+          console.log(data);
+          var index = Math.floor(Math.random() * effects.length);
+          $("#quoteText").hide(effects[index], 500, function () {
+            $("#quoteText").html(data['content']);
+            $("#quoteText").show(effects[index], 500);
+          });
+          $("#quote footer").hide(effects[index], 1000, function () {
+            $("#quote footer cite").text(data['author']);
+            $("#quote footer").show(effects[index], 1000);
+          });
+        },
+        cache: false
+      });
+    }
+
+    $(document).ready(function () {
+      getQuote();
+      $("#new-quote").on("click", function () {
+        getQuote();
+      });
+    });
+  </script>
+
+</body>
+
+</html>
