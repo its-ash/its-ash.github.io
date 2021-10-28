@@ -4,38 +4,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Poiret+One&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400&family=Open+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/codemirror.min.css">
+    <link rel="stylesheet" href="/assets/css/dracula.min.css">
     <title>Ash</title>
     <style>
         * {
             margin: 0;
             padding: 0;
-            font-size: 10vmin;
-            color: rgb(202, 221, 255);
-            font-family: 'Poiret One', cursive;
-
+            overflow-x: hidden;
         }
 
         html,
         body {
-            padding-top: 100px;
             height: 100%;
             background-color: black;
-            overflow: hidden;
         }
 
-        .user {
-            margin-left: 100px;
+        #code {
+            height: 100%;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .CodeMirror {
+            max-height: 90vh;
+            height: 90vh;
+        }
+
+        #display {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f3f3f3;
         }
     </style>
 </head>
 
-<body>
-    <div class="user">
-        <h1>Ashvini Jangid</h1> <br>
-        <h2>ashvinijangid@gmail.com</h2>
-        <h3>Jaipur, India</h3>
+<body class="row d-flex p-5">
+    <div class="col-md-6 col-12 d-flex" id="display"></div>
+    <div class="col-md-6 col-12">
+        <textarea id="code"></textarea>
     </div>
+
+    <script src="/assets/js/codemirror.min.js"></script>
+    <script src="/assets/js/javascript-hint.min.js"></script>
+    <script src="/assets/js/css-lint.min.js"></script>
+    <script src="/assets/js/html-hint.min.js"></script>
+    <script src="/assets/js/htmlmixed.min.js"></script>
+    <script src="/assets/js/xml.min.js"></script>
+    <script src="/assets/js/sublime.min.js"></script>
+    <script>
+        const htmlEditor = CodeMirror.fromTextArea(
+            document.getElementById("code"), {
+            lineNumbers: true,
+            mode: 'htmlmixed',
+            theme: 'dracula',
+        });
+
+        htmlEditor.on('change', (editor) => {
+            const text = editor.doc.getValue()
+            document.getElementById("display").innerHTML = text;
+        });
+
+        fetch("data.txt")
+            .then((x) => x.text())
+            .then(x => htmlEditor.getDoc().setValue(x));
+    </script>
 </body>
 
 </html>
