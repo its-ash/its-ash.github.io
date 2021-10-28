@@ -67,7 +67,7 @@
             document.getElementById("display").innerHTML = text;
         });
 
-        fetch("data.txt")
+        fetch("readme.md")
             .then((x) => x.text())
             .then(x => htmlEditor.getDoc().setValue(x));
     </script>

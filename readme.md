@@ -4,14 +4,14 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ASH</title>
 </head>
 <body>
         <div class="col-12 text-center p-4">
                 <h1 class="col-12 h2 ">Hello, Stranger <br> My name is <br> 
                 <strong>Ashvini Jangid</strong></h1>
-                <p>I'm develope software and hardware.</p>
                 <img class="col-md-4 col-6" src="/assets/img.jpg" alt="Ashvini Jangid">
+                <p>I'm develope software and hardware.</p>
+                <h3>I have few skills</h3>
                 <div class="row mt-5">
                         <div class="col-md-4 col-6">
                                 <ol class="text-start">
@@ -47,7 +47,6 @@
                                 </ol>
                         </div>
                 </div>
-        
-        </div>
+    </div>
 </body>
 </html>
