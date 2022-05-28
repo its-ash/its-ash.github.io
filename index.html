@@ -67,15 +67,10 @@
         const hideReset = () => document.getElementById('reset-btn').style.display = "none";
         let originalCode = "";
 
-
-
-
-
         const syncCode = () => {
             htmlEditor.getDoc().setValue(originalCode);
             hideReset();
         }
-
 
         const htmlEditor = CodeMirror.fromTextArea(
             document.getElementById("code"), {
