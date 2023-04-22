@@ -3,9 +3,6 @@
     <div v-if="post">
       <h1 class="font-weight-bold">{{ post.title }}</h1>
       <nuxt-content :document="post" />
-      <div class="mt-8">
-        <nuxt-link to="/" class="text-decoration-none">← Back to blog</nuxt-link>
-      </div>
     </div>
   </div>
 </template>

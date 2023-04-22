@@ -19,7 +19,7 @@ export default {
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Crete+Round:ital@0;1&family=Noto+Sans:ital,wght@0,100;0,300;0,400;0,600;1,300;1,400;1,600&display=swa"
+        href: "https://fonts.googleapis.com/css2?family=Crete+Round:ital@0;1&family=Fira+Code:wght@300;400;500&family=Noto+Sans:ital,wght@0,100;0,300;0,400;0,600;1,300;1,400;1,600&display=swap"
       }
 
     ]
