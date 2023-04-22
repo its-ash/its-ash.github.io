@@ -12,7 +12,7 @@
 export default {
   name: "_slug",
   data: () => ({
-    post: {}
+    post: null
   }),
   methods: {},
   async fetch() {
@@ -22,6 +22,13 @@ export default {
         .limit(1)
         .fetch()
     )?.[0];
+  },
+  watch: {
+    post(value) {
+      if (!value) {
+        this.$router.replace({ name: "index" });
+      }
+    }
   }
 };
 </script>

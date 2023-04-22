@@ -21,11 +21,11 @@ export default {
     };
   },
   mounted() {
-    this.back = this.$route.path.includes("blog");
+    this.back = this.$route.path.length > 4;
   },
   watch: {
     $route(value) {
-      this.back = value.path.includes("blog");
+      this.back = value.path.length > 4;
     }
   }
 };

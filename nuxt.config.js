@@ -69,6 +69,10 @@ export default {
     }
   },
 
+  router: {
+    base: "/its-ash/"
+  },
+
   vuetify: {
     customVariables: ["~/assets/variables.scss"],
     theme: {

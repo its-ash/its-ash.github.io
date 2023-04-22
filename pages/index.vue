@@ -13,7 +13,7 @@
           <h2 class="font-weight-bold">
             <nuxt-link
               class="black--text text-decoration-none"
-              :to="{name: 'blog-slug',params: {slug:post.slug}}">
+              :to="{name: 'slug',params: {slug:post.slug}}">
               {{ post.title }}
             </nuxt-link>
           </h2>
@@ -87,20 +87,20 @@ export default {
     this.postsDataList = await this.$content().fetch();
   },
   mounted() {
-    const search = this.$route.query?.search ?? "";
-    if (search) {
-      this.search = search;
-    }
+    // const search = this.$route.query?.search ?? "";
+    // if (search) {
+    //   this.search = search;
+    // }
 
   },
   watch: {
-    search(value) {
-      if (this.$route.query?.search !== value && value) {
-        this.$router.replace({ name: "index", query: { search: value } });
-      } else {
-        this.$router.replace({ name: "index" });
-      }
-    }
+    // search(value) {
+    //   if (this.$route.query?.search !== value && value) {
+    //     this.$router.replace({ name: "index", query: { search: value } });
+    //   } else {
+    //     this.$router.replace({ name: "index" });
+    //   }
+    // }
   }
 };
 </script>
