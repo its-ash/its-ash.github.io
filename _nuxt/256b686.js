@@ -1,1 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[2],{464:function(e,t,r){"use strict";r.r(t);var n={name:"CodeBlock"},c=r(82),component=Object(c.a)(n,(function(){return(0,this._self._c)("div",{staticClass:"p-6 border bg-white dark:bg-black dark:border-gray-700 rounded"},[this._t("default")],2)}),[],!1,null,"70c8860c",null);t.default=component.exports}}]);
