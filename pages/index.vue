@@ -14,7 +14,7 @@
       <article v-for="post of posts" :key="post.slug" class="col-xl-4 col-md-6 col-12 ma-0">
         <v-card elevation="1" :class="[getClass(post.lang)]">
           <div class="px-4 py-2">
-            <img v-if="post.lang" class="language" :src="getIcon(post.lang)" :alt="post.lang">
+            <img v-if="post.lang.trim()" class="language" :src="getIcon(post.lang)" :alt="post.lang">
             <h2 class="font-weight-bold">
               <nuxt-link
                 class="black--text text-decoration-none"
