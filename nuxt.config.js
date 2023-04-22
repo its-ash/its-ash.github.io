@@ -70,7 +70,7 @@ export default {
   },
 
   router: {
-    base: "/its-ash/"
+    base: "/"
   },
 
   vuetify: {
