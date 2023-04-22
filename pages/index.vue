@@ -6,7 +6,7 @@
       </div>
     </div>
 
-    <article v-for="post of posts" :key="post.slug" class="col-6 ma-0">
+    <article v-for="post of posts" :key="post.slug" class="col-xl-4 col-md-6 col-12 ma-0">
       <v-card elevation="1" :class="[getClass(post.lang)]">
         <div class="px-4 py-2">
           <img v-if="post.lang" class="language" :src="getIcon(post.lang)" :alt="post.lang">
@@ -24,6 +24,7 @@
       </v-card>
 
     </article>
+    <h2 v-if="posts.length === 0">No Blog Found ...</h2>
 
   </v-row>
 </template>
@@ -56,7 +57,7 @@ export default {
   methods: {
     getClass(lang) {
       const language = (lang ?? "").toString().toLowerCase();
-      let className = "";
+      let className = "text";
       switch (language) {
         case "js":
           className = "javascript";
@@ -94,10 +95,10 @@ export default {
   },
   watch: {
     search(value) {
-      if (this.$route.query?.search !== value) {
+      if (this.$route.query?.search !== value && value) {
         this.$router.replace({ name: "index", query: { search: value } });
       } else {
-        this.$router.replace({ name: "index", query: {} });
+        this.$router.replace({ name: "index" });
       }
     }
   }
@@ -118,7 +119,11 @@ export default {
 }
 
 .python {
-  background-color: rgb(55 116 167 / 29%) !important
+  background-color: rgb(55 116 167 / 29%) !important;
+}
+
+.text {
+  background-color: rgb(55 91 167 / 29%) !important;
 }
 
 .v-card.v-sheet {

@@ -1,26 +1,9 @@
 ---
-title: Getting started
-description: 'Empower your NuxtJS application with @nuxt/content module: write in a content/ directory and fetch your Markdown, JSON, YAML and CSV files through a MongoDB like API, acting as a Git-based Headless CMS.'
+title: Welcome to Ashini Jangid Blogs
+description: 'Lets start the new journey'
+lang: ''
+tag: [ 'ashvini', 'blog' ]
+slug: 'ashvini-jangid'
 ---
 
-Empower your NuxtJS application with `@nuxtjs/content` module: write in a `content/` directory and fetch your Markdown,
-JSON, YAML and CSV files through a MongoDB like API, acting as a **Git-based Headless CMS**.
-
-## Writing content
-
-Learn how to write your `content/`, supporting Markdown, YAML, CSV and JSON: https://content.nuxtjs.org/writing.
-
-## Fetching content
-
-Learn how to fetch your content with `$content`: https://content.nuxtjs.org/fetching.
-
-## Displaying content
-
-Learn how to display your Markdown content with the `<nuxt-content>` component directly in your
-template: https://content.nuxtjs.org/displaying.
-
-```js[server.js]
-function test() {
-  console.log("notice the blank line before this function?");
-}
-```
+Welcome to our **tech blog!** Here, we explore the ever-evolving world of technology and its impact on our lives. From the latest gadgets and apps to emerging trends and groundbreaking innovations, we cover it all. Our team of experts are passionate about all things tech, and we're excited to share our knowledge and insights with you. Whether you're a tech enthusiast or just looking to stay up-to-date on the latest tech news, we've got you covered. So sit back, relax, and join us on this exciting journey through the world of technology!
