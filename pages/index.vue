@@ -5,26 +5,32 @@
         <v-text-field placeholder="Search..." clearable outlined dense hide-details v-model="search"></v-text-field>
       </div>
     </div>
+    <div v-if="loading" class="d-flex justify-center col-12">
+      <Loader></Loader>
+    </div>
 
-    <article v-for="post of posts" :key="post.slug" class="col-xl-4 col-md-6 col-12 ma-0">
-      <v-card elevation="1" :class="[getClass(post.lang)]">
-        <div class="px-4 py-2">
-          <img v-if="post.lang" class="language" :src="getIcon(post.lang)" :alt="post.lang">
-          <h2 class="font-weight-bold">
-            <nuxt-link
-              class="black--text text-decoration-none"
-              :to="{name: 'slug',params: {slug:post.slug}}">
-              {{ post.title }}
-            </nuxt-link>
-          </h2>
-          <span>
+    <template v-else>
+
+      <article v-for="post of posts" :key="post.slug" class="col-xl-4 col-md-6 col-12 ma-0">
+        <v-card elevation="1" :class="[getClass(post.lang)]">
+          <div class="px-4 py-2">
+            <img v-if="post.lang" class="language" :src="getIcon(post.lang)" :alt="post.lang">
+            <h2 class="font-weight-bold">
+              <nuxt-link
+                class="black--text text-decoration-none"
+                :to="{name: 'slug',params: {slug:post.slug}}">
+                {{ post.title }}
+              </nuxt-link>
+            </h2>
+            <span>
             {{ post.description }}
           </span>
-        </div>
-      </v-card>
+          </div>
+        </v-card>
 
-    </article>
-    <h2 v-if="posts.length === 0">No Blog Found ...</h2>
+      </article>
+      <h2 v-if="posts.length === 0">No Blog Found ...</h2>
+    </template>
 
   </v-row>
 </template>
@@ -34,7 +40,8 @@ export default {
   name: "IndexPage",
   data: () => ({
     search: "",
-    postsDataList: []
+    postsDataList: [],
+    loading: true
   }),
   computed: {
     posts() {
@@ -85,6 +92,7 @@ export default {
   },
   async fetch() {
     this.postsDataList = await this.$content().fetch();
+    this.loading = false;
   },
   mounted() {
     // const search = this.$route.query?.search ?? "";

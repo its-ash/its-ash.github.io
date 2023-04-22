@@ -35,6 +35,7 @@ export default {
 .body-container {
   overflow: auto;
   margin-bottom: 40px;
+  background-color: #fefefe;
 }
 
 .footer {
