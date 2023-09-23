@@ -9,7 +9,7 @@ slug: 'diamond-pattern-js'
 
 
 
-# JS Pattern using nested loops
+# Diamond Pattern using nested loops
 
 <CodeBlock>
 
@@ -45,7 +45,7 @@ for (let i = width; i != 0; i--) {
 
 <br/>
 
-# JS Pattern using Repeat method
+# Diamond Pattern using Repeat method
 
 <CodeBlock>
 

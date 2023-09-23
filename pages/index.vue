@@ -72,6 +72,9 @@ export default {
         case "python":
           className = "python";
           break;
+        case "ubuntu":
+          className = "ubuntu";
+          break;
       }
       return className;
     },
@@ -84,6 +87,9 @@ export default {
           break;
         case "python":
           icon = "/icons/python.svg";
+          break;
+        case "ubuntu":
+          icon = "/icons/ubuntu.svg";
           break;
       }
       return icon;
@@ -128,6 +134,10 @@ export default {
 
 .python {
   background-color: rgb(55 116 167 / 29%) !important;
+}
+
+.ubuntu {
+  background-color: rgb(221 72 20 / 52%) !important;
 }
 
 .text {
