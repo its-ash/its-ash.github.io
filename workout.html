@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weekly Workout Plan</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    /* Basic styling for tab buttons */
+    .tab-button.active {
+      background-color: #3B82F6; /* blue-600 */
+      color: white;
+      border-color: #3B82F6; /* blue-600 */
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-5xl">
+  <header class="text-center mb-8">
+    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Your Weekly Training Split</h1>
+    <p class="text-md text-gray-600 mt-2">A structured plan for balanced muscle growth and recovery.</p>
+  </header>
+
+  <!-- Tab Navigation -->
+  <div class="mb-8">
+    <div class="flex flex-wrap justify-center border-b border-gray-200">
+      <button class="tab-button flex-grow sm:flex-grow-0 text-center py-3 px-4 font-medium text-gray-600 border-b-2 border-transparent hover:bg-gray-200 hover:border-gray-300 transition-colors duration-300 rounded-t-lg" data-tab="monday">
+        Mon: <span class="font-normal hidden sm:inline">Upper Body</span>
+      </button>
+      <button class="tab-button flex-grow sm:flex-grow-0 text-center py-3 px-4 font-medium text-gray-600 border-b-2 border-transparent hover:bg-gray-200 hover:border-gray-300 transition-colors duration-300 rounded-t-lg" data-tab="tuesday">
+        Tue: <span class="font-normal hidden sm:inline">Lower Body</span>
+      </button>
+      <button class="tab-button flex-grow sm:flex-grow-0 text-center py-3 px-4 font-medium text-gray-600 border-b-2 border-transparent hover:bg-gray-200 hover:border-gray-300 transition-colors duration-300 rounded-t-lg" data-tab="wednesday">
+        Wed: <span class="font-normal hidden sm:inline">Rest</span>
+      </button>
+      <button class="tab-button flex-grow sm:flex-grow-0 text-center py-3 px-4 font-medium text-gray-600 border-b-2 border-transparent hover:bg-gray-200 hover:border-gray-300 transition-colors duration-300 rounded-t-lg" data-tab="thursday">
+        Thu: <span class="font-normal hidden sm:inline">Push</span>
+      </button>
+      <button class="tab-button flex-grow sm:flex-grow-0 text-center py-3 px-4 font-medium text-gray-600 border-b-2 border-transparent hover:bg-gray-200 hover:border-gray-300 transition-colors duration-300 rounded-t-lg" data-tab="friday">
+        Fri: <span class="font-normal hidden sm:inline">Pull</span>
+      </button>
+      <button class="tab-button flex-grow sm:flex-grow-0 text-center py-3 px-4 font-medium text-gray-600 border-b-2 border-transparent hover:bg-gray-200 hover:border-gray-300 transition-colors duration-300 rounded-t-lg" data-tab="saturday">
+        Sat: <span class="font-normal hidden sm:inline">Legs</span>
+      </button>
+      <button class="tab-button flex-grow sm:flex-grow-0 text-center py-3 px-4 font-medium text-gray-600 border-b-2 border-transparent hover:bg-gray-200 hover:border-gray-300 transition-colors duration-300 rounded-t-lg" data-tab="sunday">
+        Sun: <span class="font-normal hidden sm:inline">Rest</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tab Content Panels -->
+  <div id="tab-content-container" class="bg-white p-6 rounded-lg shadow-md">
+    <!-- Monday: Upper Body -->
+    <div id="monday" class="tab-content">
+      <h2 class="text-2xl font-bold mb-1 text-blue-700">Upper Body Foundation</h2>
+      <p class="mb-6 text-gray-600">A comprehensive stimulus for all major upper body muscles.</p>
+      <div class="space-y-4">
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Barbell Bench Press:</strong> 3 sets of 6-8 reps (2-3 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Bent-Over Barbell Row:</strong> 3 sets of 6-8 reps (2-3 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Seated Dumbbell Overhead Press:</strong> 3 sets of 8-10 reps (1-2 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Lat Pulldown (Wide Grip):</strong> 3 sets of 8-10 reps (1-2 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Dumbbell Bicep Curls:</strong> 2 sets of 12-15 reps (1 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Triceps Pushdowns:</strong> 2 sets of 12-15 reps (1 min rest)</div>
+      </div>
+    </div>
+
+    <!-- Tuesday: Lower Body -->
+    <div id="tuesday" class="tab-content">
+      <h2 class="text-2xl font-bold mb-1 text-blue-700">Lower Body Power</h2>
+      <p class="mb-6 text-gray-600">Heavy, compound movements to build foundational leg strength.</p>
+      <div class="space-y-4">
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Barbell Back Squat:</strong> 4 sets of 6-8 reps (2-3 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Romanian Deadlift (RDL):</strong> 3 sets of 8-10 reps (2 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Walking Lunges:</strong> 3 sets of 10-12 reps per leg (1-2 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Seated Leg Curls:</strong> 3 sets of 10-12 reps (1-2 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Standing Calf Raises:</strong> 4 sets of 10-15 reps (1 min rest)</div>
+      </div>
+    </div>
+
+    <!-- Wednesday: Rest -->
+    <div id="wednesday" class="tab-content">
+      <h2 class="text-2xl font-bold mb-1 text-green-700">Rest & Active Recovery</h2>
+      <p class="mb-6 text-gray-600">Allow muscles to repair and replenish energy stores.</p>
+      <div class="p-6 border rounded-lg bg-green-50 text-green-800">
+        <p class="font-semibold">Focus on Active Recovery:</p>
+        <p>Engage in 20-45 minutes of low-intensity activity to aid recovery. This helps increase blood flow, reduce soreness, and prepare your body for the next workout.</p>
+        <ul class="list-disc list-inside mt-2">
+          <li>Brisk Walking</li>
+          <li>Light Cycling or Swimming</li>
+          <li>Gentle Yoga or Stretching</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Thursday: Push -->
+    <div id="thursday" class="tab-content">
+      <h2 class="text-2xl font-bold mb-1 text-blue-700">Push Dominance</h2>
+      <p class="mb-6 text-gray-600">Develop the chest, shoulders, and triceps.</p>
+      <div class="space-y-4">
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Incline Dumbbell Press:</strong> 3 sets of 8-10 reps (1-2 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Flat Machine Chest Press:</strong> 3 sets of 10-12 reps (1-2 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Dumbbell Lateral Raises:</strong> 3 sets of 12-15 reps (1 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Dips (Chest Version):</strong> 3 sets to failure (2 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>EZ-Bar Skull Crushers:</strong> 3 sets of 10-12 reps (1 min rest)</div>
+      </div>
+    </div>
+
+    <!-- Friday: Pull -->
+    <div id="friday" class="tab-content">
+      <h2 class="text-2xl font-bold mb-1 text-blue-700">Pull Strength</h2>
+      <p class="mb-6 text-gray-600">Build back width and thickness, plus biceps.</p>
+      <div class="space-y-4">
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Pull-Ups (or Assisted/Lat Pulldown):</strong> 3 sets of 6-10 reps (2-3 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>T-Bar Row:</strong> 3 sets of 8-10 reps (2 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Seated Cable Row (Neutral Grip):</strong> 3 sets of 10-12 reps (1-2 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Face Pulls:</strong> 3 sets of 15-20 reps (1 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Preacher Curls:</strong> 3 sets of 10-12 reps (1 min rest)</div>
+      </div>
+    </div>
+
+    <!-- Saturday: Legs -->
+    <div id="saturday" class="tab-content">
+      <h2 class="text-2xl font-bold mb-1 text-blue-700">Leg Hypertrophy</h2>
+      <p class="mb-6 text-gray-600">Focus on volume and metabolic stress for muscle growth.</p>
+      <div class="space-y-4">
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Leg Press:</strong> 4 sets of 10-15 reps (1-2 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Bulgarian Split Squats:</strong> 3 sets of 10-12 reps per leg (1-2 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Leg Extensions:</strong> 3 sets of 15-20 reps (1 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Lying Leg Curls:</strong> 3 sets of 15-20 reps (1 min rest)</div>
+        <div class="p-4 border rounded-lg bg-gray-50"><strong>Seated Calf Raises:</strong> 4 sets of 15-20 reps (1 min rest)</div>
+      </div>
+    </div>
+
+    <!-- Sunday: Rest -->
+    <div id="sunday" class="tab-content">
+      <h2 class="text-2xl font-bold mb-1 text-green-700">Rest & Recharge</h2>
+      <p class="mb-6 text-gray-600">Final recovery day to prepare for the week ahead.</p>
+      <div class="p-6 border rounded-lg bg-green-50 text-green-800">
+        <p class="font-semibold">Prepare for the Week:</p>
+        <p>Use this day for complete rest or light active recovery. Focus on proper nutrition and hydration to maximize the benefits of your training week and ensure you're ready for Monday.</p>
+        <ul class="list-disc list-inside mt-2">
+          <li>Full Rest</li>
+          <li>Light Stretching</li>
+          <li>Meal Preparation</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // JavaScript to handle tab switching functionality
+  document.addEventListener('DOMContentLoaded', function () {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    function switchTab(tabName) {
+      // Deactivate all tabs and content
+      tabContents.forEach(content => {
+        content.classList.remove('active');
+      });
+      tabButtons.forEach(button => {
+        button.classList.remove('active');
+      });
+
+      // Activate the selected tab and content
+      const selectedContent = document.getElementById(tabName);
+      const selectedButton = document.querySelector(`.tab-button[data-tab="${tabName}"]`);
+
+      if (selectedContent) {
+        selectedContent.classList.add('active');
+      }
+      if (selectedButton) {
+        selectedButton.classList.add('active');
+      }
+    }
+
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const tabName = button.dataset.tab;
+        switchTab(tabName);
+      });
+    });
+
+    // Set the initial tab based on the current day of the week
+    const dayOfWeek = new Date().getDay(); // Sunday = 0, Monday = 1, ...
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const todayTab = days[dayOfWeek];
+
+    // Default to Monday if it's a weekend for a fresh start view
+    if (todayTab === 'sunday' || todayTab === 'saturday') {
+      switchTab('monday');
+    } else {
+      switchTab(todayTab);
+    }
+  });
+</script>
+</body>
+</html>
