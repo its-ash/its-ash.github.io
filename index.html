@@ -1,102 +1,267 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400&family=Open+Sans:wght@300;400;500&display=swap"
-    rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/codemirror.css">
-  <link rel="stylesheet" href="/assets/css/theme.css">
-  <title>Ash</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-    }
-
-    html,
-    body {
-      height: 100%;
-      overflow-x: hidden;
-    }
-
-    #code {
-      height: 100%;
-      font-family: 'Fira Code', monospace;
-    }
-
-    .CodeMirror {
-      overflow-x: hidden !important;
-      height: 100%;
-      font-size: 12px;
-    }
-
-    #display {
-      font-family: 'Open Sans', sans-serif;
-      background-color: #f3f3f3;
-    }
-
-    .reset-btn {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      width: auto;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ashvini Jangid</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    
+    <style>
+        :root {
+            --md-blue-500: #2196F3;
+            --md-blue-600: #1976D2;
+            --md-blue-50: #E3F2FD;
+            --md-grey-100: #F5F5F5;
+            --md-grey-200: #EEEEEE;
+            --md-grey-600: #757575;
+            --md-grey-800: #424242;
+            --md-indigo-500: #3F51B5;
+            --md-indigo-600: #303F9F;
+        }
+        
+        body {
+            background-color: var(--md-grey-100);
+            min-height: 100vh;
+        }
+        
+        .editor-container {
+            height: calc(100vh - 120px);
+            border: 1px solid var(--md-grey-200);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+        
+        .CodeMirror {
+            height: 100%;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+        }
+        
+        .output-frame {
+            height: 100%;
+            width: 100%;
+            border: none;
+            background: white;
+        }
+        
+        .navbar {
+            background-color: var(--md-indigo-600) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            color: var(--md-grey-800);
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .auto-save-indicator {
+            background-color: var(--md-blue-50);
+            color: var(--md-blue-600);
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            border: 1px solid var(--md-blue-500);
+        }
+        
+        @media (max-width: 768px) {
+            .editor-container {
+                height: 300px;
+                margin-bottom: 20px;
+            }
+            
+            .output-container {
+                height: 400px;
+            }
+        }
+    </style>
 </head>
+<body>
+    <nav class="navbar navbar-dark">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">
+                <i class="fas fa-code"></i> Ashvini Jangid
+            </span>
+            <div class="auto-save-indicator d-none" id="autoSaveIndicator">
+                <i class="fas fa-sync-alt fa-spin"></i> Auto-updating...
+            </div>
+        </div>
+    </nav>
 
-<body class="row d-flex">
-<button onclick="syncCode()" class="reset-btn bg-danger rounded" style="display: none;"
-        id="reset-btn">Reset
-</button>
-<div class="col-md-6 col-12 d-flex p-0" id="display"></div>
-<div class="col-md-6 col-12 p-0 ">
-  <textarea id="code"></textarea>
-</div>
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Editor Section -->
+            <div class="col-lg-6 col-md-12 mb-3 order-md-1 order-2">
+                <div class="editor-container">
+                    <textarea id="htmlEditor"></textarea>
+                </div>
+            </div>
+            
+            <!-- Output Section -->
+            <div class="col-lg-6 col-md-12 mb-3 order-1 order-md-2">
+                <div class="editor-container output-container">
+                    <iframe id="output" class="output-frame"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<script src="/assets/js/codemirror.js"></script>
-<script src="/assets/js/javascript-hint.min.js"></script>
-<script src="/assets/js/css-lint.min.js"></script>
-<script src="/assets/js/html-hint.min.js"></script>
-<script src="/assets/js/htmlmixed.min.js"></script>
-<script src="/assets/js/xml.min.js"></script>
-<script>
-  const showReset = () => document.getElementById('reset-btn').style.display = "block";
-  const hideReset = () => document.getElementById('reset-btn').style.display = "none";
-  let originalCode = "";
+    <!-- Font Awesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- CodeMirror JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
 
-  const syncCode = () => {
-    htmlEditor.getDoc().setValue(originalCode);
-    hideReset();
-  }
+    <script>
+        // Initialize CodeMirror
+        const editor = CodeMirror.fromTextArea(document.getElementById('htmlEditor'), {
+            mode: 'htmlmixed',
+            theme: 'monokai',
+            lineNumbers: true,
+            autoCloseTags: true,
+            autoCloseBrackets: true,
+            matchBrackets: true,
+            indentUnit: 2,
+            lineWrapping: true,
+            extraKeys: {
+                'Ctrl-Space': 'autocomplete',
+                'Cmd-/': 'toggleComment',
+                'Ctrl-/': 'toggleComment'
+            }
+        });
 
-  const htmlEditor = CodeMirror.fromTextArea(
-    document.getElementById("code"), {
-      lineNumbers: true,
-      mode: 'htmlmixed',
-      smartIndent: true,
-      lineWrapping: true,
-    });
+        // Default Ashvini Jangid portfolio HTML
+        const defaultHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ashvini Jangid</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .glass { backdrop-filter: blur(10px); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+        .tech-icon { transition: all 0.3s ease; }
+        .tech-icon:hover { transform: translateY(-5px); }
+    </style>
+</head>
+<body class="d-flex align-items-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="glass rounded-4 p-5 text-white text-center">
+                    <!-- Header -->
+                    <div class="mb-5">
+                        <div class="mb-4">
+                            <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+                                <img src="/morty.png" alt="Ashvini Jangid" class="rounded-circle" style="width: 100px; height: 100px;">
+                            </div>
+                        </div>
+                        <h1 class="display-5 fw-bold mb-3">Ashvini Jangid</h1>
+                        <p class="lead mb-4 opacity-75">Full-Stack Developer</p>
+                        <p class="mb-4">Building scalable solutions with JavaScript, Go & Python</p>
+                    </div>
 
-  htmlEditor.on('change', (editor) => {
-    const value = editor.doc.getValue();
-    localStorage.setItem('code', value);
-    document.getElementById("display").innerHTML = value;
-    if (originalCode !== value) showReset();
-  });
+                    <!-- Tech Stack -->
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-4">
+                            <div class="tech-icon">
+                                <i class="fab fa-js-square text-warning mb-2" style="font-size: 3rem;"></i>
+                                <h6 class="mb-0">JavaScript</h6>
+                                <small class="opacity-75">Vue • React • Node.js</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="tech-icon">
+                                <i class="fab fa-golang text-info mb-2" style="font-size: 3rem;"></i>
+                                <h6 class="mb-0">Go</h6>
+                                <small class="opacity-75">APIs • Microservices</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="tech-icon">
+                                <i class="fab fa-python text-success mb-2" style="font-size: 3rem;"></i>
+                                <h6 class="mb-0">Python</h6>
+                                <small class="opacity-75">Django • FastAPI</small>
+                            </div>
+                        </div>
+                    </div>
 
-  fetch("readme.md")
-    .then((code) => code.text())
-    .then(code => originalCode = code)
-    .then(() => {
-      const code = localStorage.getItem('code') || originalCode;
-      htmlEditor.getDoc().setValue(code);
-    });
-
-</script>
+                    <!-- Contact -->
+                    <div class="d-flex justify-content-center gap-4">
+                        <a href="mailto:ashvini.jangid@email.com" class="btn btn-light btn-sm rounded-pill px-3">
+                            <i class="fas fa-envelope me-2"></i>Email
+                        </a>
+                        <a href="https://github.com/its-ash" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                            <i class="fab fa-github me-2"></i>GitHub
+                        </a>
+                        <a href="https://www.linkedin.com/in/ashvinijangid/" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                            <i class="fab fa-linkedin me-2"></i>LinkedIn
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
+</html>`;
 
+        // Set default content
+        editor.setValue(defaultHTML);
+
+        // Function to run the code
+        function runCode() {
+            const code = editor.getValue();
+            const output = document.getElementById('output');
+            
+            // Create a blob with the HTML content
+            const blob = new Blob([code], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            // Set the iframe source to the blob URL
+            output.src = url;
+            
+            // Clean up the previous URL to prevent memory leaks
+            output.onload = function() {
+                URL.revokeObjectURL(url);
+            };
+        }
+
+        // Auto-run on load
+        window.addEventListener('load', function() {
+            setTimeout(runCode, 500);
+        });
+
+        // Optional: Auto-run on editor change (with debounce)
+        let timeout;
+        editor.on('change', function() {
+            clearTimeout(timeout);
+            timeout = setTimeout(runCode, 1000);
+        });
+
+        // Handle keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                runCode();
+            }
+        });
+    </script>
+</body>
 </html>
