@@ -31,6 +31,9 @@
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             background-color: white;
+            display: flex;
+            justify-items: center;
+            align-items: center;
         }
         
         .CodeMirror {
@@ -68,15 +71,13 @@
             font-size: 14px;
             border: 1px solid var(--md-blue-500);
         }
-        
+
         @media (max-width: 768px) {
             .editor-container {
-                height: 300px;
-                margin-bottom: 20px;
+                height: 30vh;
             }
-            
             .output-container {
-                height: 400px;
+                height: 60vh;
             }
         }
     </style>
@@ -98,12 +99,12 @@
             <!-- Editor Section -->
             <div class="col-lg-6 col-md-12 mb-3 order-md-1 order-2">
                 <div class="editor-container">
-                    <textarea id="htmlEditor"></textarea>
+                    <label for="htmlEditor"></label><textarea id="htmlEditor"></textarea>
                 </div>
             </div>
             
             <!-- Output Section -->
-            <div class="col-lg-6 col-md-12 mb-3 order-1 order-md-2">
+            <div class="col-lg-6 col-md-12 mb-3 order-1 order-md-2 h-100">
                 <div class="editor-container output-container">
                     <div id="output" class="output-frame"></div>
                 </div>
@@ -157,9 +158,9 @@
     </style>
 </head>
 <body class="d-flex align-items-center">
-    <div class="container">
+    <div class="container h-100">
         <div class="row justify-content-center">
-            <div class="col-lg-10">
+            <div class="col-lg-10 mt-4">
                 <div class="glass rounded-4 p-5 text-white text-center">
                     <!-- Header -->
                     <div class="mb-5">
@@ -206,7 +207,7 @@
                     </div>
 
                     <!-- Contact -->
-                    <div class="d-flex justify-content-center gap-4">
+                    <div class="d-flex justify-content-center gap-3">
                         <a href="mailto:ashvini.jangid@email.com" class="btn btn-light btn-sm rounded-pill px-3">
                             <i class="fas fa-envelope me-2"></i>Email
                         </a>
@@ -219,8 +220,6 @@
                         <a href="https://www.canva.com/design/DAEF9SNL7Is/StxhrgvjJZJulsUo62asog/view?utm_content=DAEF9SNL7Is&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=ha547c67981" class="btn btn-outline-light btn-sm rounded-pill px-3">
                             <i class="fab fa-file me-2"></i>Resume
                         </a>
-
-
                     </div>
                 </div>
             </div>
