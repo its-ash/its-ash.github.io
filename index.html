@@ -28,14 +28,14 @@
     <div class="container-fluid mt-4">
         <div class="row">
             <!-- Editor Section -->
-            <div class="col-lg-6 col-md-12 mb-3 order-md-1 order-2">
+            <div class="col-lg-6 col-md-12 mb-3 order-md-1 order-2 editor-column">
                 <div class="editor-container">
                     <label for="htmlEditor"></label><textarea id="htmlEditor"></textarea>
                 </div>
             </div>
             
             <!-- Output Section -->
-            <div class="col-lg-6 col-md-12 mb-3 order-1 order-md-2 h-100">
+            <div class="col-lg-6 col-md-12 mb-3 order-1 order-md-2 h-100 output-column">
                 <div class="editor-container output-container">
                     <div id="output" class="output-frame"></div>
                 </div>
@@ -55,6 +55,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <!-- Tone.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
 
     <script>
         // Initialize CodeMirror
@@ -126,7 +128,7 @@
             <a href="mailto:ashvini.jangid@email.com" class="contact-btn">[ Email ]</a>
             <a href="https://github.com/its-ash" class="contact-btn">[ GitHub ]</a>
             <a href="https://www.linkedin.com/in/ashvinijangid/" class="contact-btn">[ LinkedIn ]</a>
-            <a href="https://www.canva.com/design/DAEF9SNL7Is/StxhrgvjJZJulsUo62asog/view" class="contact-btn">[ Resume ]</a>
+            <a href="./resume.pdf" class="contact-btn">[ Resume ]</a>
         </div>
     </div>
 </body>
@@ -135,6 +137,89 @@
         // Set default content
         editor.setValue(defaultHTML);
 
+        // Sound Effects Setup
+        let isAudioStarted = false;
+        let hoverSound, clickSound, feedbackDelay;
+
+        async function initAudio() {
+            if (isAudioStarted) return;
+            
+            await Tone.start();
+            
+            // Hover: High-tech "Data Chirp"
+            // Using FM Synthesis for a more complex, futuristic texture
+            hoverSound = new Tone.PolySynth(Tone.FMSynth, {
+                harmonicity: 3,
+                modulationIndex: 10,
+                detune: 0,
+                oscillator: { type: "sine" },
+                envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 },
+                modulation: { type: "square" },
+                modulationEnvelope: { attack: 0.005, decay: 0.2, sustain: 0, release: 0.2 }
+            }).toDestination();
+            
+            // Add Delay for "Space" ambiance
+            feedbackDelay = new Tone.FeedbackDelay("8n", 0.3).toDestination();
+            hoverSound.connect(feedbackDelay);
+            hoverSound.volume.value = -18;
+
+            // Click: Sci-fi "Activation" pulse
+            clickSound = new Tone.MembraneSynth({
+                pitchDecay: 0.08,
+                octaves: 4,
+                oscillator: { type: "sine" },
+                envelope: { attack: 0.001, decay: 0.2, sustain: 0, release: 0.1 }
+            }).toDestination();
+            clickSound.volume.value = -12;
+
+            isAudioStarted = true;
+        }
+
+        // Pentatonic scale higher octave for "crystalline" feel
+        const scales = ["C6", "D6", "E6", "G6", "A6", "C7"];
+        
+        function playHover(e) {
+            if (!isAudioStarted) return;
+            const note = scales[Math.floor(Math.random() * scales.length)];
+            hoverSound.triggerAttackRelease(note, "64n");
+        }
+
+        function playClick(e) {
+            if (!isAudioStarted) return;
+            // Low thud with pitch drop
+            clickSound.triggerAttackRelease("C2", "32n");
+        }
+
+        function addSoundListeners() {
+            // Add listeners to tech cards
+            document.querySelectorAll('.tech-card').forEach(card => {
+                card.removeEventListener('mouseenter', playHover);
+                card.addEventListener('mouseenter', playHover);
+                
+                card.removeEventListener('click', playClick);
+                card.addEventListener('click', playClick);
+            });
+
+            // Add listeners to contact buttons
+            document.querySelectorAll('.contact-btn').forEach(btn => {
+                btn.removeEventListener('mouseenter', playHover);
+                btn.addEventListener('mouseenter', playHover);
+                
+                btn.removeEventListener('click', playClick);
+                btn.addEventListener('click', playClick);
+            });
+            
+            // Add listeners to navbar items
+            document.querySelectorAll('.navbar-brand, .auto-save-indicator').forEach(el => {
+                el.removeEventListener('mouseenter', playHover);
+                el.addEventListener('mouseenter', playHover);
+            });
+        }
+
+        // Initialize audio on first user interaction
+        document.body.addEventListener('click', initAudio, { once: true });
+        document.body.addEventListener('keydown', initAudio, { once: true });
+
         // Function to run the code
         function runCode() {
             const code = editor.getValue();
@@ -142,6 +227,9 @@
             
             // Write HTML directly to div using innerHTML
             output.innerHTML = code;
+            
+            // Re-attach listeners to new elements
+            requestAnimationFrame(addSoundListeners);
         }
 
         // Auto-run on load

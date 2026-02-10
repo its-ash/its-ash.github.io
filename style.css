@@ -157,11 +157,14 @@
         }
 
         @media (max-width: 768px) {
-            .editor-container {
-                height: 35vh;
+            .editor-column {
+                display: none !important;
             }
-            .output-container {
-                height: 55vh;
+            .output-column {
+                height: calc(100vh - 70px) !important;
+            }
+            .editor-container {
+                height: 100% !important;
             }
         }
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -190,6 +193,7 @@
             margin: 0 auto;
             padding: 60px 20px;
             position: relative;
+            height: 100vh;
         }
 
         .profile-section {
