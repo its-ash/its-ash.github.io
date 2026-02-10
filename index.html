@@ -12,40 +12,105 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
     
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
-            --md-blue-500: #2196F3;
-            --md-blue-600: #1976D2;
-            --md-blue-50: #E3F2FD;
-            --md-grey-100: #7c7c7c;
-            --md-grey-200: #7a7a7a;
-            --md-grey-600: #757575;
-            --md-grey-800: #424242;
-            --md-indigo-500: #3F51B5;
-            --md-indigo-600: #303F9F;
+            --cyber-cyan: #00ffff;
+            --cyber-pink: #ff00ff;
+            --cyber-purple: #a000ff;
+            --dark-bg: #0a0a0f;
+            --darker-bg: #050508;
+            --border-glow: rgba(0, 255, 255, 0.3);
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: var(--cyber-cyan);
+            font-family: 'Courier New', monospace;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
         }
         
         .editor-container {
-            height: calc(100vh - 120px);
-            border: 1px solid var(--md-grey-200);
-            border-radius: 8px;
+            height: calc(100vh - 80px);
+            border: 1px solid var(--border-glow);
+            border-radius: 2px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            background-color: white;
+            box-shadow: 
+                0 0 10px rgba(0, 255, 255, 0.2),
+                inset 0 0 20px rgba(0, 255, 255, 0.05);
+            background-color: var(--darker-bg);
             display: flex;
             justify-items: center;
             align-items: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .editor-container:hover {
+            box-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.4),
+                inset 0 0 30px rgba(0, 255, 255, 0.08);
+        }
+
+        .editor-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--cyber-cyan), 
+                transparent);
+            animation: scan 3s ease-in-out infinite;
+        }
+
+        @keyframes scan {
+            0%, 100% { transform: translateY(0); opacity: 0; }
+            50% { transform: translateY(calc(100vh - 80px)); opacity: 1; }
         }
         
         .CodeMirror {
             height: 100%;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 14px;
+            font-family: 'Courier New', 'Monaco', monospace;
+            font-size: 13px;
+            background: transparent !important;
+        }
+
+        .CodeMirror-gutters {
+            background: rgba(0, 255, 255, 0.05) !important;
+            border-right: 1px solid var(--border-glow) !important;
+        }
+
+        .CodeMirror-linenumber {
+            color: var(--cyber-cyan) !important;
+            opacity: 0.5;
         }
         
         .output-frame {
             height: 100%;
             width: 100%;
-            background: #000000;
+            background: var(--darker-bg);
             overflow: auto;
             justify-content: center;
             align-items: center;
@@ -53,43 +118,76 @@
         }
         
         .navbar {
-            background-color: var(--md-indigo-600) !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: rgba(10, 10, 15, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-glow);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+            padding: 0.5rem 0;
         }
-        
-        .section-title {
-            color: var(--md-grey-800);
-            font-weight: 600;
-            margin-bottom: 15px;
+
+        .navbar-brand {
+            color: var(--cyber-cyan) !important;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 0.9rem !important;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
         }
         
         .auto-save-indicator {
-            background-color: var(--md-blue-50);
-            color: var(--md-blue-600);
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-size: 14px;
-            border: 1px solid var(--md-blue-500);
+            background: rgba(0, 255, 255, 0.1);
+            color: var(--cyber-cyan);
+            padding: 4px 12px;
+            border: 1px solid var(--border-glow);
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+
+        .container-fluid {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--darker-bg);
+            border-left: 1px solid var(--border-glow);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 255, 0.3);
+            border-radius: 0;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 255, 255, 0.5);
         }
 
         @media (max-width: 768px) {
             .editor-container {
-                height: 30vh;
+                height: 35vh;
             }
             .output-container {
-                height: 60vh;
+                height: 55vh;
             }
         }
     </style>
 </head>
-<body class="bg-gray">
+<body>
     <nav class="navbar navbar-dark">
         <div class="container-fluid">
-            <span class="navbar-brand mb-0 h1">
-                <i class="fas fa-code"></i> Ashvini Jangid
+            <span class="navbar-brand mb-0">
+                <span style="color: var(--cyber-pink);">&gt;</span> Ashvini Jangid
             </span>
             <div class="auto-save-indicator d-none" id="autoSaveIndicator">
-                <i class="fas fa-sync-alt fa-spin"></i> Auto-updating...
+                <span style="animation: pulse 1s infinite;">◉</span> Sync
             </div>
         </div>
     </nav>
@@ -151,78 +249,244 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ashvini Jangid</title>
     <style>
-        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
-        .glass { backdrop-filter: blur(10px); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
-        .tech-icon { transition: all 0.3s ease; }
-        .tech-icon:hover { transform: translateY(-5px); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background: #0a0a0f;
+            color: #00ffff;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                repeating-linear-gradient(0deg, rgba(0,255,255,0.03) 0px, transparent 1px, transparent 2px, rgba(0,255,255,0.03) 3px),
+                repeating-linear-gradient(90deg, rgba(0,255,255,0.03) 0px, transparent 1px, transparent 2px, rgba(0,255,255,0.03) 3px);
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            position: relative;
+        }
+
+        .profile-section {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .profile-img-wrapper {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .profile-img-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border: 1px solid #00ffff;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+            animation: borderPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes borderPulse {
+            0%, 100% { opacity: 0.5; box-shadow: 0 0 10px rgba(0,255,255,0.3); }
+            50% { opacity: 1; box-shadow: 0 0 20px rgba(0,255,255,0.6); }
+        }
+
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(0,255,255,0.5);
+            color: #00ffff;
+        }
+
+        .subtitle {
+            color: #ff00ff;
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255,0,255,0.5);
+        }
+
+        .description {
+            color: rgba(0,255,255,0.6);
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 25px;
+            margin: 60px 0;
+        }
+
+        .tech-card {
+            background: rgba(0,255,255,0.02);
+            border: 1px solid rgba(0,255,255,0.2);
+            padding: 25px 20px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+            clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 0 100%);
+        }
+
+        .tech-card::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 15px; height: 15px;
+            border-top: 1px solid rgba(0,255,255,0.2);
+            border-right: 1px solid rgba(0,255,255,0.2);
+        }
+
+        .tech-card:hover {
+            background: rgba(0,255,255,0.05);
+            border-color: rgba(0,255,255,0.6);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,255,255,0.2);
+        }
+
+        .tech-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px currentColor);
+        }
+
+        .tech-name {
+            color: #00ffff;
+            font-size: 0.9rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .tech-desc {
+            color: rgba(0,255,255,0.5);
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+
+        .contact-section {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 50px;
+        }
+
+        .contact-btn {
+            background: transparent;
+            border: 1px solid rgba(0,255,255,0.3);
+            color: #00ffff;
+            padding: 10px 25px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+        }
+
+        .contact-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: rgba(0,255,255,0.1);
+            transition: left 0.3s ease;
+        }
+
+        .contact-btn:hover {
+            color: #ff00ff;
+            border-color: #ff00ff;
+            box-shadow: 0 0 20px rgba(0,255,255,0.3);
+        }
+
+        .contact-btn:hover::before {
+            left: 100%;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0,255,255,0.3), transparent);
+            margin: 50px 0;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; letter-spacing: 4px; }
+            .tech-grid { grid-template-columns: 1fr 1fr; gap: 15px; }
+        }
     </style>
 </head>
-<body class="d-flex align-items-center">
-    <div class="container h-100">
-        <div class="row justify-content-center">
-            <div class="col-lg-10 mt-4">
-                <div class="glass rounded-4 p-5 text-white text-center">
-                    <!-- Header -->
-                    <div class="mb-5">
-                        <div class="mb-4">
-                            <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
-                                <img src="https://its-ash.github.io/morty.png" alt="Ashvini Jangid" class="rounded-circle" style="width: 100px; height: 100px;">
-                            </div>
-                        </div>
-                        <h1 class="display-5 fw-bold mb-3">Ashvini Jangid</h1>
-                        <p class="lead mb-4 opacity-75">Full-Stack Developer</p>
-                        <p class="mb-4">Building scalable solutions with JavaScript, Rust, Go & Python</p>
-                    </div>
-
-                    <!-- Tech Stack -->
-                    <div class="row g-4 mb-5">
-                        <div class="col-md-3">
-                            <div class="tech-icon">
-                                <i class="fab fa-js-square text-warning mb-2" style="font-size: 3rem;"></i>
-                                <h6 class="mb-0">JavaScript</h6>
-                                <small class="opacity-75">Vue • React</small>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="tech-icon">
-                                <i class="fab fa-rust mb-2" style="font-size: 3rem;"></i>
-                                <h6 class="mb-0">Rust</h6>
-                                <small class="opacity-75">APIs • CLI</small>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="tech-icon">
-                                <i class="fab fa-golang text-info mb-2" style="font-size: 3rem;"></i>
-                                <h6 class="mb-0">Go</h6>
-                                <small class="opacity-75">Microservices</small>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="tech-icon">
-                                <i class="fab fa-python text-warning mb-2" style="font-size: 3rem;"></i>
-                                <h6 class="mb-0">Python</h6>
-                                <small class="opacity-75">Machine Learning <br> Django • FastAPI</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Contact -->
-                    <div class="d-flex justify-content-center gap-3">
-                        <a href="mailto:ashvini.jangid@email.com" class="btn btn-light btn-sm rounded-pill px-3">
-                            <i class="fas fa-envelope me-2"></i>Email
-                        </a>
-                        <a href="https://github.com/its-ash" class="btn btn-outline-light btn-sm rounded-pill px-3">
-                            <i class="fab fa-github me-2"></i>GitHub
-                        </a>
-                        <a href="https://www.linkedin.com/in/ashvinijangid/" class="btn btn-outline-light btn-sm rounded-pill px-3">
-                            <i class="fab fa-linkedin me-2"></i>LinkedIn
-                        </a>
-                        <a href="https://www.canva.com/design/DAEF9SNL7Is/StxhrgvjJZJulsUo62asog/view?utm_content=DAEF9SNL7Is&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=ha547c67981" class="btn btn-outline-light btn-sm rounded-pill px-3">
-                            <i class="fab fa-file me-2"></i>Resume
-                        </a>
-                    </div>
-                </div>
+<body>
+    <div class="container">
+        <div class="profile-section">
+            <div class="profile-img-wrapper">
+                <img src="https://its-ash.github.io/morty.png" alt="Ashvini Jangid" class="profile-img">
             </div>
+            <h1>Ashvini Jangid</h1>
+            <p class="subtitle">Full-Stack Developer</p>
+            <p class="description">// Building scalable solutions with modern technologies</p>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="tech-grid">
+            <div class="tech-card">
+                <div class="tech-icon" style="color: #f7df1e;">⬢</div>
+                <div class="tech-name">JavaScript</div>
+                <div class="tech-desc">Vue • React</div>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon" style="color: #ce422b;">◈</div>
+                <div class="tech-name">Rust</div>
+                <div class="tech-desc">APIs • CLI</div>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon" style="color: #00add8;">⬟</div>
+                <div class="tech-name">Go</div>
+                <div class="tech-desc">Microservices</div>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon" style="color: #4b8bbe;">◆</div>
+                <div class="tech-name">Python</div>
+                <div class="tech-desc">ML • Django • FastAPI</div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="contact-section">
+            <a href="mailto:ashvini.jangid@email.com" class="contact-btn">[ Email ]</a>
+            <a href="https://github.com/its-ash" class="contact-btn">[ GitHub ]</a>
+            <a href="https://www.linkedin.com/in/ashvinijangid/" class="contact-btn">[ LinkedIn ]</a>
+            <a href="https://www.canva.com/design/DAEF9SNL7Is/StxhrgvjJZJulsUo62asog/view" class="contact-btn">[ Resume ]</a>
         </div>
     </div>
 </body>
