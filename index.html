@@ -1,256 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ashvini Jangid</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- CodeMirror CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
-    
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ashvini Jangid | Full-Stack Developer</title>
+  <meta name="description" content="Ashvini Jangid - Full-Stack Developer building resilient products with modern web and backend systems.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav class="navbar navbar-dark">
-        <div class="container-fluid">
-            <span class="navbar-brand mb-0">
-                <span style="color: var(--cyber-pink);">&gt;</span> Ashvini Jangid
-            </span>
-            <div class="auto-save-indicator d-none" id="autoSaveIndicator">
-                <span style="animation: pulse 1s infinite;">◉</span> Sync
-            </div>
+  <div class="site-shell" id="siteShell">
+    <canvas id="tubesCanvas" aria-hidden="true"></canvas>
+    <div class="backdrop-glow" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <p class="brand"><span>&gt;</span> Ashvini Jangid</p>
+      <a class="resume-link" href="/resume.pdf" target="_blank" rel="noreferrer">Resume</a>
+    </header>
+
+    <main class="content">
+      <section class="hero card reveal">
+        <div class="hero-profile">
+          <img src="/morty.png" alt="Ashvini Jangid" class="avatar">
+          <div>
+            <p class="eyebrow">Full-Stack Developer</p>
+            <h1>Building products that stay fast, clear, and reliable at scale.</h1>
+          </div>
         </div>
-    </nav>
-
-    <div class="container-fluid mt-4">
-        <div class="row">
-            <!-- Editor Section -->
-            <div class="col-lg-6 col-md-12 mb-3 order-md-1 order-2 editor-column">
-                <div class="editor-container">
-                    <label for="htmlEditor"></label><textarea id="htmlEditor"></textarea>
-                </div>
-            </div>
-            
-            <!-- Output Section -->
-            <div class="col-lg-6 col-md-12 mb-3 order-1 order-md-2 h-100 output-column">
-                <div class="editor-container output-container">
-                    <div id="output" class="output-frame"></div>
-                </div>
-            </div>
+        <p class="summary">
+          I ship practical software across frontend, backend, and developer tooling. My focus is performance, maintainability,
+          and shipping quickly without sacrificing quality.
+        </p>
+        <div class="cta-row">
+          <a href="mailto:ashvini.jangid@email.com" class="btn btn-primary">Email</a>
+          <a href="https://github.com/its-ash" class="btn btn-ghost" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://www.linkedin.com/in/ashvinijangid/" class="btn btn-ghost" target="_blank" rel="noreferrer">LinkedIn</a>
         </div>
-    </div>
+      </section>
 
-    <!-- Font Awesome -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
-    
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- CodeMirror JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
-    <!-- Tone.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+      <section class="grid-section reveal">
+        <article class="card">
+          <h2>Core Stack</h2>
+          <ul class="pill-list">
+            <li>JavaScript / TypeScript</li>
+            <li>React / Vue</li>
+            <li>Go / Rust / Python</li>
+            <li>FastAPI / Django</li>
+            <li>Microservices</li>
+            <li>Cloud Deployments</li>
+          </ul>
+        </article>
 
-    <script>
-        // Initialize CodeMirror
-        const editor = CodeMirror.fromTextArea(document.getElementById('htmlEditor'), {
-            mode: 'htmlmixed',
-            theme: 'monokai',
-            lineNumbers: true,
-            autoCloseTags: true,
-            autoCloseBrackets: true,
-            matchBrackets: true,
-            indentUnit: 2,
-            lineWrapping: true,
-            extraKeys: {
-                'Ctrl-Space': 'autocomplete',
-                'Cmd-/': 'toggleComment',
-                'Ctrl-/': 'toggleComment'
+        <article class="card">
+          <h2>How I Work</h2>
+          <p>
+            I design systems around measurable outcomes: latency, reliability, developer velocity, and a clean handoff.
+            I prefer boring architecture where possible and complexity only when it directly pays off.
+          </p>
+          <p>
+            Cursor movement drives the 3D tubes in this page. Click anywhere to randomize the neon palette.
+          </p>
+        </article>
+      </section>
+
+      <section class="card reveal">
+        <h2>Selected Focus Areas</h2>
+        <div class="focus-grid">
+          <div>
+            <h3>Frontend Systems</h3>
+            <p>Accessible interfaces, animation that supports meaning, and production-grade performance tuning.</p>
+          </div>
+          <div>
+            <h3>Backend Platforms</h3>
+            <p>APIs and service boundaries built for observability, predictable scaling, and low operational drag.</p>
+          </div>
+          <div>
+            <h3>Developer Experience</h3>
+            <p>Tooling, CI guardrails, and workflows that reduce friction and keep teams shipping with confidence.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <p class="interaction-hint" id="interactionHint">Move cursor to steer tubes. Click to randomize.</p>
+  </div>
+
+  <script type="module">
+    const canvas = document.getElementById('tubesCanvas');
+    const shell = document.getElementById('siteShell');
+    const hint = document.getElementById('interactionHint');
+
+    const tubePalettes = [
+      {
+        tubes: ['#ff00ff', '#00ffff', '#9dff00'],
+        lights: ['#ff5cff', '#00f0ff', '#00ff9d', '#ffe600']
+      },
+      {
+        tubes: ['#ff1744', '#18ffff', '#d4ff00'],
+        lights: ['#ff4fa3', '#00d9ff', '#6fffe9', '#fff200']
+      },
+      {
+        tubes: ['#d500ff', '#00f7ff', '#39ff14'],
+        lights: ['#ff47f5', '#00f7ff', '#84ff00', '#ffb300']
+      }
+    ];
+
+    let app;
+
+    const initializeTubes = async () => {
+      try {
+        const module = await import('https://cdn.jsdelivr.net/npm/threejs-components@0.0.19/build/cursors/tubes1.min.js');
+        const TubesCursor = module.default;
+
+        app = TubesCursor(canvas, {
+          tubes: {
+            colors: ['#ff00ff', '#00ffff', '#9dff00'],
+            lights: {
+              intensity: 255,
+              colors: ['#ff5cff', '#00f0ff', '#00ff9d', '#ffe600']
             }
+          }
         });
 
-        // Default Ashvini Jangid portfolio HTML
-        const defaultHTML = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ashvini Jangid</title>
-    <style>
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="profile-section">
-            <div class="profile-img-wrapper">
-                <img src="https://its-ash.github.io/morty.png" alt="Ashvini Jangid" class="profile-img">
-            </div>
-            <h1>Ashvini Jangid</h1>
-            <p class="subtitle">Full-Stack Developer</p>
-            <p class="description">// Building scalable solutions with modern technologies</p>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="tech-grid">
-            <div class="tech-card">
-                <div class="tech-icon" style="color: #f7df1e;">⬢</div>
-                <div class="tech-name">JavaScript</div>
-                <div class="tech-desc">Vue • React</div>
-            </div>
-            <div class="tech-card">
-                <div class="tech-icon" style="color: #ce422b;">◈</div>
-                <div class="tech-name">Rust</div>
-                <div class="tech-desc">APIs • CLI</div>
-            </div>
-            <div class="tech-card">
-                <div class="tech-icon" style="color: #00add8;">⬟</div>
-                <div class="tech-name">Go</div>
-                <div class="tech-desc">Microservices</div>
-            </div>
-            <div class="tech-card">
-                <div class="tech-icon" style="color: #4b8bbe;">◆</div>
-                <div class="tech-name">Python</div>
-                <div class="tech-desc">ML • Django • FastAPI</div>
-            </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="contact-section">
-            <a href="mailto:ashvini.jangid@email.com" class="contact-btn">[ Email ]</a>
-            <a href="https://github.com/its-ash" class="contact-btn">[ GitHub ]</a>
-            <a href="https://www.linkedin.com/in/ashvinijangid/" class="contact-btn">[ LinkedIn ]</a>
-            <a href="./resume.pdf" class="contact-btn">[ Resume ]</a>
-        </div>
-    </div>
-</body>
-</html>`;
-
-        // Set default content
-        editor.setValue(defaultHTML);
-
-        // Sound Effects Setup
-        let isAudioStarted = false;
-        let hoverSound, clickSound, feedbackDelay;
-
-        async function initAudio() {
-            if (isAudioStarted) return;
-            
-            await Tone.start();
-            
-            // Hover: High-tech "Data Chirp"
-            // Using FM Synthesis for a more complex, futuristic texture
-            hoverSound = new Tone.PolySynth(Tone.FMSynth, {
-                harmonicity: 3,
-                modulationIndex: 10,
-                detune: 0,
-                oscillator: { type: "sine" },
-                envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 },
-                modulation: { type: "square" },
-                modulationEnvelope: { attack: 0.005, decay: 0.2, sustain: 0, release: 0.2 }
-            }).toDestination();
-            
-            // Add Delay for "Space" ambiance
-            feedbackDelay = new Tone.FeedbackDelay("8n", 0.3).toDestination();
-            hoverSound.connect(feedbackDelay);
-            hoverSound.volume.value = -18;
-
-            // Click: Sci-fi "Activation" pulse
-            clickSound = new Tone.MembraneSynth({
-                pitchDecay: 0.08,
-                octaves: 4,
-                oscillator: { type: "sine" },
-                envelope: { attack: 0.001, decay: 0.2, sustain: 0, release: 0.1 }
-            }).toDestination();
-            clickSound.volume.value = -12;
-
-            isAudioStarted = true;
+        shell.classList.add('is-ready');
+      } catch (error) {
+        console.error('Failed to initialize Tubes background:', error);
+        shell.classList.add('is-fallback');
+        if (hint) {
+          hint.textContent = 'Interactive background unavailable on this browser. Static neon mode enabled.';
         }
+      }
+    };
 
-        // Pentatonic scale higher octave for "crystalline" feel
-        const scales = ["C6", "D6", "E6", "G6", "A6", "C7"];
-        
-        function playHover(e) {
-            if (!isAudioStarted) return;
-            const note = scales[Math.floor(Math.random() * scales.length)];
-            hoverSound.triggerAttackRelease(note, "64n");
-        }
+    window.addEventListener('click', () => {
+      if (!app || !app.tubes) return;
+      const palette = tubePalettes[Math.floor(Math.random() * tubePalettes.length)];
+      app.tubes.setColors(palette.tubes);
+      app.tubes.setLightsColors(palette.lights);
+    });
 
-        function playClick(e) {
-            if (!isAudioStarted) return;
-            // Low thud with pitch drop
-            clickSound.triggerAttackRelease("C2", "32n");
-        }
-
-        function addSoundListeners() {
-            // Add listeners to tech cards
-            document.querySelectorAll('.tech-card').forEach(card => {
-                card.removeEventListener('mouseenter', playHover);
-                card.addEventListener('mouseenter', playHover);
-                
-                card.removeEventListener('click', playClick);
-                card.addEventListener('click', playClick);
-            });
-
-            // Add listeners to contact buttons
-            document.querySelectorAll('.contact-btn').forEach(btn => {
-                btn.removeEventListener('mouseenter', playHover);
-                btn.addEventListener('mouseenter', playHover);
-                
-                btn.removeEventListener('click', playClick);
-                btn.addEventListener('click', playClick);
-            });
-            
-            // Add listeners to navbar items
-            document.querySelectorAll('.navbar-brand, .auto-save-indicator').forEach(el => {
-                el.removeEventListener('mouseenter', playHover);
-                el.addEventListener('mouseenter', playHover);
-            });
-        }
-
-        // Initialize audio on first user interaction
-        document.body.addEventListener('click', initAudio, { once: true });
-        document.body.addEventListener('keydown', initAudio, { once: true });
-
-        // Function to run the code
-        function runCode() {
-            const code = editor.getValue();
-            const output = document.getElementById('output');
-            
-            // Write HTML directly to div using innerHTML
-            output.innerHTML = code;
-            
-            // Re-attach listeners to new elements
-            requestAnimationFrame(addSoundListeners);
-        }
-
-        // Auto-run on load
-        window.addEventListener('load', function() {
-            setTimeout(runCode, 500);
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            observer.unobserve(entry.target);
+          }
         });
+      },
+      { threshold: 0.15 }
+    );
 
-        // Optional: Auto-run on editor change (with debounce)
-        let timeout;
-        editor.on('change', function() {
-            clearTimeout(timeout);
-            timeout = setTimeout(runCode, 1000);
-        });
+    reveals.forEach((item) => observer.observe(item));
 
-        // Handle keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                e.preventDefault();
-                runCode();
-            }
-        });
-    </script>
+    initializeTubes();
+  </script>
 </body>
 </html>
