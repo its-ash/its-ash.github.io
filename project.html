@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Projects | Ashvini Jangid</title>
+        <meta name="description" content="Project gallery with live website previews.">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;700;800&family=Space+Grotesk:wght@400;500;700&display=swap"
+                rel="stylesheet">
+        <style>
+                :root {
+                        --ink-900: #111218;
+                        --ink-700: #2a2f42;
+                        --paper: #f6f5ef;
+                        --card: #ffffff;
+                        --line: #d6d2c9;
+                        --accent: #ff6b3d;
+                        --accent-soft: #ffd7c9;
+                        --teal: #0f9d94;
+                        --shadow: 0 20px 42px rgba(17, 18, 24, 0.16);
+                }
+
+                * {
+                        box-sizing: border-box;
+                        margin: 0;
+                        padding: 0;
+                }
+
+                body {
+                        min-height: 100vh;
+                        color: var(--ink-900);
+                        font-family: "Space Grotesk", sans-serif;
+                        background:
+                                radial-gradient(circle at 12% 18%, var(--accent-soft) 0%, transparent 32%),
+                                radial-gradient(circle at 88% 84%, #caefe8 0%, transparent 28%),
+                                linear-gradient(155deg, #fff7eb 0%, var(--paper) 48%, #f2f7ff 100%);
+                        padding: clamp(18px, 3vw, 44px);
+                }
+
+                .page {
+                        width: min(1200px, 100%);
+                        margin: 0 auto;
+                        display: grid;
+                        gap: 20px;
+                }
+
+                .hero {
+                        border: 2px solid var(--line);
+                        border-radius: 24px;
+                        background: rgba(255, 255, 255, 0.82);
+                        box-shadow: var(--shadow);
+                        padding: clamp(16px, 2.6vw, 30px);
+                        display: flex;
+                        flex-wrap: wrap;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 14px;
+                        animation: slideIn 480ms ease both;
+                }
+
+                .hero h1 {
+                        font-family: "Sora", sans-serif;
+                        font-weight: 800;
+                        font-size: clamp(1.4rem, 3.8vw, 2.6rem);
+                        letter-spacing: -0.02em;
+                        line-height: 1.05;
+                        max-width: 18ch;
+                }
+
+                .hero p {
+                        color: var(--ink-700);
+                        margin-top: 8px;
+                        max-width: 54ch;
+                        line-height: 1.6;
+                }
+
+                .home-link {
+                        text-decoration: none;
+                        color: var(--ink-900);
+                        border: 2px solid var(--ink-900);
+                        border-radius: 999px;
+                        padding: 10px 16px;
+                        font-weight: 700;
+                        transition: transform 180ms ease, background-color 180ms ease, color 180ms ease;
+                }
+
+                .home-link:hover {
+                        transform: translateY(-2px);
+                        background: var(--ink-900);
+                        color: #fff;
+                }
+
+                .projects-grid {
+                        display: grid;
+                        gap: 18px;
+                        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                }
+
+                .project-card {
+                        border: 2px solid var(--line);
+                        border-radius: 20px;
+                        background: var(--card);
+                        overflow: clip;
+                        box-shadow: var(--shadow);
+                        animation: riseIn 520ms ease both;
+                }
+
+                .project-meta {
+                        padding: 14px 16px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        gap: 12px;
+                        border-bottom: 2px solid var(--line);
+                }
+
+                .project-title {
+                        font-family: "Sora", sans-serif;
+                        font-size: 0.96rem;
+                        line-height: 1.35;
+                        word-break: break-all;
+                }
+
+                .visit-link {
+                        text-decoration: none;
+                        color: #fff;
+                        background: var(--teal);
+                        border-radius: 999px;
+                        padding: 8px 12px;
+                        font-size: 0.8rem;
+                        white-space: nowrap;
+                        transition: filter 180ms ease;
+                }
+
+                .visit-link:hover {
+                        filter: brightness(1.08);
+                }
+
+                .project-frame {
+                        width: 100%;
+                        border: 0;
+                        display: block;
+                        aspect-ratio: 16 / 10;
+                        background: #edf0f5;
+                }
+
+                .note {
+                        color: var(--ink-700);
+                        font-size: 0.92rem;
+                        line-height: 1.6;
+                        padding: 8px 2px;
+                }
+
+                .error-chip {
+                        display: inline-block;
+                        margin-top: 10px;
+                        background: #ffe9e1;
+                        border: 1px solid #f5b6a0;
+                        color: #7a2d12;
+                        padding: 6px 10px;
+                        border-radius: 10px;
+                        font-size: 0.82rem;
+                }
+
+                @keyframes slideIn {
+                        from {
+                                opacity: 0;
+                                transform: translateY(12px);
+                        }
+
+                        to {
+                                opacity: 1;
+                                transform: translateY(0);
+                        }
+                }
+
+                @keyframes riseIn {
+                        from {
+                                opacity: 0;
+                                transform: translateY(18px) scale(0.98);
+                        }
+
+                        to {
+                                opacity: 1;
+                                transform: translateY(0) scale(1);
+                        }
+                }
+
+                @media (max-width: 640px) {
+                        .project-meta {
+                                flex-direction: column;
+                                align-items: flex-start;
+                        }
+                }
+        </style>
+</head>
+
+<body>
+        <main class="page">
+                <section class="hero">
+                        <div>
+                                <h1>Project Gallery</h1>
+                                <p>Live previews of websites rendered from one JavaScript URL array.</p>
+                        </div>
+                        <a class="home-link" href="index.html">Back To Home</a>
+                </section>
+
+                <section class="projects-grid" id="projectsGrid" aria-live="polite"></section>
+
+                <p class="note">
+                        Some websites block embedding in iframes for security reasons. Use the Open button to view them
+                        directly.
+                </p>
+        </main>
+
+        <script>
+                const websiteUrls = [
+                        "https://fxopspro.com/",
+                        "https://flavourdiem.com/",
+                        "https://scenta.in",
+                        "https://marutiayurveda.in",
+                        "https://phiindia.org/",
+                        "https://sdp.foxapi.live/",
+                        "https://alanowarinternational.com/"
+                ];
+
+                const projectsGrid = document.getElementById("projectsGrid");
+
+                const normalizeUrl = (url) => {
+                        try {
+                                return new URL(url).toString();
+                        } catch {
+                                return null;
+                        }
+                };
+
+                const hostnameFromUrl = (url) => {
+                        try {
+                                return new URL(url).hostname;
+                        } catch {
+                                return "Invalid URL";
+                        }
+                };
+
+                const createProjectCard = (url, index) => {
+                        const safeUrl = normalizeUrl(url);
+                        const card = document.createElement("article");
+                        card.className = "project-card";
+                        card.style.animationDelay = `${index * 70}ms`;
+
+                        if (!safeUrl) {
+                                card.innerHTML = `
+          <div class="project-meta">
+            <h2 class="project-title">${url}</h2>
+          </div>
+          <div style="padding: 16px;">
+            <span class="error-chip">Skipped: invalid URL format.</span>
+          </div>
+        `;
+                                return card;
+                        }
+
+                        const host = hostnameFromUrl(safeUrl);
+                        card.innerHTML = `
+        <div class="project-meta">
+          <h2 class="project-title">${host}</h2>
+          <a class="visit-link" href="${safeUrl}" target="_blank" rel="noreferrer">Open</a>
+        </div>
+        <iframe
+          class="project-frame"
+          src="${safeUrl}"
+          title="Preview of ${host}"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+      `;
+
+                        return card;
+                };
+
+                if (websiteUrls.length === 0) {
+                        projectsGrid.innerHTML = '<span class="error-chip">No project URLs added yet.</span>';
+                } else {
+                        websiteUrls.forEach((url, index) => {
+                                projectsGrid.appendChild(createProjectCard(url, index));
+                        });
+                }
+        </script>
+</body>
+
+</html>
