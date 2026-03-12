@@ -96,6 +96,97 @@
     const hint = document.getElementById('interactionHint');
     const cursorAura = document.getElementById('cursorAura');
 
+    const faviconLink = (() => {
+      let link = document.querySelector('link[rel="icon"]');
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.head.appendChild(link);
+      }
+      link.type = 'image/png';
+      return link;
+    })();
+
+    const faviconCanvas = document.createElement('canvas');
+    faviconCanvas.width = 64;
+    faviconCanvas.height = 64;
+    const faviconContext = faviconCanvas.getContext('2d');
+    let lastFaviconUpdateAt = 0;
+
+    const renderFaviconFrame = (timestamp) => {
+      if (!faviconContext) return;
+
+      const t = timestamp * 0.002;
+      faviconContext.clearRect(0, 0, 64, 64);
+
+      const halo = faviconContext.createRadialGradient(32, 32, 4, 32, 32, 30);
+      halo.addColorStop(0, 'rgba(0, 245, 255, 0.26)');
+      halo.addColorStop(0.55, 'rgba(255, 51, 202, 0.18)');
+      halo.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      faviconContext.fillStyle = halo;
+      faviconContext.beginPath();
+      faviconContext.arc(32, 32, 30, 0, Math.PI * 2);
+      faviconContext.fill();
+
+      faviconContext.save();
+      faviconContext.translate(32, 32);
+      faviconContext.lineCap = 'round';
+
+      faviconContext.lineWidth = 6;
+      faviconContext.strokeStyle = '#00f5ff';
+      faviconContext.beginPath();
+      faviconContext.arc(0, 0, 19, t, t + Math.PI * 1.35);
+      faviconContext.stroke();
+
+      faviconContext.lineWidth = 5;
+      faviconContext.strokeStyle = '#ff33ca';
+      faviconContext.beginPath();
+      faviconContext.arc(0, 0, 13, -t * 1.3, -t * 1.3 + Math.PI * 1.2);
+      faviconContext.stroke();
+
+      const orbitX = Math.cos(t * 1.75) * 21;
+      const orbitY = Math.sin(t * 1.75) * 21;
+      faviconContext.fillStyle = '#9eff00';
+      faviconContext.beginPath();
+      faviconContext.arc(orbitX, orbitY, 3.6, 0, Math.PI * 2);
+      faviconContext.fill();
+
+      faviconContext.restore();
+
+      faviconContext.fillStyle = '#ffffff';
+      faviconContext.beginPath();
+      faviconContext.arc(32, 32, 2.8, 0, Math.PI * 2);
+      faviconContext.fill();
+
+      faviconLink.href = faviconCanvas.toDataURL('image/png');
+    };
+
+    const animateFavicon = (timestamp) => {
+      if (!faviconContext) return;
+      const frameGap = document.hidden ? 900 : 120;
+      if (timestamp - lastFaviconUpdateAt >= frameGap) {
+        renderFaviconFrame(timestamp);
+        lastFaviconUpdateAt = timestamp;
+      }
+      requestAnimationFrame(animateFavicon);
+    };
+
+    document.addEventListener('visibilitychange', () => {
+      lastFaviconUpdateAt = 0;
+    });
+
+    requestAnimationFrame(animateFavicon);
+
+    const titleSource = ` ${document.title}   `;
+    let titleOffset = 0;
+
+    window.setInterval(() => {
+      const leading = titleSource.slice(titleOffset);
+      const trailing = titleSource.slice(0, titleOffset);
+      document.title = `${leading}${trailing}`;
+      titleOffset = (titleOffset + 1) % titleSource.length;
+    }, 190);
+
     const tubePalettes = [
       {
         tubes: ['#ff00ff', '#00ffff', '#9dff00'],
