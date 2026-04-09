@@ -3,16 +3,27 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Video</title>
-  <style>
-    html, body { height: 100%; margin: 0; background: #000; display: flex; align-items: center; justify-content: center; }
-    video { max-width: 100%; max-height: 100%; border-radius: 12px; }
-  </style>
+  <title>Video Stream | Ashvini Jangid</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=JetBrains+Mono:wght@400;600;700;800&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <video controls playsinline>
-    <source src="vid.mp4" type="video/mp4" />
-    Your browser does not support the video tag.
-  </video>
+<body class="video-page">
+  <main class="video-shell">
+    <div class="window-title">
+      <strong>STREAM MONITOR</strong>
+      <span class="status-chip">[PLAYBACK READY]</span>
+    </div>
+    <p class="cmd">$ ffplay ./vid.mp4 --fullscreen=false --audio=on</p>
+    <video controls playsinline>
+      <source src="vid.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+    <div class="video-meta">
+      <a class="home-link" href="index.html">cd ~/home</a>
+      <a class="home-link" href="project.html">ls /deployments</a>
+    </div>
+  </main>
 </body>
 </html>
