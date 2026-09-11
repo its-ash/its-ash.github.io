@@ -31,7 +31,9 @@
         </main>
 
         <script>
-                const websiteUrls = [
+                const GITHUB_USER = "its-ash";
+                const HOMEPAGE_PATTERN = /^https?:\/\/[^/]*\.itsash\.in\/?$/i;
+                const staticWebsiteUrls = [
                         "https://fxopspro.com/",
                         "https://flavourdiem.com/",
                         "https://scenta.in",
@@ -96,13 +98,46 @@
                         return card;
                 };
 
-                if (websiteUrls.length === 0) {
-                        projectsGrid.innerHTML = '<span class="error-chip">[ERR] no project urls configured</span>';
-                } else {
-                        websiteUrls.forEach((url, index) => {
-                                projectsGrid.appendChild(createProjectCard(url, index));
-                        });
-                }
+                const fetchItsAshRepoUrls = async () => {
+                        const urls = [];
+                        for (let page = 1; ; page++) {
+                                const res = await fetch(`https://api.github.com/users/${GITHUB_USER}/repos?per_page=100&page=${page}`, {
+                                        headers: { Accept: "application/vnd.github+json" }
+                                });
+                                if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
+                                const repos = await res.json();
+                                if (repos.length === 0) break;
+                                for (const repo of repos) {
+                                        if (repo.homepage && HOMEPAGE_PATTERN.test(repo.homepage.trim())) {
+                                                urls.push(repo.homepage.trim());
+                                        }
+                                }
+                                if (repos.length < 100) break;
+                        }
+                        return urls;
+                };
+
+                (async () => {
+                        try {
+                                const dynamicUrls = await fetchItsAshRepoUrls();
+                                const websiteUrls = [...staticWebsiteUrls, ...dynamicUrls];
+                                if (websiteUrls.length === 0) {
+                                        projectsGrid.innerHTML = '<span class="error-chip">[ERR] no matching *.itsash.in projects found</span>';
+                                } else {
+                                        websiteUrls.forEach((url, index) => {
+                                                projectsGrid.appendChild(createProjectCard(url, index));
+                                        });
+                                }
+                        } catch (err) {
+                                staticWebsiteUrls.forEach((url, index) => {
+                                        projectsGrid.appendChild(createProjectCard(url, index));
+                                });
+                                const warning = document.createElement("p");
+                                warning.className = "note";
+                                warning.textContent = `[warn] failed to load itsash.in repos from GitHub: ${err.message}`;
+                                projectsGrid.after(warning);
+                        }
+                })();
         </script>
 </body>
 
