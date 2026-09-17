@@ -38,8 +38,6 @@
                         "https://flavourdiem.com/",
                         "https://scenta.in",
                         "https://marutiayurveda.in",
-                        "https://phiindia.org/",
-                        "https://ash-tools.store/",
                         "https://share.ash-tools.store/",
                         "https://alanowarinternational.com/"
                 ];
@@ -108,7 +106,7 @@
                                 const repos = await res.json();
                                 if (repos.length === 0) break;
                                 for (const repo of repos) {
-                                        if (repo.homepage && HOMEPAGE_PATTERN.test(repo.homepage.trim())) {
+                                        if (repo.homepage) {
                                                 urls.push(repo.homepage.trim());
                                         }
                                 }
