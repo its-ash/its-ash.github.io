@@ -3,334 +3,171 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ashvini Jangid | Full-Stack Developer</title>
-  <meta name="description" content="Terminal profile interface for Ashvini Jangid with system-level engineering status and project access.">
+  <title>Ashvini Jangid | Software Engineer</title>
+  <meta name="description" content="Ashvini Jangid, software engineer from India building AI agents, LLM apps, and computer vision with Rust, Python, and JavaScript. Explore an interactive 3D island.">
+  <meta name="theme-color" content="#141b2b">
+  <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=JetBrains+Mono:wght@400;600;700;800&family=VT323&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="site-shell" id="siteShell">
-    <canvas id="tubesCanvas" aria-hidden="true"></canvas>
-    <div class="backdrop-glow" aria-hidden="true"></div>
-    <div class="cursor-aura" id="cursorAura" aria-hidden="true"></div>
-
-    <header class="topbar">
-      <p class="brand">root@ashvini:~$ whoami_</p>
-      <div class="top-actions">
-        <a class="resume-link" href="/project.html">projects --open</a>
-        <a class="resume-link" href="/resume.pdf" target="_blank" rel="noreferrer">resume --pdf</a>
-      </div>
-    </header>
-
-    <main class="content">
-      <section class="hero card reveal">
-        <div class="hero-profile">
-          <img src="/morty.png" alt="Ashvini Jangid" class="avatar">
-          <div class="hero-copy">
-            <p class="prompt">$ cat profile.txt</p>
-            <h1 class="typewriter">FULL-STACK ENGINEER // SYSTEMS OPERATOR █</h1>
-          </div>
-        </div>
-        <p class="summary">
-          I BUILD RESILIENT SOFTWARE SURFACES ACROSS WEB, BACKEND, AND DEVICE NETWORKS. PRIORITY ORDER: LATENCY,
-          MAINTAINABILITY, CLEAR DEPLOYMENT PATHS, AND SHIP VELOCITY.
-        </p>
-        <div class="cta-row">
-          <a href="mailto:ashvini.jangid@email.com" class="btn btn-primary">mail --compose</a>
-          <a href="https://github.com/its-ash" class="btn" target="_blank" rel="noreferrer">github --profile</a>
-          <a href="https://www.linkedin.com/in/ashvinijangid/" class="btn btn-warn" target="_blank" rel="noreferrer">linkedin --sync</a>
-        </div>
-      </section>
-
-      <section class="grid-section reveal">
-        <article class="card">
-          <div class="card-header">
-            <h2>STACK / MODULES</h2>
-            <span class="status-chip">[OK]</span>
-          </div>
-          <ul class="pill-list">
-            <li>JavaScript / TypeScript</li>
-            <li>Node.js</li>
-            <li>React / Vue</li>
-            <li>Go / Rust / Python</li>
-            <li>FastAPI / Django</li>
-            <li>IoT Systems</li>
-            <li>Embedded Linux / Edge Devices</li>
-            <li>Arduino / ESP32 / Raspberry Pi</li>
-            <li>MQTT / Sensor Data Pipelines</li>
-            <li>Microservices</li>
-            <li>Cloud Deployments</li>
-          </ul>
-        </article>
-
-        <article class="card">
-          <div class="card-header">
-            <h2>RUNTIME / BEHAVIOR</h2>
-            <span class="status-chip">[LIVE]</span>
-          </div>
-          <ul class="status-log">
-            <li><span class="status-chip">[01]</span> ARCHITECTURE STAYS SIMPLE UNTIL COMPLEXITY IS PROVEN NECESSARY.</li>
-            <li><span class="status-chip">[02]</span> DELIVERY METRICS: SPEED, RELIABILITY, OPERATOR CLARITY.</li>
-            <li><span class="status-chip">[03]</span> REQUIREMENTS ARE BROKEN INTO SMALL, SHIPPABLE UNITS WITH FAST FEEDBACK.</li>
-            <li><span class="status-chip">[04]</span> I PREFER CLEAR INTERFACES, DOCUMENTED TRADE-OFFS, AND PREDICTABLE HANDOFFS.</li>
-            <li><span class="status-chip">[05]</span> TESTS AND OBSERVABILITY ARE ADDED EARLY TO REDUCE LATE-STAGE RISK.</li>
-            <li><span class="status-chip">[06]</span> COLLABORATION PRIORITY: ALIGNMENT FIRST, EXECUTION SECOND, ITERATION ALWAYS.</li>
-          </ul>
-          <p class="bar">[||||||||||||||....] SYSTEM CONFIDENCE 82%</p>
-        </article>
-      </section>
-
-      <section class="card reveal">
-        <div class="card-header">
-          <h2>ACTIVE FOCUS / QUARTER</h2>
-          <span class="status-chip">[SYNC]</span>
-        </div>
-        <p class="divider">==============================================================</p>
-        <div class="focus-grid">
-          <div>
-            <h3>Frontend Systems</h3>
-            <p>ACCESSIBLE UI LAYERS, PURPOSEFUL MOTION, AND FRAME-TIME STABILITY UNDER LOAD.</p>
-          </div>
-          <div>
-            <h3>Backend Platforms</h3>
-            <p>API BOUNDARIES WITH STRONG OBSERVABILITY, LOW-RISK SCALE PATHS, AND OPERABLE FAIL STATES.</p>
-          </div>
-          <div>
-            <h3>Developer Experience</h3>
-            <p>TOOLING + CI GUARDRAILS THAT CUT FRICTION, KEEP FEEDBACK LOOPS TIGHT, AND REDUCE REGRESSION COST.</p>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <p class="interaction-hint" id="interactionHint">matrix rain active | click => color profile switch</p>
-  </div>
-
-  <script type="module">
-    const canvas = document.getElementById('tubesCanvas');
-    const hint = document.getElementById('interactionHint');
-    const cursorAura = document.getElementById('cursorAura');
-
-    const faviconLink = (() => {
-      let link = document.querySelector('link[rel="icon"]');
-      if (!link) {
-        link = document.createElement('link');
-        link.rel = 'icon';
-        document.head.appendChild(link);
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://api.open-meteo.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="/style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
       }
-      link.type = 'image/png';
-      return link;
-    })();
-
-    const faviconCanvas = document.createElement('canvas');
-    faviconCanvas.width = 64;
-    faviconCanvas.height = 64;
-    const faviconContext = faviconCanvas.getContext('2d');
-    let lastFaviconUpdateAt = 0;
-
-    const renderFaviconFrame = (timestamp) => {
-      if (!faviconContext) return;
-
-      const t = timestamp * 0.002;
-      faviconContext.clearRect(0, 0, 64, 64);
-
-      const halo = faviconContext.createRadialGradient(32, 32, 4, 32, 32, 30);
-      halo.addColorStop(0, 'rgba(0, 245, 255, 0.26)');
-      halo.addColorStop(0.55, 'rgba(255, 51, 202, 0.18)');
-      halo.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      faviconContext.fillStyle = halo;
-      faviconContext.beginPath();
-      faviconContext.arc(32, 32, 30, 0, Math.PI * 2);
-      faviconContext.fill();
-
-      faviconContext.save();
-      faviconContext.translate(32, 32);
-      faviconContext.lineCap = 'round';
-
-      faviconContext.lineWidth = 6;
-      faviconContext.strokeStyle = '#00f5ff';
-      faviconContext.beginPath();
-      faviconContext.arc(0, 0, 19, t, t + Math.PI * 1.35);
-      faviconContext.stroke();
-
-      faviconContext.lineWidth = 5;
-      faviconContext.strokeStyle = '#ff33ca';
-      faviconContext.beginPath();
-      faviconContext.arc(0, 0, 13, -t * 1.3, -t * 1.3 + Math.PI * 1.2);
-      faviconContext.stroke();
-
-      const orbitX = Math.cos(t * 1.75) * 21;
-      const orbitY = Math.sin(t * 1.75) * 21;
-      faviconContext.fillStyle = '#9eff00';
-      faviconContext.beginPath();
-      faviconContext.arc(orbitX, orbitY, 3.6, 0, Math.PI * 2);
-      faviconContext.fill();
-
-      faviconContext.restore();
-
-      faviconContext.fillStyle = '#ffffff';
-      faviconContext.beginPath();
-      faviconContext.arc(32, 32, 2.8, 0, Math.PI * 2);
-      faviconContext.fill();
-
-      faviconLink.href = faviconCanvas.toDataURL('image/png');
-    };
-
-    const animateFavicon = (timestamp) => {
-      if (!faviconContext) return;
-      const frameGap = document.hidden ? 900 : 120;
-      if (timestamp - lastFaviconUpdateAt >= frameGap) {
-        renderFaviconFrame(timestamp);
-        lastFaviconUpdateAt = timestamp;
-      }
-      requestAnimationFrame(animateFavicon);
-    };
-
-    document.addEventListener('visibilitychange', () => {
-      lastFaviconUpdateAt = 0;
-    });
-
-    requestAnimationFrame(animateFavicon);
-
-    const titleSource = ` ${document.title}   `;
-    let titleOffset = 0;
-
-    window.setInterval(() => {
-      const leading = titleSource.slice(titleOffset);
-      const trailing = titleSource.slice(0, titleOffset);
-      document.title = `${leading}${trailing}`;
-      titleOffset = (titleOffset + 1) % titleSource.length;
-    }, 190);
-
-    const matrixProfiles = [
-      {
-        lead: '#8bff72',
-        glyph: '#33ff00',
-        trail: 'rgba(8, 16, 8, 0.16)'
-      },
-      {
-        lead: '#ffe08a',
-        glyph: '#ffb000',
-        trail: 'rgba(18, 12, 6, 0.16)'
-      },
-      {
-        lead: '#9affef',
-        glyph: '#57ffd6',
-        trail: 'rgba(6, 14, 12, 0.16)'
-      }
-    ];
-
-    const matrixChars = '01$#@&%*+-<>[]{}~=/ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const context = canvas.getContext('2d');
-    let matrixProfile = matrixProfiles[0];
-    let fontSize = 16;
-    let columns = 0;
-    let drops = [];
-    let lastFrameAt = 0;
-    let lastPointer = { x: window.innerWidth * 0.5, y: window.innerHeight * 0.5 };
-
-    const resizeMatrix = () => {
-      if (!context) return;
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
-      canvas.style.width = `${window.innerWidth}px`;
-      canvas.style.height = `${window.innerHeight}px`;
-      context.setTransform(dpr, 0, 0, dpr, 0, 0);
-      fontSize = Math.max(12, Math.floor(window.innerWidth / 90));
-      columns = Math.ceil(window.innerWidth / fontSize);
-      drops = Array.from({ length: columns }, () => Math.random() * -120);
-      context.fillStyle = '#0a0a0a';
-      context.fillRect(0, 0, window.innerWidth, window.innerHeight);
-    };
-
-    const drawMatrix = (timestamp) => {
-      if (!context) return;
-      if (timestamp - lastFrameAt < 42) {
-        requestAnimationFrame(drawMatrix);
-        return;
-      }
-      lastFrameAt = timestamp;
-
-      context.fillStyle = matrixProfile.trail;
-      context.fillRect(0, 0, window.innerWidth, window.innerHeight);
-      context.font = `${fontSize}px JetBrains Mono, Fira Code, monospace`;
-      context.textBaseline = 'top';
-
-      for (let i = 0; i < drops.length; i += 1) {
-        const char = matrixChars[Math.floor(Math.random() * matrixChars.length)];
-        const x = i * fontSize;
-        const y = drops[i] * fontSize;
-
-        context.fillStyle = matrixProfile.glyph;
-        context.fillText(char, x, y);
-        context.fillStyle = matrixProfile.lead;
-        context.fillText(char, x, y - fontSize);
-
-        if (y > window.innerHeight + Math.random() * 160) {
-          drops[i] = Math.random() * -100;
-        } else {
-          drops[i] += 1;
-        }
-      }
-
-      requestAnimationFrame(drawMatrix);
-    };
-
-    window.addEventListener('resize', resizeMatrix);
-
-    window.addEventListener('click', () => {
-      const index = (matrixProfiles.indexOf(matrixProfile) + 1) % matrixProfiles.length;
-      matrixProfile = matrixProfiles[index];
-      if (hint) {
-        hint.textContent = `matrix rain active | profile:${index + 1} | click => next`;
-      }
-    });
-
-    const handlePointerMotion = (x, y) => {
-      const event = { clientX: x, clientY: y };
-      const dx = event.clientX - lastPointer.x;
-      const dy = event.clientY - lastPointer.y;
-      const velocity = Math.hypot(dx, dy);
-      lastPointer = { x: event.clientX, y: event.clientY };
-
-      if (cursorAura) {
-        const scale = 1 + Math.min(velocity / 90, 1.7);
-        cursorAura.style.setProperty('--aura-x', `${event.clientX}px`);
-        cursorAura.style.setProperty('--aura-y', `${event.clientY}px`);
-        cursorAura.style.setProperty('--aura-scale', scale.toFixed(2));
-      }
-    };
-
-    if ('PointerEvent' in window) {
-      window.addEventListener('pointermove', (event) => {
-        handlePointerMotion(event.clientX, event.clientY);
-      });
-    } else {
-      window.addEventListener('mousemove', (event) => {
-        handlePointerMotion(event.clientX, event.clientY);
-      });
     }
-
-    const reveals = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('in-view');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.15 }
-    );
-
-    reveals.forEach((item) => observer.observe(item));
-
-    resizeMatrix();
-    requestAnimationFrame(drawMatrix);
   </script>
+  <script type="module" src="/js/main.js"></script>
+</head>
+<body class="home">
+  <canvas id="scene" aria-label="Interactive 3D island with live sky and weather"></canvas>
+
+  <header class="bar">
+    <a class="brand panel" href="/">
+      <img src="/morty.png" alt="" class="avatar" width="40" height="40">
+      <span><strong>Ashvini Jangid</strong><small>Software engineer</small></span>
+    </a>
+    <nav class="nav panel" aria-label="Main">
+      <button type="button" data-open="about">About</button>
+      <button type="button" data-open="projects">Projects</button>
+      <button type="button" data-open="contact">Contact</button>
+      <a class="nav-cta" href="/resume.pdf" target="_blank" rel="noreferrer"><i class="ph ph-file-text" aria-hidden="true"></i>Resume</a>
+    </nav>
+  </header>
+
+  <aside class="dock panel" id="dock" data-expanded="true" aria-label="Info and controls">
+  <div class="dock-bar">
+    <button type="button" data-tab="me" aria-pressed="true" aria-controls="tab-me"><i class="ph ph-user" aria-hidden="true"></i>About</button>
+    <button type="button" data-tab="scene" aria-pressed="false" aria-controls="tab-scene"><i class="ph ph-sliders-horizontal" aria-hidden="true"></i>Scene</button>
+    <button type="button" class="icon-btn" id="dockToggle" aria-expanded="true" aria-label="Minimize" title="Minimize"><i class="ph ph-minus" aria-hidden="true"></i></button>
+  </div>
+  <div class="dock-body">
+  <section class="intro dock-panel" id="tab-me">
+    <p class="kicker">Software engineer from India</p>
+    <h1>Hi, I'm Ashvini.</h1>
+    <p class="lede">I build AI agents, LLM apps, and computer vision systems, with Rust, Python, and JavaScript on Linux.</p>
+    <ul class="chips" aria-label="Skills">
+      <li data-cat="lang">Rust</li>
+      <li data-cat="lang">JavaScript</li>
+      <li data-cat="lang">Python</li>
+      <li data-cat="sys">Linux</li>
+      <li data-cat="ai">Agents</li>
+      <li data-cat="ai">LLM</li>
+      <li data-cat="ai">Computer Vision</li>
+    </ul>
+    <div class="row">
+      <button type="button" class="btn primary" data-open="about">About me</button>
+      <button type="button" class="btn" data-open="projects">See projects</button>
+    </div>
+    <p class="keys"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> walk me around. <kbd>Enter</kbd> opens what I stand near.</p>
+    <p class="keys">Drag to look around. Click me, the house, the board, the temple, the skill islands, the crocodile, or the sky.</p>
+  </section>
+
+  <section class="controls dock-panel" id="tab-scene" hidden>
+    <div class="ctl-head">
+      <i class="ph ph-map-pin" aria-hidden="true"></i>
+      <span class="ctl-place"><span id="place">Finding location</span><small id="cond">Loading weather</small></span>
+      <div class="seg" role="group" aria-label="Temperature unit">
+        <button type="button" data-unit="c" aria-pressed="true">°C</button>
+        <button type="button" data-unit="f" aria-pressed="false">°F</button>
+      </div>
+      <button type="button" id="locBtn" class="icon-btn" aria-label="Use my exact location" title="Use my exact location"><i class="ph ph-crosshair" aria-hidden="true"></i></button>
+    </div>
+    <div class="seg modes" role="group" aria-label="Weather mode">
+      <button type="button" data-mode="live" aria-pressed="true"><i class="ph ph-broadcast" aria-hidden="true"></i>Live</button>
+      <button type="button" data-mode="clear" aria-pressed="false" aria-label="Clear"><i class="ph ph-sun" aria-hidden="true"></i></button>
+      <button type="button" data-mode="clouds" aria-pressed="false" aria-label="Cloudy"><i class="ph ph-cloud" aria-hidden="true"></i></button>
+      <button type="button" data-mode="rain" aria-pressed="false" aria-label="Rain"><i class="ph ph-cloud-rain" aria-hidden="true"></i></button>
+      <button type="button" data-mode="snow" aria-pressed="false" aria-label="Snow"><i class="ph ph-cloud-snow" aria-hidden="true"></i></button>
+      <button type="button" data-mode="storm" aria-pressed="false" aria-label="Storm"><i class="ph ph-cloud-lightning" aria-hidden="true"></i></button>
+      <button type="button" data-mode="fog" aria-pressed="false" aria-label="Fog"><i class="ph ph-cloud-fog" aria-hidden="true"></i></button>
+    </div>
+    <label class="scrub">
+      <span>Time shift <output id="offsetOut" for="offset">Now</output></span>
+      <input type="range" id="offset" min="-12" max="12" step="0.25" value="0">
+    </label>
+    <button type="button" id="sound" class="btn" aria-pressed="false"><i class="ph ph-speaker-slash" aria-hidden="true"></i><span>Sound off</span></button>
+  </section>
+  </div>
+  </aside>
+
+  <button type="button" class="prompt panel" id="prompt" hidden><kbd>Enter</kbd><span>Open <strong id="nearLabel"></strong></span></button>
+  <div class="focus-bar panel" id="focusBar" hidden>
+    <button type="button" class="btn" id="backBtn"><i class="ph ph-arrow-left" aria-hidden="true"></i>Back to island</button>
+    <button type="button" class="btn" id="listBtn"><i class="ph ph-list" aria-hidden="true"></i>List view</button>
+  </div>
+  <div class="tip" id="tip" hidden></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <dialog id="locate" class="sheet small">
+    <h2>Show your sky?</h2>
+    <p>Allow location to see the live weather, sun, and moon where you are. Your location stays in your browser.</p>
+    <form method="dialog" class="row">
+      <button class="btn primary" value="gps"><i class="ph ph-map-pin" aria-hidden="true"></i>Allow location</button>
+      <button class="btn" value="ip">Use approximate</button>
+    </form>
+  </dialog>
+
+  <dialog id="about" class="sheet" aria-labelledby="aboutTitle">
+    <form method="dialog"><button class="icon-btn close" aria-label="Close"><i class="ph ph-x" aria-hidden="true"></i></button></form>
+    <div class="sheet-head">
+      <img src="/morty.png" alt="Ashvini Jangid" class="avatar lg" width="64" height="64">
+      <div>
+        <h2 id="aboutTitle">About me</h2>
+        <p class="muted">Software engineer from India</p>
+      </div>
+    </div>
+    <p>I build AI agents, LLM apps, and computer vision systems, and the fast Rust and Python code under them. I care most about low latency, code that is easy to maintain, clear deployment paths, and fast shipping.</p>
+    <h3>How I work</h3>
+    <ul class="ticks">
+      <li>Keep the architecture simple until complexity is proven necessary.</li>
+      <li>Break requirements into small units that ship with fast feedback.</li>
+      <li>Add tests and observability early to cut late-stage risk.</li>
+      <li>Prefer clear interfaces, documented trade-offs, and clean handoffs.</li>
+    </ul>
+    <h3>Current focus</h3>
+    <div class="focus">
+      <article><h4>AI agents</h4><p>Agents that plan, call tools, and finish real tasks.</p></article>
+      <article><h4>LLM apps</h4><p>Retrieval, prompts, and evals that hold up in production.</p></article>
+      <article><h4>Computer vision</h4><p>Image models that run fast on real cameras and devices.</p></article>
+    </div>
+    <h3 id="stackTitle">Tech stack</h3>
+    <div class="groups">
+      <section><h4>Languages</h4><ul class="pills"><li>Rust</li><li>JavaScript</li><li>Python</li></ul></section>
+      <section><h4>Systems</h4><ul class="pills"><li>Linux</li></ul></section>
+      <section><h4>AI</h4><ul class="pills"><li>Agents</li><li>LLM</li><li>Computer Vision</li></ul></section>
+    </div>
+  </dialog>
+
+  <dialog id="projects" class="sheet" aria-labelledby="projectsTitle">
+    <form method="dialog"><button class="icon-btn close" aria-label="Close"><i class="ph ph-x" aria-hidden="true"></i></button></form>
+    <h2 id="projectsTitle">Projects</h2>
+    <p class="muted">Live sites I built and shipped.</p>
+    <ul class="links">
+      <li><a href="https://fxopspro.com/" target="_blank" rel="noreferrer">fxopspro.com<i class="ph ph-arrow-up-right" aria-hidden="true"></i></a></li>
+      <li><a href="https://flavourdiem.com/" target="_blank" rel="noreferrer">flavourdiem.com<i class="ph ph-arrow-up-right" aria-hidden="true"></i></a></li>
+      <li><a href="https://scenta.in" target="_blank" rel="noreferrer">scenta.in<i class="ph ph-arrow-up-right" aria-hidden="true"></i></a></li>
+      <li><a href="https://marutiayurveda.in" target="_blank" rel="noreferrer">marutiayurveda.in<i class="ph ph-arrow-up-right" aria-hidden="true"></i></a></li>
+      <li><a href="https://share.ash-tools.store/" target="_blank" rel="noreferrer">share.ash-tools.store<i class="ph ph-arrow-up-right" aria-hidden="true"></i></a></li>
+      <li><a href="https://alanowarinternational.com/" target="_blank" rel="noreferrer">alanowarinternational.com<i class="ph ph-arrow-up-right" aria-hidden="true"></i></a></li>
+    </ul>
+    <a class="btn primary" href="/project.html">View all projects<i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+  </dialog>
+
+  <dialog id="contact" class="sheet small" aria-labelledby="contactTitle">
+    <form method="dialog"><button class="icon-btn close" aria-label="Close"><i class="ph ph-x" aria-hidden="true"></i></button></form>
+    <h2 id="contactTitle">Contact</h2>
+    <p class="muted">Send a message about a project, a role, or an idea.</p>
+    <ul class="links">
+      <li><a href="mailto:ashvini.jangid@email.com"><i class="ph ph-envelope-simple" aria-hidden="true"></i>ashvini.jangid@email.com</a></li>
+      <li><a href="https://github.com/its-ash" target="_blank" rel="noreferrer"><i class="ph ph-github-logo" aria-hidden="true"></i>github.com/its-ash</a></li>
+      <li><a href="https://www.linkedin.com/in/ashvinijangid/" target="_blank" rel="noreferrer"><i class="ph ph-linkedin-logo" aria-hidden="true"></i>linkedin.com/in/ashvinijangid</a></li>
+    </ul>
+  </dialog>
 </body>
 </html>
