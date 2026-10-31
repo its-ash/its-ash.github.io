@@ -6,7 +6,9 @@ import { createCharacter } from './character.js';
 import { createProps } from './props.js';
 import { createSkills } from './skills.js';
 import { createTemple } from './temple.js';
-import { createArena, pillarSpots } from './arena.js';
+import { createArena, pillarSpots, createHunt, createShenron } from './arena.js';
+import { fetchActivity } from './github.js';
+import { createAbout, createContact } from './sheets.js';
 
 const ORBIT_R = 80;
 const DEG = 180 / Math.PI;
@@ -187,6 +189,20 @@ const WALL = techPose(1.6, -1.6, -0.5);
 const TECH_AT = atTech(0.9, -0.1);
 const TECH_LOOK = rotXZ(WALL, 0, 0);
 const HOME = new THREE.Vector3(0, 1.5, 0);
+const GH_TREE = [4.0, -3.9];
+const GH_SIGN = [3.3, -3.3];
+const GH_GREENS = ['#9be9a8', '#40c463', '#30a14e', '#216e39'];
+const GITHUB_URL = 'https://github.com/its-ash';
+const RESUME_URL = '/resume.pdf';
+const BALL_KEY = 'itsash.balls';
+const BALL_SPOTS = [[-3.6, -2.6], [-3.2, 3.0], [1.4, 5.0], [4.8, -2.4], atTemple(-1.2, -2.0), atTech(-2.6, 1.4), atSaiyan(0.4, -2.3)];
+const ISLANDS = [
+  { x: 0, z: 0, r: MAIN_R, stop: [0.9, 4.6] },
+  { ...TISLE, stop: atTemple(1.6, 1.4) },
+  { ...TECH, stop: atTech(2.2, 1.6) },
+  { ...SAIYAN, stop: atSaiyan(-1.9, 0.9) }
+];
+const islandAt = (x, z) => ISLANDS.reduce((best, I, i) => (Math.hypot(x - I.x, z - I.z) - I.r < Math.hypot(x - ISLANDS[best].x, z - ISLANDS[best].z) - ISLANDS[best].r ? i : best), 0);
 const xz = ([x, z]) => ({ x, z });
 
 const WAYPOINTS = [
@@ -206,7 +222,7 @@ const WAYPOINTS = [
   { name: 'sw1', x: 4.0, z: -0.2 },
   { name: 'saiyanHead', ...xz(S_BRIDGE.a) },
   { name: 'saiyanEnd', ...xz(S_BRIDGE.b) },
-  { name: 'saiyan', x: SAIYAN.x, z: SAIYAN.z, look: atSaiyan(0, 2), wait: [5, 7] },
+  { name: 'saiyan', x: SAIYAN.x, z: SAIYAN.z, look: atSaiyan(0, 2), wait: [8, 10], blast: true },
   { name: 'saiyanEnd', ...xz(S_BRIDGE.b) },
   { name: 'saiyanHead', ...xz(S_BRIDGE.a) },
   { name: 'sw2', x: 5.0, z: -0.6 },
@@ -225,7 +241,8 @@ const OBSTACLES = [
   [-5.2, -1.2, 0.4], [-4.6, -3.4, 0.4], [2.4, -5.4, 0.4], [5.6, -1.4, 0.35], [-3.2, 4.8, 0.35], [4.6, 3.8, 0.3], [-0.8, -3.2, 0.3],
   [TEMPLE.x, TEMPLE.z, 0.85], [...PEEPAL, 0.5], ...[-0.8, 0, 0.8].map((x) => [...rotXZ(SERVER, x, 0), 0.55]),
   ...[-1.1, -0.37, 0.37, 1.1].map((x) => [...rotXZ(WALL, x, 0.1), 0.42]),
-  ...pillarSpots(PAD_R).map(([x, z]) => [...atSaiyan(x, z), 0.2])
+  ...pillarSpots(PAD_R).map(([x, z]) => [...atSaiyan(x, z), 0.2]),
+  [...GH_TREE, 0.35], [...GH_SIGN, 0.15]
 ];
 
 const POIS = [
@@ -249,7 +266,7 @@ const blocked = (x, z) => !walkable(x, z) || OBSTACLES.some(([ox, oz, r]) => Mat
 export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onNear, onBell, projects = [], reducedMotion = false, lowPower = false }) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: !lowPower, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(devicePixelRatio, lowPower ? 1.25 : 1.75));
-  renderer.shadowMap.enabled = !lowPower;
+  renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   const scene = new THREE.Scene();
@@ -284,7 +301,8 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
     flash: 0,
     nextStrike: 0,
     sky: { sunAlt: 0, moonAlt: 0, phase: 0, fraction: 0, day: 1, night: 0 },
-    phaseDrawn: -1
+    phaseDrawn: -1,
+    summonK: 0
   };
 
   // Sky
@@ -475,6 +493,15 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
   mailbox.rotation.y = -0.3;
   island.add(tag(mailbox, 'contact', 'Contact'));
 
+  const aboutSheet = createAbout({ reduced: reducedMotion });
+  aboutSheet.root.position.set(-2.4 + Math.sin(0.35) * 2.0, 2.9, -1.2 + Math.cos(0.35) * 2.0);
+  aboutSheet.root.rotation.y = 0.35;
+  island.add(tag(aboutSheet.root, 'about', 'About me'));
+  const contactSheet = createContact({ reduced: reducedMotion });
+  contactSheet.root.position.set(-1.1 + Math.sin(-0.3) * 1.2, 0.6, 3.3 + Math.cos(-0.3) * 1.2);
+  contactSheet.root.rotation.y = -0.3;
+  island.add(tag(contactSheet.root, 'contact', 'Contact'));
+
   const lamp = new THREE.Group();
   lamp.add(mesh(new THREE.CylinderGeometry(0.06, 0.09, 2.4, 6), mat('#2f3540'), [0, 1.2, 0]));
   const bulbMat = mat('#fff1c2', { emissive: '#ffcf70', emissiveIntensity: 0 });
@@ -614,29 +641,6 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
   island.add(techTree);
   trees.push(techTree);
 
-  const tuftMat = mat('#5aa84a');
-  const TUFTS = lowPower ? 260 : 560;
-  const tufts = new THREE.InstancedMesh(new THREE.ConeGeometry(0.035, 0.16, 3), tuftMat, TUFTS);
-  const tm = new THREE.Matrix4();
-  const tq = new THREE.Quaternion();
-  const te = new THREE.Euler();
-  const tp = new THREE.Vector3();
-  const ts = new THREE.Vector3();
-  const lands = [{ x: 0, z: 0, r: MAIN_R - 0.4 }, { ...TISLE, r: TISLE.r - 0.3 }, { ...TECH, r: TECH.r - 0.3 }, { ...SAIYAN, r: SAIYAN.r - 0.3 }];
-  let placed = 0;
-  for (let tries = 0; placed < TUFTS && tries < TUFTS * 8; tries++) {
-    const L = lands[rand() < 0.64 ? 0 : 1 + Math.floor(rand() * 3)];
-    const a = rand() * Math.PI * 2;
-    const d = Math.sqrt(rand()) * L.r;
-    const x = L.x + Math.cos(a) * d;
-    const z = L.z + Math.sin(a) * d;
-    if (OBSTACLES.some(([ox, oz, r]) => Math.hypot(x - ox, z - oz) < r + 0.15) || Math.hypot(x + 2.4, z + 1.2) < 1.9 || Math.hypot(x - SAIYAN.x, z - SAIYAN.z) < PAD_R + 0.45) continue;
-    tufts.setMatrixAt(placed++, tm.compose(tp.set(x, 0.66, z), tq.setFromEuler(te.set(spread(0.4), rand() * 6, spread(0.4))), ts.setScalar(0.7 + rand() * 0.7)));
-  }
-  tufts.count = placed;
-  tufts.receiveShadow = true;
-  island.add(tufts);
-
   const bench = group(2.0, 0.6, -1.5);
   const benchWood = mat('#9c6a37');
   bench.add(mesh(new THREE.BoxGeometry(1.1, 0.07, 0.38), benchWood, [0, 0.29, 0]), mesh(new THREE.BoxGeometry(1.1, 0.26, 0.06), benchWood, [0, 0.5, -0.17]));
@@ -664,6 +668,12 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
     onLeave: (name) => name === 'door' && (doors.open = false),
     blocked,
     powered: onPad,
+    onBlast: (p) => {
+      boom.position.copy(p);
+      boomT = 0;
+      shake = reducedMotion ? 0 : 0.7;
+      state.flash = Math.max(state.flash, 0.5);
+    },
     start: { name: 'temple', timer: 7 }
   });
   island.add(tag(me.root, 'me', 'Say hi'));
@@ -677,6 +687,220 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
   skills.items.forEach((s) => tag(s, 'skill', s.userData.skill.name));
   tag(skills.server, 'stack', 'Tech stack');
   const meWorld = new THREE.Vector3();
+
+  // GitHub tree
+  const ghTree = group(GH_TREE[0], 0.6, GH_TREE[1]);
+  const bark = mat('#5b3a22');
+  ghTree.add(mesh(new THREE.CylinderGeometry(0.13, 0.24, 1.7, 8), bark, [0, 0.85, 0]));
+  [[0.18, 1.45, -0.7], [-0.2, 1.3, 0.75]].forEach(([x, y, r]) => {
+    const br = mesh(new THREE.CylinderGeometry(0.04, 0.07, 0.7, 6), bark, [x, y, 0]);
+    br.rotation.z = r;
+    ghTree.add(br);
+  });
+  const LEAF_MAX = 160;
+  const leaves = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.11, 1), mat('#ffffff', { roughness: 0.6 }), LEAF_MAX);
+  const leafSpots = Array.from({ length: LEAF_MAX }, (_, i) => {
+    const v = new THREE.Vector3(spread(2), spread(2), spread(2)).normalize().multiplyScalar(0.45 + rand() * 0.45);
+    leaves.setColorAt(i, new THREE.Color(GH_GREENS[i % GH_GREENS.length]));
+    return new THREE.Vector3(v.x, 2.05 + v.y * 0.75, v.z);
+  });
+  leaves.count = 0;
+  leaves.castShadow = true;
+  leaves.frustumCulled = false;
+  ghTree.add(leaves);
+  ghTree.userData.sway = 3;
+  island.add(tag(ghTree, 'github', 'GitHub activity'));
+  ghTree.userData.info = 'Loading GitHub activity...';
+  trees.push(ghTree);
+  const gh = { target: 0, shown: 0 };
+  const leafM = new THREE.Matrix4();
+  const leafQ = new THREE.Quaternion();
+  const leafS = new THREE.Vector3();
+  const growLeaves = (dt) => {
+    if (gh.shown >= gh.target) return;
+    gh.shown = Math.min(gh.target, gh.shown + dt * 45);
+    const n = Math.ceil(gh.shown);
+    for (let i = 0; i < n; i++) leaves.setMatrixAt(i, leafM.compose(leafSpots[i], leafQ, leafS.setScalar(clamp(gh.shown - i, 0.001, 1))));
+    leaves.count = n;
+    leaves.instanceMatrix.needsUpdate = true;
+    leaves.boundingSphere = null;
+  };
+
+  const ghSignTex = canvasTexture(512, 256, (ctx, w, h, n) => {
+    ctx.fillStyle = '#24292f';
+    ctx.fillRect(0, 0, w, h);
+    ctx.strokeStyle = '#40c463';
+    ctx.lineWidth = 10;
+    ctx.strokeRect(5, 5, w - 10, h - 10);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '700 64px Outfit, sans-serif';
+    ctx.fillText('GitHub', w / 2, 70);
+    ctx.fillStyle = '#9be9a8';
+    ctx.font = '600 40px "JetBrains Mono", monospace';
+    ctx.fillText(typeof n === 'number' ? `${n} commits` : (n ?? 'loading...'), w / 2, 145);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    ctx.font = '500 30px Outfit, sans-serif';
+    ctx.fillText('Tap to open profile', w / 2, 205);
+  });
+  const ghSign = group(GH_SIGN[0], 0.6, GH_SIGN[1]);
+  ghSign.rotation.y = Math.atan2(VIEW.x - GH_SIGN[0], VIEW.z - GH_SIGN[1]);
+  ghSign.add(mesh(new THREE.BoxGeometry(0.08, 1.1, 0.08), bark, [0, 0.55, 0]));
+  ghSign.add(mesh(new THREE.BoxGeometry(0.9, 0.48, 0.05), mat('#24292f'), [0, 1.15, 0]));
+  const ghFace = new THREE.Mesh(new THREE.PlaneGeometry(0.84, 0.42), new THREE.MeshBasicMaterial({ map: ghSignTex, toneMapped: false }));
+  ghFace.position.set(0, 1.15, 0.03);
+  ghSign.add(ghFace);
+  ghSign.userData.url = GITHUB_URL;
+  island.add(tag(ghSign, 'link', 'Open my GitHub'));
+
+  fetchActivity()
+    .then(({ commits, logs }) => {
+      gh.target = Math.min(LEAF_MAX, commits);
+      gh.label = commits;
+      ghTree.userData.info = `${commits} commits pushed to public GitHub repos recently. One leaf per commit.`;
+      ghSignTex.userData.redraw(gh.label);
+      skills.setLogs(logs);
+    })
+    .catch(() => {
+      gh.label = 'offline';
+      ghTree.userData.info = 'GitHub activity is not available right now.';
+      ghSignTex.userData.redraw(gh.label);
+      skills.setLogs(['github api unavailable', 'try again later']);
+    });
+  document.fonts?.ready.then(() => ghSignTex.userData.redraw(gh.label));
+
+  // Dragon Balls
+  const found = Array(7).fill(false);
+  try {
+    const saved = JSON.parse(localStorage.getItem(BALL_KEY));
+    if (Array.isArray(saved)) saved.forEach((i) => Number.isInteger(i) && i >= 0 && i < 7 && (found[i] = true));
+  } catch {}
+  const saveBalls = () => {
+    try {
+      localStorage.setItem(BALL_KEY, JSON.stringify(found.flatMap((f, i) => (f ? [i] : []))));
+    } catch {}
+  };
+  const hunt = createHunt({ spots: BALL_SPOTS });
+  hunt.balls.forEach((b) => island.add(tag(b, 'ball', 'Dragon Ball')));
+  hunt.reset(found);
+  const shenron = createShenron();
+  arena.group.add(shenron.group);
+  tag(shenron.head, 'wish', 'Make a wish: open my resume');
+  const summon = { phase: found.every(Boolean) ? 'rise' : 'none', k: 0, t: 0 };
+  const ballTarget = new THREE.Vector3();
+  const collectBall = (i) => {
+    if (!Number.isInteger(i) || found[i] || summon.phase !== 'none' || !hunt.collect(i)) return;
+    found[i] = true;
+    saveBalls();
+    const n = found.filter(Boolean).length;
+    me.say(n === 7 ? 'All seven! Come forth, Shenron!' : `Dragon Ball ${n}/7!`, 2.5);
+    onAction?.('ball', null, n);
+    if (n === 7)
+      setTimeout(() => {
+        Object.assign(summon, { phase: 'rise', k: 0 });
+        onAction?.('summon');
+      }, 1800);
+  };
+  const stepSummon = (dt, t) => {
+    if (summon.phase === 'rise') {
+      summon.k = Math.min(1, summon.k + dt / 4);
+      if (summon.k === 1) Object.assign(summon, { phase: 'wish', t: 0 });
+    } else if (summon.phase === 'wish') {
+      if ((summon.t += dt) > 45) summon.phase = 'leave';
+    } else if (summon.phase === 'leave') {
+      summon.k = Math.max(0, summon.k - dt / 3);
+      if (summon.k === 0) {
+        summon.phase = 'none';
+        found.fill(false);
+        saveBalls();
+        hunt.reset(found);
+      }
+    }
+    state.summonK = lerp(state.summonK, summon.phase === 'rise' || summon.phase === 'wish' ? 1 : 0, 1 - Math.exp(-dt * 1.5));
+    shenron.update(dt, { t, k: summon.k });
+  };
+
+  // Flying Nimbus
+  const nimbus = group();
+  const nimbusMat = mat('#ffe27a', { emissive: '#ffc93c', emissiveIntensity: 0.35, roughness: 0.9 });
+  [[0, 0, 0, 0.42], [0.42, 0.02, 0.05, 0.32], [-0.42, 0.02, -0.05, 0.32], [0.18, 0.1, -0.26, 0.28], [-0.18, 0.08, 0.26, 0.28], [-0.78, -0.02, 0.05, 0.2], [-1.02, -0.04, 0.08, 0.13]].forEach(([x, y, z, r]) => {
+    const p = mesh(new THREE.IcosahedronGeometry(r, 1), nimbusMat, [x, y, z]);
+    p.scale.y = 0.55;
+    nimbus.add(p);
+  });
+  const ride = { phase: 'idle', t: 0, dur: 1, dest: 0, from: new THREE.Vector3(), to: new THREE.Vector3(), mid: new THREE.Vector3(), park: new THREE.Vector3(ISLANDS[0].stop[0] + 0.9, 0.95, ISLANDS[0].stop[1]) };
+  nimbus.position.copy(ride.park);
+  island.add(tag(nimbus, 'nimbus', 'Ride Flying Nimbus'));
+  const ridePos = new THREE.Vector3();
+  const rideNext = new THREE.Vector3();
+  const bezier = (u, out) => out.copy(ride.from).multiplyScalar((1 - u) ** 2).addScaledVector(ride.mid, 2 * u * (1 - u)).addScaledVector(ride.to, u * u);
+  const startRide = () => {
+    if (ride.phase !== 'idle' || view.mode !== 'orbit') return;
+    const p = me.pos;
+    ride.dest = (islandAt(p.x, p.z) + 1) % ISLANDS.length;
+    Object.assign(ride, { phase: 'fetch', t: 0, dur: 0.9 });
+    ride.from.copy(nimbus.position);
+    ride.to.set(p.x, 0.48, p.z);
+    ride.mid.lerpVectors(ride.from, ride.to, 0.5).setY(Math.max(ride.from.y, ride.to.y) + 1);
+  };
+  const stepRide = (dt, t, motion) => {
+    if (ride.phase === 'idle') {
+      ridePos.copy(ride.park);
+      ridePos.y += Math.sin(t * 1.6) * 0.08 * motion;
+      nimbus.position.lerp(ridePos, 1 - Math.exp(-dt * 3));
+      nimbus.rotation.y += dt * 0.2 * motion;
+      return;
+    }
+    ride.t = Math.min(1, ride.t + dt / ride.dur);
+    const u = ride.t < 0.5 ? 2 * ride.t ** 2 : 1 - (-2 * ride.t + 2) ** 2 / 2;
+    bezier(u, ridePos);
+    bezier(Math.min(1, u + 0.02), rideNext);
+    const moving = rideNext.distanceToSquared(ridePos) > 1e-6;
+    const heading = Math.atan2(rideNext.x - ridePos.x, rideNext.z - ridePos.z);
+    if (moving) nimbus.rotation.y = heading - Math.PI / 2;
+    nimbus.position.copy(ridePos);
+    if (ride.phase === 'fly') {
+      me.root.position.set(ridePos.x, ridePos.y + 0.12, ridePos.z);
+      if (moving) me.root.rotation.y = heading;
+    }
+    if (ride.t < 1) return;
+    if (ride.phase === 'fetch') {
+      me.mount();
+      me.say('Nimbus!', 1.5);
+      const [sx, sz] = ISLANDS[ride.dest].stop;
+      Object.assign(ride, { phase: 'fly', t: 0 });
+      ride.from.copy(nimbus.position);
+      ride.to.set(sx, 0.48, sz);
+      const d = ride.from.distanceTo(ride.to);
+      ride.dur = 1.4 + d / 7;
+      ride.mid.lerpVectors(ride.from, ride.to, 0.5).setY(3 + d * 0.15);
+      return;
+    }
+    me.root.position.set(ride.to.x, 0.6, ride.to.z);
+    me.dismount();
+    ride.phase = 'idle';
+    ride.park.set(ride.to.x + 0.9, 0.95, ride.to.z);
+  };
+
+  // Kamehameha impact
+  const boomMat = new THREE.MeshBasicMaterial({ color: '#bdf0ff', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+  const boom = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), boomMat);
+  boom.visible = false;
+  boom.raycast = () => {};
+  scene.add(boom);
+  let boomT = -1;
+  let shake = 0;
+  const shakeV = new THREE.Vector3();
+  const stepBoom = (dt) => {
+    if (boomT < 0) return;
+    boomT += dt;
+    const u = Math.min(1, boomT / 0.9);
+    boom.visible = u < 1;
+    boom.scale.setScalar(0.3 + (1 - (1 - u) ** 3) * 3.2);
+    boomMat.opacity = (1 - u) * 0.9;
+    if (u === 1) boomT = -1;
+  };
   document.fonts?.ready.then(() => boardTex.userData.redraw(boardHover));
 
   const props = createProps({
@@ -814,16 +1038,23 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
 
   const view = { mode: 'orbit', tween: null, saved: null, k: 0 };
 
+  const spots = {
+    projects: { root: board, face: boardFace, anchor: boardFace, halfW: 1.12, halfH: 0.78, regionAt: rowAt, hover: setBoardHover, item: (i) => boardItems[i] },
+    about: aboutSheet,
+    contact: contactSheet
+  };
+  const spotRow = (res) => (view.mode === 'focus' && res?.hit.object === view.spot?.face ? view.spot.regionAt(res.hit.uv) : -1);
+
   const setHover = (res, x, y) => {
     const o = res?.o ?? null;
-    const row = view.mode === 'focus' && res?.hit.object === boardFace ? rowAt(res.hit.uv) : -1;
-    setBoardHover(row);
+    const row = spotRow(res);
+    view.spot?.hover(row);
     if (o !== hovered) {
       hovered?.traverse((m) => m.userData.base && m.material.emissive.copy(m.userData.base));
       if (view.mode === 'orbit') o?.traverse((m) => m.userData.base && m.material.emissive.copy(m.userData.base).add(hoverAdd));
       hovered = view.mode === 'orbit' ? o : null;
     }
-    const label = view.mode === 'orbit' ? o?.userData.label : row >= 0 ? `Open ${boardItems[row].label}` : null;
+    const label = view.mode === 'orbit' ? o?.userData.label : row >= 0 ? `Open ${view.spot.item(row).label}` : null;
     canvas.style.cursor = label ? 'pointer' : '';
     onHover?.(label ?? null, x, y);
   };
@@ -831,36 +1062,51 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
   const tweenTo = (pos, tgt, dur, done) =>
     (view.tween = { fp: camera.position.clone(), tp: pos, ft: controls.target.clone(), tt: tgt, t0: performance.now(), dur: reducedMotion ? 1 : dur, done });
 
-  const focusProjects = () => {
-    if (view.mode !== 'orbit') return;
+  const focusOn = (name) => {
+    const spot = spots[name];
+    if (!spot || view.mode === 'focusing' || view.mode === 'leaving' || view.spot === spot) return;
     if (view.intro) {
       view.tween = null;
       endIntro();
     }
-    view.mode = 'focusing';
-    view.saved = { pos: camera.position.clone(), tgt: controls.target.clone() };
-    Object.assign(controls, { enabled: false, autoRotate: false, minDistance: 0.1 });
     setHover(null);
-    const c = boardFace.getWorldPosition(new THREE.Vector3());
+    if (view.mode === 'orbit') {
+      view.saved = { pos: camera.position.clone(), tgt: controls.target.clone() };
+      Object.assign(controls, { enabled: false, autoRotate: false, minDistance: 0.1 });
+    }
+    view.mode = 'focusing';
+    view.spot = spot;
+    frameSpot(spot, 1400);
+    onFocus?.(true, name);
+  };
+
+  const frameSpot = (spot, dur) => {
+    view.tall = camera.aspect < 1;
+    spot.layout?.(view.tall);
+    island.updateMatrixWorld(true);
+    const c = spot.anchor.getWorldPosition(new THREE.Vector3());
     c.y -= island.position.y;
-    const n = new THREE.Vector3(0, 0, 1).applyQuaternion(boardFace.getWorldQuaternion(new THREE.Quaternion()));
+    const n = new THREE.Vector3(0, 0, 1).applyQuaternion(spot.anchor.getWorldQuaternion(new THREE.Quaternion()));
     const half = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-    const dist = Math.max(0.78 / half, 1.12 / (half * camera.aspect));
-    tweenTo(c.clone().addScaledVector(n, dist), c, 1400, () => (view.mode = 'focus'));
-    onFocus?.(true);
+    const chrome = innerHeight / Math.max(1, innerHeight - (innerWidth < 700 ? 150 : 110));
+    const dist = Math.max((spot.halfH * chrome) / half, spot.halfW / (half * camera.aspect));
+    tweenTo(c.clone().addScaledVector(n, dist), c, dur, () => view.mode !== 'leaving' && (view.mode = 'focus'));
   };
 
   const unfocus = () => {
     if (view.mode !== 'focus' && view.mode !== 'focusing') return;
-    view.mode = 'leaving';
     setHover(null);
+    view.mode = 'leaving';
     tweenTo(view.saved.pos, view.saved.tgt, 1200, () => {
       view.mode = 'orbit';
+      view.spot = null;
       Object.assign(controls, { enabled: true, minDistance: 12 });
       idleAt = performance.now() + 8000;
     });
     onFocus?.(false);
   };
+
+  const openItem = (it) => (it.focus ? focusOn(it.focus) : onAction?.('open', null, it.url));
 
   canvas.addEventListener('pointermove', (e) => {
     if (e.pointerType !== 'mouse') return;
@@ -874,9 +1120,9 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
     const res = pick(e.clientX, e.clientY);
     if (view.mode === 'leaving' || view.mode === 'focusing') return;
     if (view.mode === 'focus') {
-      const row = res?.hit.object === boardFace ? rowAt(res.hit.uv) : -1;
-      if (row >= 0) onAction?.('open', res.o, boardItems[row].url);
-      else if (res?.o !== board) unfocus();
+      const row = spotRow(res);
+      if (row >= 0) openItem(view.spot.item(row));
+      else if (res?.o !== view.spot.root) unfocus();
       return;
     }
     if (!res) return;
@@ -885,17 +1131,32 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
   });
 
   const trigger = (action, o) => {
-    if (action === 'projects') return focusProjects();
+    if (action === 'projects') return focusOn('projects');
+    if (action === 'about' || action === 'stack') {
+      doors.pulse = 2.5;
+      return focusOn('about');
+    }
+    if (action === 'contact') {
+      doors.flag = 3;
+      return focusOn('contact');
+    }
+    if (action === 'ball') return collectBall(o?.userData.index);
+    if (action === 'nimbus') return startRide();
+    if (action === 'link') return onAction?.('open', o, o.userData.url);
+    if (action === 'wish') {
+      if (summon.phase !== 'wish') return;
+      summon.phase = 'leave';
+      me.say('Your wish is granted!', 3);
+      return onAction?.('open', o, RESUME_URL);
+    }
     if (o) o.userData.pop = 1;
     if (action === 'cloud') burst(o);
     if (action === 'lamp') state.lamp = !(state.lamp ?? state.sky.night > 0.5);
     if (action === 'windmill') state.spin = 12;
     if (action === 'me') me.wave();
-    if (action === 'contact') doors.flag = 3;
-    if (action === 'about') doors.pulse = 2.5;
     if (action === 'croc') props.snap();
     if (action === 'temple') ringBell();
-    if (action === 'saiyan') me.say(me.power > 0.5 ? "It's over 9000!" : 'Walk me onto the platform to power up!', 3);
+    if (action === 'saiyan' && !me.blast() && me.power < 0.6) me.say('Walk me onto the platform to power up!', 3);
     onAction?.(action, o);
   };
 
@@ -1015,7 +1276,14 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
   let skyTimer = 0;
   updateSky();
 
+  const perf = { low: lowPower, last: 0 };
+
   const loop = () => {
+    if (perf.low) {
+      const now = performance.now();
+      if (now - perf.last < 30) return;
+      perf.last = now;
+    }
     const dt = Math.min(clock.getDelta(), 0.05);
     const t = clock.elapsedTime;
     const motion = reducedMotion ? 0.3 : 1;
@@ -1032,7 +1300,7 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
     for (const c of [top, bottom]) {
       const l = c.r * 0.3 + c.g * 0.59 + c.b * 0.11;
       c.lerp(gray.setRGB(l, l, l), overcast).multiplyScalar(1 - cur.storm * 0.35 - cur.rain * 0.15);
-      c.lerp(white, state.flash * 0.5);
+      c.lerp(white, state.flash * 0.5).multiplyScalar(1 - 0.75 * state.summonK);
     }
     skyU.top.value.copy(top);
     skyU.bottom.value.copy(bottom);
@@ -1051,7 +1319,7 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
     sun.visible = s.sunAlt > -4;
     sun.children[1].material.opacity = 1 - overcast * 0.8;
     sunLight.position.copy(dirV).multiplyScalar(0.4);
-    sunLight.intensity = ease(-2, 8, s.sunAlt) * 2.4 * (1 - overcast * 0.65);
+    sunLight.intensity = ease(-2, 8, s.sunAlt) * 2.4 * (1 - overcast * 0.65) * (1 - 0.7 * state.summonK);
     sunLight.color.lerpColors(sunsetSun, noonSun, ease(0, 30, s.sunAlt));
 
     moon.position.set(s.moonDir.x, s.moonDir.y, s.moonDir.z).multiplyScalar(ORBIT_R);
@@ -1062,7 +1330,7 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
 
     hemi.color.copy(top).lerp(white, 0.3);
     hemi.groundColor.set('#4a3b2a');
-    hemi.intensity = lerp(0.35, 1.1, s.day) * (1 - cur.storm * 0.3) + state.flash * 3;
+    hemi.intensity = lerp(0.35, 1.1, s.day) * (1 - cur.storm * 0.3) * (1 - 0.5 * state.summonK) + state.flash * 3;
 
     const lit = state.lamp ?? s.night > 0.5;
     lampLight.intensity = lerp(lampLight.intensity, lit ? 8 : 0, 1 - Math.exp(-dt * 6));
@@ -1074,7 +1342,6 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
     const coverTarget = cur.snow > 0.1 ? 0.85 : state.temp < -2 ? 0.3 : 0;
     state.snowCover = lerp(state.snowCover, coverTarget, 1 - Math.exp(-dt * 0.25));
     grassMat.color.copy(grassBase).lerp(grassDry, heat).lerp(snowWhite, state.snowCover);
-    tuftMat.color.copy(grassMat.color).multiplyScalar(0.82);
     foliageMats.forEach((m, i) => m.color.copy(foliageBase[i]).lerp(snowWhite, state.snowCover * 0.55));
     pondMat.color.copy(state.temp < 0 ? ice : water);
     pondMat.roughness = state.temp < 0 ? 0.6 : 0.15;
@@ -1099,7 +1366,16 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
     me.update(dt, { t, motion, rain: cur.rain, snow: cur.snow, temp: state.temp, cam: camera.position });
     checkNear();
     skills.update(dt, { t, motion, target: me.root.getWorldPosition(meWorld) });
-    arena.update(dt, { t, motion, power: me.power });
+    stepRide(dt, t, motion);
+    stepBoom(dt);
+    growLeaves(dt);
+    ballTarget.copy(me.root.position).setY(me.root.position.y + 1.6);
+    hunt.update(dt, { t, motion, target: ballTarget });
+    hunt.balls.forEach((b, i) => b.visible && b.userData.fly < 0 && Math.hypot(b.userData.home.x - me.pos.x, b.userData.home.z - me.pos.z) < 0.6 && collectBall(i));
+    stepSummon(dt, t);
+    arena.update(dt, { t, motion, power: me.power, found, summon: state.summonK });
+    aboutSheet.update(dt, view.spot === aboutSheet && view.mode !== 'leaving');
+    contactSheet.update(dt, view.spot === contactSheet && view.mode !== 'leaving');
     temple.update(dt, { t, night: s.night, motion, windK });
     props.update(dt, { t, motion, day: s.day, night: s.night, rain: cur.rain, snow: cur.snow, storm: cur.storm, windX: wx * windK, windZ: wz * windK, windK, temp: state.temp, snowCover: state.snowCover });
 
@@ -1189,8 +1465,38 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
       camera.position.add(panFix);
     }
     controls.update(dt);
-    renderer.render(scene, camera);
+    if (shake > 0) {
+      shakeV.set(spread(1), spread(1), spread(1)).multiplyScalar(shake * 0.25);
+      camera.position.add(shakeV);
+      renderer.render(scene, camera);
+      camera.position.sub(shakeV);
+      shake = Math.max(0, shake - dt);
+    } else renderer.render(scene, camera);
   };
+
+  const setLowPower = (on) => {
+    perf.low = on;
+    renderer.setPixelRatio(Math.min(devicePixelRatio, on ? 1 : 1.75));
+    sunLight.castShadow = !on;
+    sunLight.shadow.mapSize.setScalar(on ? 1024 : 2048);
+    sunLight.shadow.map?.dispose();
+    sunLight.shadow.map = null;
+    flies.visible = !on;
+    resize();
+  };
+
+  const snapshot = (w = 1200, h = 630) =>
+    new Promise((resolve, reject) => {
+      const ratio = renderer.getPixelRatio();
+      renderer.setPixelRatio(1);
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.render(scene, camera);
+      renderer.domElement.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('Snapshot failed'))), 'image/png');
+      renderer.setPixelRatio(ratio);
+      resize();
+    });
 
   const resize = () => {
     const w = innerWidth;
@@ -1198,6 +1504,11 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    if (view.mode === 'focus' && view.spot && view.tall !== camera.aspect < 1) {
+      view.spot.hover(-1);
+      view.mode = 'focusing';
+      frameSpot(view.spot, 500);
+    }
   };
 
   const endIntro = () => {
@@ -1255,8 +1566,10 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
     setTempLabel(main, sub, wind) {
       tempTex.userData.redraw(main, sub, wind);
     },
-    focusProjects,
+    focus: focusOn,
     unfocus,
+    setLowPower,
+    snapshot,
     interact: () => near && trigger(near.action, null),
     focused: () => view.mode !== 'orbit',
     sky: () => ({ ...state.sky }),

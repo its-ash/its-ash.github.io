@@ -5,6 +5,8 @@ import * as W from './weather.js';
 const REFRESH_MS = 15 * 60e3;
 const UNIT_KEY = 'itsash.unit';
 const DOCK_KEY = 'itsash.dock';
+const LOW_KEY = 'itsash.lowpower';
+const SHARE_NAME = 'itsash-island.png';
 const PROJECTS = [
   { label: 'fxopspro.com', url: 'https://fxopspro.com/' },
   { label: 'flavourdiem.com', url: 'https://flavourdiem.com/' },
@@ -17,7 +19,9 @@ const PROJECTS = [
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const lowPower = matchMedia('(max-width: 700px)').matches || (navigator.hardwareConcurrency ?? 8) <= 4;
+const autoLow = matchMedia('(max-width: 700px)').matches || (navigator.hardwareConcurrency ?? 8) <= 4;
+const savedLow = localStorage.getItem(LOW_KEY);
+let lowPower = savedLow === null ? autoLow : savedLow === '1';
 
 const app = { place: W.DEFAULT_PLACE, weather: null, mode: 'live', unit: localStorage.getItem(UNIT_KEY) === 'f' ? 'f' : 'c', offset: 0 };
 const audio = new Ambience();
@@ -61,7 +65,7 @@ const render = () => {
 const tick = () => {
   const sky = scene?.sky();
   const c = W.conditions(effective().code, effective().cloudCover);
-  audio.update({ rain: c.rain, wind: effective().wind, day: sky?.day ?? 1, night: sky?.night ?? 0 });
+  audio.update({ rain: c.rain, wind: effective().wind, day: sky?.day ?? 1, night: sky?.night ?? 0, sunAlt: sky?.sunAlt ?? null });
 };
 
 const apply = () => {
@@ -126,17 +130,11 @@ const sunInfo = () => {
 };
 
 const ACTIONS = {
-  about: () => openSheet('about'),
-  stack: () => {
-    openSheet('about');
-    $('#stackTitle').scrollIntoView({ block: 'start' });
-  },
   open: (_, url) => {
     const u = new URL(url, location.href);
-    if (!['http:', 'https:'].includes(u.protocol)) return;
-    u.origin === location.origin ? location.assign(u) : window.open(u, '_blank', 'noopener,noreferrer');
+    if (u.protocol === 'mailto:') return location.assign(u);
+    if (['http:', 'https:'].includes(u.protocol)) window.open(u, '_blank', 'noopener,noreferrer');
   },
-  contact: () => setTimeout(() => openSheet('contact'), 450),
   unit: () => setUnit(app.unit === 'c' ? 'f' : 'c'),
   sun: () => toast(sunInfo()),
   moon: () => {
@@ -148,6 +146,9 @@ const ACTIONS = {
   croc: () => toast('Snap! The crocodile guards the pond.'),
   temple: () => toast('Jai Bajrang Bali!'),
   lamp: () => toast(scene.lampOn() ? 'Lamp on.' : 'Lamp off.'),
+  github: (o) => toast(o?.userData.info ?? 'Loading GitHub activity...'),
+  ball: (_, n) => toast(n === 7 ? 'All 7 Dragon Balls found! Shenron is coming...' : `Dragon Ball found: ${n} of 7. Keep exploring the islands.`),
+  summon: () => toast('Shenron: Speak your wish! Tap the dragon to open my resume.'),
   windmill: () => toast(`Wind speed: ${Math.round(effective().wind)} km/h.`)
 };
 
@@ -167,9 +168,10 @@ const initScene = async () => {
       },
       projects: PROJECTS,
       onAction: (a, o, extra) => ACTIONS[a]?.(o, extra),
-      onFocus: (on) => {
+      onFocus: (on, name) => {
         document.body.classList.toggle('focused', on);
         $('#focusBar').hidden = !on;
+        $('#listBtn').hidden = name !== 'projects';
         $('#tip').hidden = true;
         if (on) $('#backBtn').focus({ preventScroll: true });
       },
@@ -181,6 +183,7 @@ const initScene = async () => {
       onThunder: () => setTimeout(() => audio.thunder(), 500 + Math.random() * 1200)
     });
     scene.setPlace(app.place.lat, app.place.lng);
+    setLow(lowPower);
     document.body.classList.add('ready');
   } catch (err) {
     console.error(err);
@@ -221,10 +224,37 @@ const bindDock = () => {
   new ResizeObserver(() => document.documentElement.style.setProperty('--dock-h', `${dock.offsetHeight}px`)).observe(dock);
 };
 
+const setLow = (on) => {
+  lowPower = on;
+  localStorage.setItem(LOW_KEY, on ? '1' : '0');
+  const btn = $('#lowBtn');
+  btn.setAttribute('aria-pressed', on);
+  btn.querySelector('span').textContent = on ? 'Low power on' : 'Low power off';
+  scene?.setLowPower(on);
+};
+
+const share = async () => {
+  if (!scene) return;
+  try {
+    const blob = await scene.snapshot();
+    const file = new File([blob], SHARE_NAME, { type: 'image/png' });
+    const data = { files: [file], title: document.title, url: location.origin };
+    if (navigator.canShare?.(data)) return await navigator.share(data);
+    const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: SHARE_NAME });
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    toast('Snapshot saved.');
+  } catch (err) {
+    if (err?.name !== 'AbortError') toast('Snapshot is not available now.');
+  }
+};
+
 const bindUi = () => {
   bindDock();
+  $('#lowBtn').addEventListener('click', () => setLow(!lowPower));
+  $('#shareBtn').addEventListener('click', share);
   $$('[data-open]').forEach((b) =>
-    b.addEventListener('click', () => (b.dataset.open === 'projects' && scene ? scene.focusProjects() : openSheet(b.dataset.open)))
+    b.addEventListener('click', () => (scene ? scene.focus(b.dataset.open) : openSheet(b.dataset.open)))
   );
   $('#backBtn').addEventListener('click', () => scene?.unfocus());
   $('#listBtn').addEventListener('click', () => openSheet('projects'));

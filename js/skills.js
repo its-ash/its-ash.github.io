@@ -144,6 +144,39 @@ const monitorWall = () => {
   return { g, screens };
 };
 
+const LOG_ROWS = 8;
+
+const fit = (ctx, text, max) => {
+  if (ctx.measureText(text).width <= max) return text;
+  let s = text;
+  while (s.length > 1 && ctx.measureText(`${s}…`).width > max) s = s.slice(0, -1);
+  return `${s}…`;
+};
+
+const drawLogs = (ctx, w, h, { lines, head, blink }) => {
+  ctx.fillStyle = '#04110a';
+  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = 'rgba(124, 255, 178, 0.05)';
+  for (let y = 0; y < h; y += 4) ctx.fillRect(0, y, w, 1);
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'left';
+  ctx.font = '600 20px "JetBrains Mono", monospace';
+  ctx.fillStyle = GREEN;
+  ctx.fillText(fit(ctx, '$ tail -f github/its-ash', w - 32), 16, 24);
+  ctx.fillStyle = 'rgba(124, 255, 178, 0.25)';
+  ctx.fillRect(16, 42, w - 32, 2);
+  ctx.font = '500 18px "JetBrains Mono", monospace';
+  const rows = Array.from({ length: LOG_ROWS }, (_, i) => lines.length ? lines[(head + i) % lines.length] : '');
+  rows.forEach((l, i) => {
+    ctx.fillStyle = `rgba(124, 255, 178, ${0.45 + (i / LOG_ROWS) * 0.55})`;
+    ctx.fillText(fit(ctx, l, w - 32), 16, 66 + i * 34);
+  });
+  if (blink) {
+    ctx.fillStyle = GREEN;
+    ctx.fillRect(16, 66 + LOG_ROWS * 34 - 10, 12, 20);
+  }
+};
+
 const mainframe = (anim) => {
   const g = group();
   const steel = mat('#2b303a', { metalness: 0.4, roughness: 0.5 });
@@ -169,11 +202,33 @@ const mainframe = (anim) => {
     g.add(reel);
     return reel;
   });
+  const crt = mat('#2b303a', { metalness: 0.3, roughness: 0.5 });
+  g.add(mesh(new THREE.BoxGeometry(0.9, 0.62, 0.5), crt, [0, 2.29, -0.02]));
+  g.add(mesh(new THREE.BoxGeometry(0.3, 0.06, 0.3), crt, [0, 2.01, -0.02]));
+  const logState = { lines: ['connecting to github...'], head: 0, blink: true };
+  const logTex = canvasTexture(512, 360, (ctx, w, h) => drawLogs(ctx, w, h, logState));
+  const logScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.78, 0.5), new THREE.MeshBasicMaterial({ map: logTex, toneMapped: false }));
+  logScreen.position.set(0, 2.29, 0.235);
+  g.add(logScreen);
+
+  let key = '';
   anim.push(({ t, dt, motion }) => {
     reels.forEach((r, i) => (r.rotation.y += dt * (i ? 1.6 : -1.1) * motion));
     leds.forEach((m, i) => (m.emissiveIntensity = !motion || Math.sin(t * (3 + i * 1.7) + i) > -0.2 ? 1.4 : 0.15));
+    logState.head = Math.floor(t / 1.6) % Math.max(1, logState.lines.length);
+    logState.blink = Math.floor(t * 2) % 2 === 0;
+    const k = `${logState.head}${logState.blink}${logState.lines.length}`;
+    if (k === key) return;
+    key = k;
+    logTex.userData.redraw();
   });
-  return g;
+  return {
+    g,
+    setLogs(lines) {
+      logState.lines = lines.length ? lines : ['no public activity yet'];
+      key = '';
+    }
+  };
 };
 
 const place = (obj, { x, z, rot }, y) => {
@@ -185,7 +240,8 @@ const place = (obj, { x, z, rot }, y) => {
 
 export function createSkills({ parent, server, wall, y = 0.6 }) {
   const anims = [];
-  const rig = place(mainframe(anims), server, y);
+  const frame = mainframe(anims);
+  const rig = place(frame.g, server, y);
   const { g: stand, screens } = monitorWall();
   place(stand, wall, y);
   parent.add(rig, stand);
@@ -223,6 +279,7 @@ export function createSkills({ parent, server, wall, y = 0.6 }) {
   return {
     items: screens,
     server: rig,
+    setLogs: frame.setLogs,
     update(dt, { t, motion, target }) {
       anims.forEach((fn) => fn({ t, dt, motion, target }));
     }

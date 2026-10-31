@@ -4,11 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Projects | Ashvini Jangid</title>
-  <meta name="description" content="Live projects by Ashvini Jangid with preview panes and direct links.">
+  <meta name="description" content="Sites and tools built by Ashvini Jangid, with screenshots, live previews, and direct links.">
   <meta name="theme-color" content="#141b2b">
+  <link rel="canonical" href="https://itsash.in/project.html">
+  <meta property="og:title" content="Projects | Ashvini Jangid">
+  <meta property="og:description" content="Sites and tools I built and shipped.">
+  <meta property="og:url" content="https://itsash.in/project.html">
+  <meta property="og:image" content="https://itsash.in/assets/og.png">
   <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://s.wordpress.com">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
   <link rel="stylesheet" href="/style.css">
@@ -25,42 +31,60 @@
     </nav>
   </header>
 
-  <main class="page">
-    <section class="page-head">
-      <h1>Projects</h1>
-      <p>Live sites and tools I built. Each preview loads the real site. Use Open to visit it in a new tab.</p>
-    </section>
+  <main class="work">
+    <header class="work-head">
+      <h1>Sites I built and shipped</h1>
+      <p id="workSub">Pick a project to preview it, then open the real site in a new tab.</p>
+    </header>
 
-    <section class="projects-grid" id="projectsGrid" aria-live="polite" aria-busy="true">
-      <div class="project-card panel skeleton"></div>
-      <div class="project-card panel skeleton"></div>
-      <div class="project-card panel skeleton"></div>
-    </section>
+    <div class="work-body">
+      <section class="viewer panel" aria-label="Project preview">
+        <div class="viewer-bar">
+          <p class="viewer-url" id="viewerUrl">Loading projects</p>
+          <div class="seg" role="group" aria-label="Preview mode">
+            <button type="button" data-view="shot" aria-pressed="true">Screenshot</button>
+            <button type="button" data-view="live" aria-pressed="false">Live</button>
+          </div>
+          <a class="btn primary" id="viewerOpen" href="/" target="_blank" rel="noreferrer">Open site<i class="ph ph-arrow-up-right" aria-hidden="true"></i></a>
+        </div>
+        <div class="viewer-stage" id="viewerStage" data-state="loading">
+          <img id="viewerShot" alt="" width="1280" height="800" fetchpriority="high">
+          <div class="viewer-empty" id="viewerEmpty"><b aria-hidden="true"></b><span>No screenshot yet. Try Live, or open the site.</span></div>
+        </div>
+      </section>
 
-    <p class="note">Some sites block embedded previews. Use Open to visit them directly.</p>
+      <ol class="work-list" id="workList" aria-label="Projects" aria-busy="true">
+        <li class="work-skel"></li>
+        <li class="work-skel"></li>
+        <li class="work-skel"></li>
+        <li class="work-skel"></li>
+      </ol>
+    </div>
+
+    <p class="note" id="workNote">Some sites block live previews. If Live stays blank, use Open site.</p>
   </main>
 
   <script type="module">
     const GITHUB_USER = 'its-ash';
-    const STATIC_URLS = [
+    const STATIC = [
       'https://fxopspro.com/',
       'https://flavourdiem.com/',
       'https://scenta.in',
       'https://marutiayurveda.in',
       'https://share.ash-tools.store/',
       'https://alanowarinternational.com/'
-    ];
+    ].map((url) => ({ url }));
+    const SHOT = (u, w) => `https://s.wordpress.com/mshots/v1/${encodeURIComponent(u.href)}?w=${w}&h=${Math.round(w * 0.625)}`;
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const grid = document.getElementById('projectsGrid');
-
-    const safeUrl = (url) => {
-      try {
-        const u = new URL(url.trim());
-        return ['http:', 'https:'].includes(u.protocol) ? u : null;
-      } catch {
-        return null;
-      }
-    };
+    const $ = (id) => document.getElementById(id);
+    const list = $('workList');
+    const stage = $('viewerStage');
+    const shot = $('viewerShot');
+    const urlBox = $('viewerUrl');
+    const open = $('viewerOpen');
+    const views = [...document.querySelectorAll('[data-view]')];
+    const state = { items: [], index: 0, view: 'shot', frame: null };
 
     const el = (tag, props = {}, ...kids) => {
       const n = Object.assign(document.createElement(tag), props);
@@ -68,38 +92,102 @@
       return n;
     };
 
-    const card = (u) => {
-      const open = el('a', { className: 'btn', href: u.href, target: '_blank', rel: 'noreferrer', textContent: 'Open' });
-      const frame = el('iframe', { className: 'project-frame', src: u.href, title: `Preview of ${u.hostname}`, loading: 'lazy', referrerPolicy: 'no-referrer' });
-      frame.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups');
-      return el('article', { className: 'project-card panel' }, el('div', { className: 'project-meta' }, el('h2', { className: 'project-title', textContent: u.hostname }), open), frame);
+    const safeUrl = (url) => {
+      try {
+        const u = new URL(String(url).trim());
+        return ['http:', 'https:'].includes(u.protocol) ? u : null;
+      } catch {
+        return null;
+      }
     };
 
-    const repoUrls = async () => {
-      const urls = [];
+    const repos = async () => {
+      const out = [];
       for (let page = 1; page <= 10; page++) {
         const res = await fetch(`https://api.github.com/users/${GITHUB_USER}/repos?per_page=100&page=${page}`, { headers: { Accept: 'application/vnd.github+json' } });
-        if (!res.ok) throw new Error(`GitHub API error ${res.status}`);
-        const repos = await res.json();
-        urls.push(...repos.map((r) => r.homepage).filter(Boolean));
-        if (repos.length < 100) break;
+        if (!res.ok) throw new Error(`GitHub ${res.status}`);
+        const data = await res.json();
+        out.push(...data.filter((r) => r.homepage && !r.fork).map((r) => ({ url: r.homepage, desc: r.description, repo: r.name, lang: r.language })));
+        if (data.length < 100) break;
       }
-      return urls;
+      return out;
     };
 
-    const show = (urls) => {
-      const seen = new Set();
-      const list = urls.map(safeUrl).filter((u) => u && !seen.has(u.hostname) && seen.add(u.hostname));
-      grid.replaceChildren(...list.map(card));
-      if (!list.length) grid.append(el('p', { className: 'error', textContent: 'No projects found.' }));
-      grid.setAttribute('aria-busy', 'false');
+    const setView = (view) => {
+      state.view = view;
+      views.forEach((b) => b.setAttribute('aria-pressed', b.dataset.view === view));
+      const item = state.items[state.index];
+      if (view === 'live' && item) {
+        state.frame ??= el('iframe', { referrerPolicy: 'no-referrer' });
+        state.frame.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-forms');
+        state.frame.title = `Live preview of ${item.u.hostname}`;
+        if (state.frame.src !== item.u.href) state.frame.src = item.u.href;
+        if (!state.frame.isConnected) stage.append(state.frame);
+      } else state.frame?.remove();
     };
+
+    const select = (i, { focus = false, scroll = false } = {}) => {
+      const item = state.items[i];
+      if (!item) return;
+      state.index = i;
+      [...list.querySelectorAll('.work-item')].forEach((b, j) => b.setAttribute('aria-current', j === i));
+      if (focus) list.querySelectorAll('.work-item')[i].focus();
+      urlBox.replaceChildren(`${item.u.protocol}//`, el('strong', { textContent: item.u.hostname }), item.u.pathname === '/' ? '' : item.u.pathname);
+      open.href = item.u.href;
+      open.setAttribute('aria-label', `Open ${item.u.hostname} in a new tab`);
+      stage.querySelector('.viewer-empty b').textContent = item.u.hostname[0].toUpperCase();
+      stage.dataset.state = 'loading';
+      shot.alt = `Screenshot of ${item.u.hostname}`;
+      shot.src = SHOT(item.u, 1280);
+      setView(state.view);
+      if (!focus) stage.animate(reduced ? [{ opacity: 0.6 }, { opacity: 1 }] : [{ opacity: 0.5, scale: 0.985 }, { opacity: 1, scale: 1 }], { duration: 220, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' });
+      history.replaceState(null, '', `?site=${encodeURIComponent(item.u.hostname)}`);
+      if (scroll && matchMedia('(max-width: 1023px)').matches) stage.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
+    };
+
+    const row = (item, i) => {
+      const thumb = el('img', { className: 'work-thumb', src: SHOT(item.u, 480), alt: '', loading: 'lazy', width: 160, height: 100 });
+      thumb.addEventListener('error', () => thumb.replaceWith(el('span', { className: 'work-thumb work-thumb-empty', textContent: item.u.hostname[0].toUpperCase() })), { once: true });
+      const text = el('span', { className: 'work-text' }, el('strong', { textContent: item.u.hostname }));
+      if (item.desc) text.append(el('span', { className: 'work-desc', textContent: item.desc }));
+      if (item.repo) text.append(el('span', { className: 'work-src', textContent: [item.repo, item.lang].filter(Boolean).join(' / ') }));
+      const btn = el('button', { type: 'button', className: 'work-item' }, thumb, text);
+      btn.addEventListener('click', () => select(i, { scroll: true }));
+      return el('li', {}, btn);
+    };
+
+    const show = (raw) => {
+      const seen = new Set();
+      state.items = raw
+        .map((p) => ({ ...p, u: safeUrl(p.url) }))
+        .filter((p) => p.u && !seen.has(p.u.hostname) && seen.add(p.u.hostname));
+      list.replaceChildren(...state.items.map(row));
+      list.setAttribute('aria-busy', 'false');
+      if (!state.items.length) {
+        list.append(el('li', { className: 'error', textContent: 'No projects found.' }));
+        urlBox.textContent = 'Nothing to preview';
+        return;
+      }
+      $('workSub').textContent = `${state.items.length} sites and tools. Pick one to preview it, then open the real site in a new tab.`;
+      const want = new URLSearchParams(location.search).get('site');
+      select(Math.max(0, state.items.findIndex((p) => p.u.hostname === want)));
+    };
+
+    shot.addEventListener('load', () => (stage.dataset.state = 'ready'));
+    shot.addEventListener('error', () => (stage.dataset.state = 'error'));
+    views.forEach((b) => b.addEventListener('click', () => setView(b.dataset.view)));
+    list.addEventListener('keydown', (e) => {
+      const step = { ArrowDown: 1, ArrowUp: -1 }[e.key];
+      if (!step || !state.items.length) return;
+      e.preventDefault();
+      select((state.index + step + state.items.length) % state.items.length, { focus: true });
+    });
 
     try {
-      show([...STATIC_URLS, ...(await repoUrls())]);
-    } catch (err) {
-      show(STATIC_URLS);
-      grid.after(el('p', { className: 'note', textContent: `GitHub projects did not load (${err.message}).` }));
+      show([...STATIC, ...(await repos())]);
+    } catch {
+      show(STATIC);
+      $('workNote').textContent = 'Projects from GitHub did not load, so this list shows the main sites only. Some sites block live previews.';
     }
   </script>
 </body>

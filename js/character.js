@@ -24,6 +24,7 @@ const SPIKES = [
   [0.06, 0.44, 0.18, 0.5, -0.3, 0.16, 0.045],
   [-0.08, 0.44, 0.18, 0.6, 0.4, 0.14, 0.04]
 ];
+const BLAST = { charge: 1.5, fire: 1.6, fade: 0.5, len: 14 };
 const { lerp, clamp } = THREE.MathUtils;
 
 const limb = (r, len, color) => {
@@ -49,7 +50,7 @@ const drawBubble = (ctx, w, h, text = '') => {
   ctx.fillText(text, w / 2, (h - 34) / 2 + 4, w - 60);
 };
 
-export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => false, powered = () => false, reduced = false, start = null }) {
+export function createCharacter({ waypoints, onArrive, onLeave, onBlast, blocked = () => false, powered = () => false, reduced = false, start = null }) {
   const root = new THREE.Group();
   const body = new THREE.Group();
   root.add(body);
@@ -182,7 +183,8 @@ export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => 
   bolt.frustumCulled = false;
   aura.add(bolt);
   const auraLight = new THREE.PointLight('#ffcc33', 0, 5, 1.5);
-  aura.add(auraLight);
+  auraLight.position.y = 1.15;
+  root.add(auraLight);
   aura.visible = false;
   root.add(aura);
   let boltT = 0;
@@ -197,6 +199,31 @@ export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => 
     bolt.geometry.attributes.position.needsUpdate = true;
   };
 
+  const additive = (color, opacity) => new THREE.MeshBasicMaterial({ color, transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, userData: { opacity } });
+  const beamGeo = new THREE.CylinderGeometry(1, 1, 1, 20, 1, true);
+  beamGeo.rotateX(Math.PI / 2);
+  beamGeo.translate(0, 0, 0.5);
+  const orbGeo = new THREE.SphereGeometry(1, 20, 14);
+  const beam = group(0, 1.05, 0.45);
+  const chargeOrb = new THREE.Mesh(orbGeo, additive('#7fdcff', 0.9));
+  chargeOrb.add(new THREE.Mesh(orbGeo, additive('#ffffff', 1)));
+  chargeOrb.children[0].scale.setScalar(0.55);
+  const core = new THREE.Mesh(beamGeo, additive('#e8fbff', 0.95));
+  const outer = new THREE.Mesh(beamGeo, additive('#38b6ff', 0.45));
+  const tip = new THREE.Mesh(orbGeo, additive('#bdf0ff', 0.8));
+  const beamParts = [chargeOrb, chargeOrb.children[0], core, outer, tip];
+  beamParts.forEach((m) => {
+    m.raycast = noPick;
+    m.frustumCulled = false;
+  });
+  beam.add(chargeOrb, core, outer, tip);
+  beam.visible = false;
+  root.add(beam);
+  const blastLight = new THREE.PointLight('#6fd3ff', 0, 8, 1.5);
+  blastLight.position.set(0, 1.05, 0.6);
+  root.add(blastLight);
+  const beamEnd = new THREE.Vector3();
+
   const bubbleTex = canvasTexture(1024, 170, drawBubble);
   const bubble = new THREE.Sprite(new THREE.SpriteMaterial({ map: bubbleTex, transparent: true, depthTest: false, opacity: 0 }));
   bubble.scale.set(3, 0.5, 1);
@@ -205,7 +232,7 @@ export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => 
   bubble.raycast = () => {};
   root.add(bubble);
 
-  const st = { mode: 'idle', target: 0, timer: 2, wave: 0, waveK: 0, talk: 0, talkK: 0, walk: 0, sit: 0, pray: 0, blink: 0, nextBlink: 2, phase: 0, umb: 0, scarf: 0, moving: false, manualIdle: 0, ssj: 0, charged: false };
+  const st = { mode: 'idle', target: 0, timer: 2, wave: 0, waveK: 0, talk: 0, talkK: 0, walk: 0, sit: 0, pray: 0, blink: 0, nextBlink: 2, phase: 0, umb: 0, scarf: 0, moving: false, manualIdle: 0, ssj: 0, charged: false, blast: -1, boomed: false, blasted: false, chargeK: 0, fireK: 0, rideK: 0 };
   const input = { x: 0, z: 0 };
   const wPos = new THREE.Vector3();
 
@@ -230,6 +257,13 @@ export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => 
   };
 
   if (waypoints[startI].line) say(waypoints[startI].line, Math.min(st.timer, 5));
+
+  const startBlast = () => {
+    if (st.ssj < 0.6 || st.blast >= 0 || st.mode === 'ride') return false;
+    Object.assign(st, { blast: 0, boomed: false, wave: 0 });
+    say('Ka... me... ha... me...', BLAST.charge);
+    return true;
+  };
 
   const nearest = () => {
     let best = 0;
@@ -267,15 +301,18 @@ export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => 
     let sitTarget = 0;
     st.talk -= dt;
 
-    if (Math.hypot(input.x, input.z) > 0.01 && st.mode !== 'manual') {
+    if (Math.hypot(input.x, input.z) > 0.01 && st.mode !== 'manual' && st.mode !== 'ride' && st.blast < 0) {
       if (st.mode === 'idle' && wp.wait) onLeave?.(wp.name);
       st.mode = 'manual';
       st.wave = 0;
     }
 
-    if (st.mode === 'manual') {
+    if (st.mode === 'ride') {
+      st.moving = false;
+    } else if (st.mode === 'manual') {
       if (st.wave > 0) st.wave -= dt;
-      drive(dt);
+      if (st.blast < 0) drive(dt);
+      else st.moving = false;
     } else if (st.wave > 0) {
       st.wave -= dt;
       if (wp.sit && st.mode === 'idle') sitTarget = st.sit > 0.5 ? 1 : 0;
@@ -299,10 +336,12 @@ export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => 
       if (wp.look) turn(Math.atan2(wp.look[0] - wp.x, wp.look[1] - wp.z), dt, 5);
       st.timer -= dt;
       sitTarget = wp.sit && st.timer > 0 ? 1 : 0;
-      if (st.timer <= 0 && st.sit < 0.05) {
+      if (wp.blast && !st.blasted && st.ssj > 0.9 && startBlast()) st.blasted = true;
+      if (st.timer <= 0 && st.sit < 0.05 && st.blast < 0) {
         if (wp.wait) onLeave?.(wp.name);
         st.target = (st.target + 1) % waypoints.length;
         st.mode = 'walk';
+        st.blasted = false;
       }
     }
 
@@ -314,7 +353,7 @@ export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => 
     st.waveK = lerp(st.waveK, st.wave > 0 ? 1 : 0, k(8));
     st.umb = lerp(st.umb, (rain > 0.15 || snow > 0.3) && st.sit < 0.5 && st.pray < 0.5 ? 1 : 0, k(4));
     st.scarf = lerp(st.scarf, temp < 8 ? 1 : 0, k(3));
-    const charged = powered(root.position.x, root.position.z);
+    const charged = st.mode !== 'ride' && powered(root.position.x, root.position.z);
     if (charged && !st.charged) say('Haaaaa! Super Saiyan!', 3);
     st.charged = charged;
     st.ssj = lerp(st.ssj, charged ? 1 : 0, k(charged ? 2.5 : 1.5));
@@ -325,11 +364,22 @@ export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => 
     const typing = Math.sin(t * 18) * 0.06 * sit;
     const power = st.ssj * (1 - w) * (1 - sit);
 
+    const B = st.blast;
+    const charging = B >= 0 && B < BLAST.charge;
+    const firing = B >= BLAST.charge;
+    st.chargeK = lerp(st.chargeK, charging ? 1 : 0, k(8));
+    st.fireK = lerp(st.fireK, firing ? 1 : 0, k(14));
+    st.rideK = lerp(st.rideK, st.mode === 'ride' ? 1 : 0, k(6));
+    const ck = st.chargeK;
+    const fk = st.fireK;
+    const ride = st.rideK;
+    const stance = Math.max(power, ck, fk);
+
     legs.forEach(({ thigh, shin, s: side }) => {
       const sw = s * side;
-      thigh.rotation.x = lerp(sw * 0.6 * w, -Math.PI / 2, sit);
-      thigh.rotation.z = side * 0.18 * power;
-      shin.rotation.x = lerp(Math.max(0, -sw) * 0.8 * w, Math.PI / 2, sit);
+      thigh.rotation.x = lerp(lerp(sw * 0.6 * w, -Math.PI / 2, sit), -0.35, ride);
+      thigh.rotation.z = side * (0.18 * stance + 0.12 * ride);
+      shin.rotation.x = lerp(lerp(Math.max(0, -sw) * 0.8 * w, Math.PI / 2, sit), 0.6, ride);
     });
 
     const waveArm = st.umb > 0.5 ? arms[0] : arms[1];
@@ -362,19 +412,37 @@ export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => 
         fx = lerp(fx, -1.5, power);
         fz = lerp(fz, 0, power);
       }
+      if (ck > 0.01) {
+        ux = lerp(ux, 0.55, ck);
+        uz = lerp(uz, a.s * 0.15, ck);
+        fx = lerp(fx, -1.9, ck);
+        fz = lerp(fz, 0, ck);
+      }
+      if (fk > 0.01) {
+        ux = lerp(ux, -1.5, fk);
+        uz = lerp(uz, -a.s * 0.2, fk);
+        fx = lerp(fx, -0.05, fk);
+        fz = lerp(fz, 0, fk);
+      }
+      if (ride > 0.01) {
+        ux = lerp(ux, 0, ride);
+        uz = lerp(uz, a.s * 0.75, ride);
+        fx = lerp(fx, -0.35, ride);
+      }
       a.upper.rotation.set(ux, 0, uz);
       a.fore.rotation.set(fx, 0, fz);
     });
 
-    body.position.y = Math.abs(s) * 0.035 * w - SIT_DROP * sit + Math.sin(t * 2) * 0.006 - 0.05 * power;
-    body.position.x = Math.sin(t * 55) * 0.008 * power * (reduced ? 0 : 1);
-    body.rotation.x = 0.06 * w + 0.12 * st.pray;
+    body.position.y = Math.abs(s) * 0.035 * w - SIT_DROP * sit + Math.sin(t * 2) * 0.006 - 0.05 * stance - 0.1 * ride;
+    body.position.x = Math.sin(t * 55) * 0.008 * Math.max(power, fk) * (reduced ? 0 : 1);
+    body.rotation.x = 0.06 * w + 0.12 * st.pray + 0.15 * ride;
+    body.rotation.y = 0.6 * ck;
     torso.scale.y = 1 + Math.sin(t * 2) * 0.012;
 
     root.getWorldPosition(wPos);
     const toCam = angleTo(root.rotation.y, Math.atan2(cam.x - wPos.x, cam.z - wPos.z));
-    const still = st.mode === 'idle' || st.wave > 0 || (st.mode === 'manual' && !st.moving);
-    const look = still && st.pray < 0.5 ? clamp(toCam, -0.9, 0.9) : 0;
+    const still = st.mode === 'idle' || st.mode === 'ride' || st.wave > 0 || (st.mode === 'manual' && !st.moving);
+    const look = still && st.pray < 0.5 && B < 0 ? clamp(toCam, -0.9, 0.9) : 0;
     head.rotation.y = lerp(head.rotation.y, sit > 0.5 && st.wave <= 0 ? 0 : look, k(4));
     head.rotation.x = lerp(head.rotation.x, sit > 0.5 && st.wave <= 0 ? 0.28 : st.pray * 0.3, k(4));
     head.rotation.z = Math.sin(st.phase * 0.5) * 0.04 * w;
@@ -419,6 +487,42 @@ export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => 
       }
     } else auraLight.intensity = 0;
 
+    beam.visible = B >= 0;
+    if (B >= 0) {
+      st.blast += dt;
+      const flick = reduced ? 1 : 1 + Math.sin(t * 40) * 0.08;
+      const f = B - BLAST.charge;
+      const fade = f > BLAST.fire ? clamp(1 - (f - BLAST.fire) / BLAST.fade, 0, 1) : 1;
+      beamParts.forEach((m) => (m.material.opacity = m.material.userData.opacity * fade));
+      [core, outer, tip].forEach((m) => (m.visible = f >= 0));
+      if (f < 0) {
+        const c = B / BLAST.charge;
+        chargeOrb.position.set(0.33, -0.27, -0.45);
+        chargeOrb.scale.setScalar((0.04 + c * 0.2) * flick);
+        blastLight.intensity = 3 * c;
+      } else {
+        const len = BLAST.len * (1 - (1 - Math.min(1, f / 0.35)) ** 3);
+        const th = flick * fade;
+        chargeOrb.position.set(0, 0, 0);
+        chargeOrb.scale.setScalar(0.3 * th);
+        core.scale.set(0.11 * th, 0.11 * th, Math.max(0.01, len));
+        outer.scale.set(0.26 * th, 0.26 * th, Math.max(0.01, len));
+        tip.position.z = len;
+        tip.scale.setScalar(0.34 * th);
+        blastLight.intensity = 8 * fade;
+        if (!st.boomed && f >= 0.35) {
+          st.boomed = true;
+          say('HA!!!', 1.4);
+          onBlast?.(beam.localToWorld(beamEnd.set(0, 0, BLAST.len)).clone());
+        }
+      }
+      if (f > BLAST.fire + BLAST.fade) {
+        st.blast = -1;
+        beam.visible = false;
+        blastLight.intensity = 0;
+      }
+    }
+
     bubble.material.opacity = st.talkK;
     bubble.visible = st.talkK > 0.02;
     bubble.position.y = 2.35 - SIT_DROP * sit + Math.sin(t * 3) * 0.03;
@@ -435,6 +539,17 @@ export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => 
     },
     get power() {
       return st.ssj;
+    },
+    blast: startBlast,
+    mount() {
+      Object.assign(st, { mode: 'ride', wave: 0, blast: -1 });
+      Object.assign(input, { x: 0, z: 0 });
+    },
+    dismount() {
+      Object.assign(st, { mode: 'manual', manualIdle: 0 });
+    },
+    get riding() {
+      return st.mode === 'ride';
     },
     get manual() {
       return st.mode === 'manual';

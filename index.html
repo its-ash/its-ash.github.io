@@ -6,6 +6,20 @@
   <title>Ashvini Jangid | Software Engineer</title>
   <meta name="description" content="Ashvini Jangid, software engineer from India building AI agents, LLM apps, and computer vision with Rust, Python, and JavaScript. Explore an interactive 3D island.">
   <meta name="theme-color" content="#141b2b">
+  <link rel="canonical" href="https://itsash.in/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Ashvini Jangid">
+  <meta property="og:title" content="Ashvini Jangid | Software Engineer">
+  <meta property="og:description" content="AI agents, LLM apps, and computer vision with Rust, Python, and JavaScript. Explore my interactive 3D island.">
+  <meta property="og:url" content="https://itsash.in/">
+  <meta property="og:image" content="https://itsash.in/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="A small 3D island with a house, a temple, a tech lab, and a Super Saiyan arena">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Ashvini Jangid | Software Engineer">
+  <meta name="twitter:description" content="AI agents, LLM apps, and computer vision. Explore my interactive 3D island.">
+  <meta name="twitter:image" content="https://itsash.in/assets/og.png">
   <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,8 +37,21 @@
     }
   </script>
   <script type="module" src="/js/main.js"></script>
+  <noscript><style>.loader, #scene, .bar, .dock { display: none !important; } .fallback { display: block !important; }</style></noscript>
 </head>
 <body class="home">
+  <div class="loader" id="loader" role="status">
+    <div class="loader-isle" aria-hidden="true">
+      <span class="l-sea"></span>
+      <span class="l-land"></span>
+      <span class="l-house"></span>
+      <span class="l-roof"></span>
+      <span class="l-tree"></span>
+      <span class="l-cloud"></span>
+    </div>
+    <p>Building the island…</p>
+  </div>
+
   <canvas id="scene" aria-label="Interactive 3D island with live sky and weather"></canvas>
 
   <header class="bar">
@@ -66,6 +93,7 @@
     </div>
     <p class="keys"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> walk me around. <kbd>Enter</kbd> opens what I stand near.</p>
     <p class="keys">Drag to look around. Right-drag or two-finger drag to move the view. Click me, the house, the board, the temple, the skill islands, the crocodile, or the sky.</p>
+    <p class="keys">Find the 7 Dragon Balls. Ride the yellow Nimbus cloud between islands. On the Super Saiyan platform, press <kbd>Enter</kbd> for a Kamehameha.</p>
   </section>
 
   <section class="controls dock-panel" id="tab-scene" hidden>
@@ -91,7 +119,11 @@
       <span>Time shift <output id="offsetOut" for="offset">Now</output></span>
       <input type="range" id="offset" min="-12" max="12" step="0.25" value="0">
     </label>
-    <button type="button" id="sound" class="btn" aria-pressed="false"><i class="ph ph-speaker-slash" aria-hidden="true"></i><span>Sound off</span></button>
+    <div class="row">
+      <button type="button" id="sound" class="btn" aria-pressed="false"><i class="ph ph-speaker-slash" aria-hidden="true"></i><span>Sound off</span></button>
+      <button type="button" id="lowBtn" class="btn" aria-pressed="false"><i class="ph ph-battery-low" aria-hidden="true"></i><span>Low power off</span></button>
+      <button type="button" id="shareBtn" class="btn"><i class="ph ph-share-network" aria-hidden="true"></i><span>Share</span></button>
+    </div>
   </section>
   </div>
   </aside>
@@ -113,36 +145,61 @@
     </form>
   </dialog>
 
-  <dialog id="about" class="sheet" aria-labelledby="aboutTitle">
-    <form method="dialog"><button class="icon-btn close" aria-label="Close"><i class="ph ph-x" aria-hidden="true"></i></button></form>
-    <div class="sheet-head">
-      <img src="/morty.png" alt="Ashvini Jangid" class="avatar lg" width="64" height="64">
+  <main class="fallback" id="fallback">
+    <header class="fb-head">
+      <img src="/morty.png" alt="Ashvini Jangid" width="72" height="72">
       <div>
-        <h2 id="aboutTitle">About me</h2>
-        <p class="muted">Software engineer from India</p>
+        <h1>Ashvini Jangid</h1>
+        <p>Software engineer from India</p>
       </div>
-    </div>
-    <p>I build AI agents, LLM apps, and computer vision systems, and the fast Rust and Python code under them. I care most about low latency, code that is easy to maintain, clear deployment paths, and fast shipping.</p>
-    <h3>How I work</h3>
-    <ul class="ticks">
-      <li>Keep the architecture simple until complexity is proven necessary.</li>
-      <li>Break requirements into small units that ship with fast feedback.</li>
-      <li>Add tests and observability early to cut late-stage risk.</li>
-      <li>Prefer clear interfaces, documented trade-offs, and clean handoffs.</li>
-    </ul>
-    <h3>Current focus</h3>
-    <div class="focus">
-      <article><h4>AI agents</h4><p>Agents that plan, call tools, and finish real tasks.</p></article>
-      <article><h4>LLM apps</h4><p>Retrieval, prompts, and evals that hold up in production.</p></article>
-      <article><h4>Computer vision</h4><p>Image models that run fast on real cameras and devices.</p></article>
-    </div>
-    <h3 id="stackTitle">Tech stack</h3>
-    <div class="groups">
-      <section><h4>Languages</h4><ul class="pills"><li>Rust</li><li>JavaScript</li><li>Python</li></ul></section>
-      <section><h4>Systems</h4><ul class="pills"><li>Linux</li></ul></section>
-      <section><h4>AI</h4><ul class="pills"><li>Agents</li><li>LLM</li><li>Computer Vision</li></ul></section>
-    </div>
-  </dialog>
+    </header>
+    <section>
+      <h2>About me</h2>
+      <p>I build AI agents, LLM apps, and computer vision systems, and the fast Rust and Python code under them. I care most about low latency, code that is easy to maintain, clear deployment paths, and fast shipping.</p>
+    </section>
+    <section>
+      <h2>How I work</h2>
+      <ul>
+        <li>Keep the architecture simple until complexity is proven necessary.</li>
+        <li>Break requirements into small units that ship with fast feedback.</li>
+        <li>Add tests and observability early to cut late-stage risk.</li>
+        <li>Prefer clear interfaces, documented trade-offs, and clean handoffs.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Current focus</h2>
+      <dl>
+        <dt>AI agents</dt><dd>Agents that plan, call tools, and finish real tasks.</dd>
+        <dt>LLM apps</dt><dd>Retrieval, prompts, and evals that hold up in production.</dd>
+        <dt>Computer vision</dt><dd>Image models that run fast on real cameras and devices.</dd>
+      </dl>
+    </section>
+    <section>
+      <h2>Tech stack</h2>
+      <p>Rust, JavaScript, Python, Linux, AI agents, LLM, computer vision.</p>
+    </section>
+    <section>
+      <h2>Projects</h2>
+      <ul>
+        <li><a href="https://fxopspro.com/" target="_blank" rel="noreferrer">fxopspro.com</a></li>
+        <li><a href="https://flavourdiem.com/" target="_blank" rel="noreferrer">flavourdiem.com</a></li>
+        <li><a href="https://scenta.in" target="_blank" rel="noreferrer">scenta.in</a></li>
+        <li><a href="https://marutiayurveda.in" target="_blank" rel="noreferrer">marutiayurveda.in</a></li>
+        <li><a href="https://share.ash-tools.store/" target="_blank" rel="noreferrer">share.ash-tools.store</a></li>
+        <li><a href="https://alanowarinternational.com/" target="_blank" rel="noreferrer">alanowarinternational.com</a></li>
+        <li><a href="/project.html" target="_blank" rel="noreferrer">All projects</a></li>
+      </ul>
+    </section>
+    <section>
+      <h2>Contact</h2>
+      <ul>
+        <li><a href="mailto:ashvini.jangid@email.com">ashvini.jangid@email.com</a></li>
+        <li><a href="https://github.com/its-ash" target="_blank" rel="noreferrer">github.com/its-ash</a></li>
+        <li><a href="https://www.linkedin.com/in/ashvinijangid/" target="_blank" rel="noreferrer">linkedin.com/in/ashvinijangid</a></li>
+        <li><a href="/resume.pdf" target="_blank" rel="noreferrer">Resume (PDF)</a></li>
+      </ul>
+    </section>
+  </main>
 
   <dialog id="projects" class="sheet" aria-labelledby="projectsTitle">
     <form method="dialog"><button class="icon-btn close" aria-label="Close"><i class="ph ph-x" aria-hidden="true"></i></button></form>
@@ -156,18 +213,7 @@
       <li><a href="https://share.ash-tools.store/" target="_blank" rel="noreferrer">share.ash-tools.store<i class="ph ph-arrow-up-right" aria-hidden="true"></i></a></li>
       <li><a href="https://alanowarinternational.com/" target="_blank" rel="noreferrer">alanowarinternational.com<i class="ph ph-arrow-up-right" aria-hidden="true"></i></a></li>
     </ul>
-    <a class="btn primary" href="/project.html">View all projects<i class="ph ph-arrow-right" aria-hidden="true"></i></a>
-  </dialog>
-
-  <dialog id="contact" class="sheet small" aria-labelledby="contactTitle">
-    <form method="dialog"><button class="icon-btn close" aria-label="Close"><i class="ph ph-x" aria-hidden="true"></i></button></form>
-    <h2 id="contactTitle">Contact</h2>
-    <p class="muted">Send a message about a project, a role, or an idea.</p>
-    <ul class="links">
-      <li><a href="mailto:ashvini.jangid@email.com"><i class="ph ph-envelope-simple" aria-hidden="true"></i>ashvini.jangid@email.com</a></li>
-      <li><a href="https://github.com/its-ash" target="_blank" rel="noreferrer"><i class="ph ph-github-logo" aria-hidden="true"></i>github.com/its-ash</a></li>
-      <li><a href="https://www.linkedin.com/in/ashvinijangid/" target="_blank" rel="noreferrer"><i class="ph ph-linkedin-logo" aria-hidden="true"></i>linkedin.com/in/ashvinijangid</a></li>
-    </ul>
+    <a class="btn primary" href="/project.html" target="_blank" rel="noreferrer">View all projects<i class="ph ph-arrow-right" aria-hidden="true"></i></a>
   </dialog>
 </body>
 </html>
