@@ -91,9 +91,9 @@
       <button type="button" class="btn primary" data-open="about">About me</button>
       <button type="button" class="btn" data-open="projects">See projects</button>
     </div>
-    <p class="keys"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> walk me around. <kbd>Enter</kbd> opens what I stand near.</p>
-    <p class="keys">Drag to look around. Right-drag or two-finger drag to move the view. Click me, the house, the board, the temple, the skill islands, the crocodile, or the sky.</p>
-    <p class="keys">Find the 7 Dragon Balls. Ride the yellow Nimbus cloud between islands. On the Super Saiyan platform, press <kbd>Enter</kbd> for a Kamehameha.</p>
+    <p class="keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or arrows walk me around. <kbd>Enter</kbd> opens what I stand near.</p>
+    <p class="keys">The camera follows me. Drag to look around me, scroll to zoom. <kbd>C</kbd> switches to the map view.</p>
+    <p class="keys">Find the 7 Dragon Balls. Ride the yellow Nimbus cloud between islands, or drive the red jeep up the mountain. Visit Jaipur for chai and a swing, play cricket, and take the balloon tour. On the Super Saiyan platform, press <kbd>Enter</kbd> for a Kamehameha.</p>
   </section>
 
   <section class="controls dock-panel" id="tab-scene" hidden>
@@ -128,7 +128,10 @@
   </div>
   </aside>
 
-  <button type="button" class="prompt panel" id="prompt" hidden><kbd>Enter</kbd><span>Open <strong id="nearLabel"></strong></span></button>
+  <button type="button" class="btn panel cam-btn" id="camBtn" aria-keyshortcuts="C"><i class="ph ph-map-trifold" aria-hidden="true"></i><span>Map view</span></button>
+  <div class="stick panel" id="stick" role="application" aria-label="Move joystick"><span></span></div>
+
+  <button type="button" class="prompt panel" id="prompt" hidden><kbd>Enter</kbd><span><strong id="nearLabel"></strong></span></button>
   <div class="focus-bar panel" id="focusBar" hidden>
     <button type="button" class="btn" id="backBtn"><i class="ph ph-arrow-left" aria-hidden="true"></i>Back to island</button>
     <button type="button" class="btn" id="listBtn"><i class="ph ph-list" aria-hidden="true"></i>List view</button>

@@ -334,7 +334,52 @@
 
   .dock { transition: opacity 300ms ease, translate 300ms var(--ease-out); }
 
-  .focused :is(.dock, .prompt) { opacity: 0; translate: 0 1rem; pointer-events: none; }
+  .focused :is(.dock, .prompt, .cam-btn, .stick) { opacity: 0; translate: 0 1rem; pointer-events: none; }
+
+  .cam-btn {
+    position: fixed;
+    inset-inline-start: 1rem;
+    inset-block-end: 1.25rem;
+    z-index: 3;
+    min-block-size: 2.75rem;
+    transition: opacity 300ms ease, translate 300ms var(--ease-out), transform 160ms var(--ease-out);
+  }
+  .no-webgl .cam-btn, .no-webgl .stick { display: none; }
+
+  .stick {
+    position: fixed;
+    inset-inline-start: 1rem;
+    inset-block-end: calc(var(--dock-h, 4.5rem) + 1.5rem);
+    z-index: 3;
+    display: none;
+    inline-size: 8.5rem;
+    block-size: 8.5rem;
+    border-radius: 50%;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: opacity 300ms ease, translate 300ms var(--ease-out);
+  }
+  .stick span {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    inline-size: 3.5rem;
+    block-size: 3.5rem;
+    margin: -1.75rem;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 6px 18px oklch(0.1 0.03 260 / 0.45);
+    transition: translate 180ms var(--ease-out), scale 160ms var(--ease-out);
+  }
+  .stick.on span { transition: scale 160ms var(--ease-out); scale: 1.08; }
+
+  @media (pointer: coarse) {
+    .stick { display: block; }
+  }
+
+  @media (pointer: coarse) and (max-width: 700px) {
+    .prompt { inset-block-end: calc(var(--dock-h, 4.5rem) + 11rem); }
+  }
   .toast:empty { display: none; }
 
   /* Sheets */
@@ -404,6 +449,7 @@
     .dock-bar [data-tab] .ph { font-size: 1.3rem; }
     .dock-bar .icon-btn { block-size: 3rem; }
     .prompt { inset-block-end: calc(var(--dock-h, 4.5rem) + 1.5rem); }
+    .cam-btn { inset-inline: auto 0.75rem; inset-block-end: calc(var(--dock-h, 4.5rem) + 1.5rem); }
   }
 
   @media (max-width: 700px) {
@@ -436,6 +482,7 @@
   @media (prefers-reduced-motion: reduce) {
     .sheet, .toast, #scene { transition: opacity 200ms ease; scale: 1; translate: none; }
     .loader-isle span { animation: none; opacity: 1; }
+    .stick span { transition: none; }
   }
 
   /* Projects page */

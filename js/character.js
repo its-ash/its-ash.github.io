@@ -50,16 +50,36 @@ const drawBubble = (ctx, w, h, text = '') => {
   ctx.fillText(text, w / 2, (h - 34) / 2 + 4, w - 60);
 };
 
-export function createCharacter({ waypoints, onArrive, onLeave, onBlast, blocked = () => false, powered = () => false, reduced = false, start = null }) {
+export function createCharacter({ waypoints, onArrive, onLeave, onBlast, blocked = () => false, powered = () => false, ground = () => 0.6, roam = () => true, reduced = false, start = null }) {
   const root = new THREE.Group();
+  root.rotation.order = 'YXZ';
   const body = new THREE.Group();
   root.add(body);
+
+  const soleMat = mat('#f7f5f0', { roughness: 0.7 });
+  const upperMat = mat(SHOE, { roughness: 0.6 });
+  const stripeMat = mat('#d6453d', { roughness: 0.5 });
+  const laceMat = mat('#3a3f4a');
+  const cuffMat = mat('#243049');
+  const shoe = () => {
+    const g = group(0, -0.27, 0.04);
+    g.add(mesh(new THREE.BoxGeometry(0.14, 0.035, 0.24), soleMat, [0, -0.025, 0]));
+    g.add(mesh(new THREE.BoxGeometry(0.125, 0.075, 0.19), upperMat, [0, 0.025, -0.015]));
+    const toe = mesh(new THREE.SphereGeometry(0.063, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), upperMat, [0, -0.008, 0.075]);
+    toe.scale.set(1, 0.9, 0.85);
+    g.add(toe);
+    [1, -1].forEach((x) => g.add(mesh(new THREE.BoxGeometry(0.006, 0.024, 0.11), stripeMat, [x * 0.064, 0.025, -0.02])));
+    [0.0, 0.025, 0.05].forEach((z) => g.add(mesh(new THREE.BoxGeometry(0.07, 0.008, 0.012), laceMat, [0, 0.064, z])));
+    g.add(mesh(new THREE.BoxGeometry(0.05, 0.05, 0.015), stripeMat, [0, 0.05, -0.112]));
+    return g;
+  };
 
   const legs = [1, -1].map((s) => {
     const thigh = limb(0.075, 0.27, JEANS);
     const shin = limb(0.07, 0.25, JEANS);
     shin.position.y = -0.27;
-    shin.add(mesh(new THREE.BoxGeometry(0.13, 0.08, 0.22), mat(SHOE), [0, -0.27, 0.04]));
+    shin.add(shoe());
+    shin.add(mesh(new THREE.CylinderGeometry(0.076, 0.076, 0.035, 14), cuffMat, [0, -0.215, 0]));
     thigh.add(shin);
     thigh.position.set(s * 0.1, HIP_Y, 0);
     body.add(thigh);
@@ -74,11 +94,27 @@ export function createCharacter({ waypoints, onArrive, onLeave, onBlast, blocked
   body.add(mesh(new THREE.BoxGeometry(0.24, 0.1, 0.04), mat('#23707a'), [0, 0.78, 0.165]));
   [-0.05, 0.05].forEach((x) => body.add(mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.14, 4), mat('#f4efe6'), [x, 1.06, 0.17])));
   body.add(mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.1, 8), mat(SKIN), [0, 1.2, 0]));
+  const hoodieDark = mat('#23707a');
+  const pelvis = mesh(new THREE.CylinderGeometry(0.17, 0.16, 0.13, 16), mat(JEANS), [0, HIP_Y + 0.02, 0]);
+  pelvis.scale.z = 0.85;
+  body.add(pelvis);
+  const hem = mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.05, 20), hoodieDark, [0, HIP_Y + 0.09, 0]);
+  hem.scale.set(1.06, 1, 0.86);
+  body.add(hem);
+  const badge = mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.01, 18), mat('#ce422b', { roughness: 0.4 }), [0.09, 0.98, 0.166]);
+  badge.rotation.x = Math.PI / 2;
+  body.add(badge);
 
   const arms = [1, -1].map((s) => {
     const upper = limb(0.06, 0.24, HOODIE);
     const fore = limb(0.055, 0.22, HOODIE);
     fore.position.y = -0.24;
+    fore.add(mesh(new THREE.CylinderGeometry(0.059, 0.059, 0.035, 14), hoodieDark, [0, -0.205, 0]));
+    if (s === 1) {
+      fore.add(mesh(new THREE.CylinderGeometry(0.046, 0.046, 0.025, 14), mat('#1b1d21'), [0, -0.234, 0]));
+      const face = mesh(new THREE.BoxGeometry(0.012, 0.04, 0.036), new THREE.MeshStandardMaterial({ color: '#0b1a2a', emissive: '#59f3ff', emissiveIntensity: 0.5 }), [s * 0.048, -0.234, 0]);
+      fore.add(face);
+    }
     const skinMat = mat(SKIN);
     const hand = group(0, -0.25, 0);
     hand.add(mesh(new THREE.BoxGeometry(0.035, 0.075, 0.07), skinMat, [0, -0.03, 0]));
@@ -95,6 +131,13 @@ export function createCharacter({ waypoints, onArrive, onLeave, onBlast, blocked
     body.add(upper);
     return { upper, fore, hand, s };
   });
+
+  const bat = group(0, -0.06, 0.02);
+  bat.add(mesh(new THREE.CylinderGeometry(0.014, 0.016, 0.2, 8), mat('#2b2f36'), [0, -0.06, 0]));
+  bat.add(mesh(new THREE.BoxGeometry(0.09, 0.42, 0.035), mat('#e8d3a3', { roughness: 0.7 }), [0, -0.37, 0.01]));
+  bat.rotation.x = 0.35;
+  bat.visible = false;
+  arms[1].hand.add(bat);
 
   const head = group(0, 1.25, 0);
   body.add(head);
@@ -129,15 +172,34 @@ export function createCharacter({ waypoints, onArrive, onLeave, onBlast, blocked
   });
   ssjHair.visible = false;
   head.add(ssjHair);
-  const eyeMat = mat('#16110e', { roughness: 0.3, flatShading: false });
+  const eyeMat = mat('#2a1a10', { roughness: 0.3, flatShading: false });
   const eyeBase = eyeMat.color.clone();
+  const whiteMat = mat('#f8f6f1', { roughness: 0.4 });
+  const glintMat = new THREE.MeshBasicMaterial({ color: '#ffffff' });
   const eyes = [1, -1].map((s) => {
-    const e = mesh(new THREE.SphereGeometry(0.034, 10, 8), eyeMat, [s * 0.09, 0.26, 0.235]);
-    e.scale.z = 0.5;
+    const e = group(s * 0.09, 0.26, 0.232);
+    const white = mesh(new THREE.SphereGeometry(0.036, 14, 10), whiteMat);
+    white.scale.set(1.15, 1, 0.45);
+    const iris = mesh(new THREE.SphereGeometry(0.022, 12, 8), eyeMat, [0, -0.002, 0.012]);
+    iris.scale.z = 0.5;
+    const glint = new THREE.Mesh(new THREE.SphereGeometry(0.006, 8, 6), glintMat);
+    glint.position.set(s * -0.007, 0.008, 0.024);
+    e.add(white, iris, glint);
     head.add(e);
     return e;
   });
   head.add(mesh(new THREE.IcosahedronGeometry(0.026, 1), skin, [0, 0.21, 0.26]));
+
+  const beardMat = mat('#1d1714', { roughness: 0.8 });
+  [1, -1].forEach((s) => {
+    const m = mesh(new THREE.CapsuleGeometry(0.011, 0.045, 2, 6), beardMat, [s * 0.03, 0.186, 0.25]);
+    m.rotation.z = s * 1.3;
+    head.add(m);
+  });
+  const goatee = mesh(new THREE.IcosahedronGeometry(0.045, 1), beardMat, [0, 0.1, 0.22]);
+  goatee.scale.set(1.2, 0.8, 0.6);
+  head.add(goatee);
+
   const smile = mesh(new THREE.TorusGeometry(0.05, 0.012, 4, 12, Math.PI), mat('#5a2a20'), [0, 0.15, 0.24]);
   smile.rotation.z = Math.PI;
   head.add(smile);
@@ -278,7 +340,7 @@ export function createCharacter({ waypoints, onArrive, onLeave, onBlast, blocked
     const len = Math.hypot(input.x, input.z);
     st.moving = len > 0.01;
     if (!st.moving) {
-      if ((st.manualIdle += dt) > 10 && !reduced) {
+      if ((st.manualIdle += dt) > 10 && !reduced && roam(root.position.x, root.position.z)) {
         st.target = nearest();
         st.mode = 'walk';
       }
@@ -292,6 +354,7 @@ export function createCharacter({ waypoints, onArrive, onLeave, onBlast, blocked
     if (blocked(x, z) || !blocked(nx, nz)) root.position.set(nx, 0.6, nz);
     else if (!blocked(nx, z)) root.position.x = nx;
     else if (!blocked(x, nz)) root.position.z = nz;
+    root.position.y = ground(root.position.x, root.position.z);
     turn(Math.atan2(input.x, input.z), dt, 12);
     st.phase += (step * 9) / SPEED;
   };
@@ -309,6 +372,7 @@ export function createCharacter({ waypoints, onArrive, onLeave, onBlast, blocked
 
     if (st.mode === 'ride') {
       st.moving = false;
+      if (st.rideKind === 'car' || st.rideKind === 'swing') sitTarget = 1;
     } else if (st.mode === 'manual') {
       if (st.wave > 0) st.wave -= dt;
       if (st.blast < 0) drive(dt);
@@ -369,7 +433,14 @@ export function createCharacter({ waypoints, onArrive, onLeave, onBlast, blocked
     const firing = B >= BLAST.charge;
     st.chargeK = lerp(st.chargeK, charging ? 1 : 0, k(8));
     st.fireK = lerp(st.fireK, firing ? 1 : 0, k(14));
-    st.rideK = lerp(st.rideK, st.mode === 'ride' ? 1 : 0, k(6));
+    st.rideK = lerp(st.rideK, st.mode === 'ride' && st.rideKind === 'nimbus' ? 1 : 0, k(6));
+    const batting = st.mode === 'ride' && st.rideKind === 'bat';
+    st.batK = lerp(st.batK ?? 0, batting ? 1 : 0, k(8));
+    st.swingT = Math.max(0, (st.swingT ?? 0) - dt);
+    const bk = st.batK;
+    const swingP = st.swingT > 0 ? 1 - st.swingT / 0.35 : 0;
+    const sweep = st.swingT > 0 ? Math.sin(swingP * Math.PI * 0.5) : 0;
+    bat.visible = bk > 0.05;
     const ck = st.chargeK;
     const fk = st.fireK;
     const ride = st.rideK;
@@ -429,6 +500,12 @@ export function createCharacter({ waypoints, onArrive, onLeave, onBlast, blocked
         uz = lerp(uz, a.s * 0.75, ride);
         fx = lerp(fx, -0.35, ride);
       }
+      if (bk > 0.01) {
+        ux = lerp(ux, lerp(0.45, -1.5, sweep), bk);
+        uz = lerp(uz, -a.s * 0.35, bk);
+        fx = lerp(fx, -0.9 + sweep * 0.7, bk);
+        fz = lerp(fz, 0, bk);
+      }
       a.upper.rotation.set(ux, 0, uz);
       a.fore.rotation.set(fx, 0, fz);
     });
@@ -436,15 +513,17 @@ export function createCharacter({ waypoints, onArrive, onLeave, onBlast, blocked
     body.position.y = Math.abs(s) * 0.035 * w - SIT_DROP * sit + Math.sin(t * 2) * 0.006 - 0.05 * stance - 0.1 * ride;
     body.position.x = Math.sin(t * 55) * 0.008 * Math.max(power, fk) * (reduced ? 0 : 1);
     body.rotation.x = 0.06 * w + 0.12 * st.pray + 0.15 * ride;
-    body.rotation.y = 0.6 * ck;
+    body.rotation.y = 0.6 * ck + bk * lerp(0.5, -0.9, sweep);
+    if (bk > 0.01) body.rotation.x += 0.18 * bk;
     torso.scale.y = 1 + Math.sin(t * 2) * 0.012;
 
     root.getWorldPosition(wPos);
     const toCam = angleTo(root.rotation.y, Math.atan2(cam.x - wPos.x, cam.z - wPos.z));
     const still = st.mode === 'idle' || st.mode === 'ride' || st.wave > 0 || (st.mode === 'manual' && !st.moving);
-    const look = still && st.pray < 0.5 && B < 0 ? clamp(toCam, -0.9, 0.9) : 0;
-    head.rotation.y = lerp(head.rotation.y, sit > 0.5 && st.wave <= 0 ? 0 : look, k(4));
-    head.rotation.x = lerp(head.rotation.x, sit > 0.5 && st.wave <= 0 ? 0.28 : st.pray * 0.3, k(4));
+    const look = still && st.pray < 0.5 && B < 0 && st.rideKind !== 'car' ? clamp(toCam, -0.9, 0.9) : 0;
+    const desk = sit > 0.5 && st.wave <= 0 && st.mode !== 'ride';
+    head.rotation.y = lerp(head.rotation.y, desk ? 0 : look, k(4));
+    head.rotation.x = lerp(head.rotation.x, desk ? 0.28 : st.pray * 0.3, k(4));
     head.rotation.z = Math.sin(st.phase * 0.5) * 0.04 * w;
 
     if ((st.nextBlink -= dt) <= 0) {
@@ -460,7 +539,7 @@ export function createCharacter({ waypoints, onArrive, onLeave, onBlast, blocked
     canopy.rotation.y += dt * 0.3 * w;
     scarf.visible = st.scarf > 0.02;
     scarf.scale.setScalar(Math.max(0.001, st.scarf));
-    laptop.visible = sit > 0.3;
+    laptop.visible = sit > 0.3 && st.mode !== 'ride';
     laptop.scale.setScalar(clamp((sit - 0.3) / 0.7, 0.001, 1));
     screenMat.emissiveIntensity = 0.7 + Math.sin(t * 3) * 0.1;
 
@@ -541,15 +620,28 @@ export function createCharacter({ waypoints, onArrive, onLeave, onBlast, blocked
       return st.ssj;
     },
     blast: startBlast,
-    mount() {
-      Object.assign(st, { mode: 'ride', wave: 0, blast: -1 });
+    swing() {
+      if (st.rideKind === 'bat' && !(st.swingT > 0)) st.swingT = 0.35;
+    },
+    mount(kind = 'nimbus') {
+      Object.assign(st, { mode: 'ride', rideKind: kind, wave: 0, blast: -1 });
       Object.assign(input, { x: 0, z: 0 });
     },
     dismount() {
-      Object.assign(st, { mode: 'manual', manualIdle: 0 });
+      Object.assign(st, { mode: 'manual', manualIdle: 0, rideKind: null });
+      root.rotation.x = 0;
     },
     get riding() {
       return st.mode === 'ride';
+    },
+    get moving() {
+      return st.walk > 0.3 || st.mode === 'ride';
+    },
+    get driving() {
+      return st.mode === 'manual' && st.moving;
+    },
+    get heading() {
+      return root.rotation.y;
     },
     get manual() {
       return st.mode === 'manual';

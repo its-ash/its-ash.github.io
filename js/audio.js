@@ -116,6 +116,28 @@ export class Ambience {
     src.stop(t + 2.8);
   }
 
+  honk() {
+    if (!this.on) return;
+    [0, 0.22].forEach((at) => {
+      this.#tone('square', 520, 500, at, 0.16, 0.05);
+      this.#tone('square', 650, 620, at, 0.16, 0.035);
+    });
+  }
+
+  thwack() {
+    if (!this.on) return;
+    const src = this.#noise();
+    const t = this.ctx.currentTime;
+    const filter = new BiquadFilterNode(this.ctx, { type: 'bandpass', frequency: 1400, Q: 1.2 });
+    const gain = new GainNode(this.ctx, { gain: 0 });
+    gain.gain.setValueAtTime(0.6, t);
+    gain.gain.exponentialRampToValueAtTime(1e-3, t + 0.12);
+    src.connect(filter).connect(gain).connect(this.master);
+    src.start(t);
+    src.stop(t + 0.15);
+    this.#tone('sine', 220, 120, 0, 0.1, 0.12);
+  }
+
   bell() {
     if (!this.on) return;
     const t = this.ctx.currentTime;

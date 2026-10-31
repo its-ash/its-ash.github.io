@@ -149,6 +149,8 @@ const ACTIONS = {
   github: (o) => toast(o?.userData.info ?? 'Loading GitHub activity...'),
   ball: (_, n) => toast(n === 7 ? 'All 7 Dragon Balls found! Shenron is coming...' : `Dragon Ball found: ${n} of 7. Keep exploring the islands.`),
   summon: () => toast('Shenron: Speak your wish! Tap the dragon to open my resume.'),
+  toast: (_, msg) => toast(String(msg)),
+  sfx: (_, name) => ['honk', 'thwack', 'bell'].includes(name) && audio[name](),
   windmill: () => toast(`Wind speed: ${Math.round(effective().wind)} km/h.`)
 };
 
@@ -180,6 +182,12 @@ const initScene = async () => {
         $('#prompt').hidden = !label;
       },
       onBell: () => audio.bell(),
+      onCamera: (mode) => {
+        const btn = $('#camBtn');
+        const follow = mode === 'follow';
+        btn.querySelector('i').className = `ph ${follow ? 'ph-map-trifold' : 'ph-person-simple-walk'}`;
+        btn.querySelector('span').textContent = follow ? 'Map view' : 'Follow me';
+      },
       onThunder: () => setTimeout(() => audio.thunder(), 500 + Math.random() * 1200)
     });
     scene.setPlace(app.place.lat, app.place.lng);
@@ -249,8 +257,47 @@ const share = async () => {
   }
 };
 
+const bindStick = () => {
+  const pad = $('#stick');
+  const knob = pad.querySelector('span');
+  let id = null;
+  const move = (e) => {
+    const r = pad.getBoundingClientRect();
+    const max = r.width * 0.32;
+    let x = e.clientX - (r.left + r.width / 2);
+    let y = e.clientY - (r.top + r.height / 2);
+    const d = Math.hypot(x, y);
+    if (d > max) [x, y] = [(x * max) / d, (y * max) / d];
+    knob.style.translate = `${x}px ${y}px`;
+    scene?.setStick(x / max, -y / max);
+  };
+  const end = (e) => {
+    if (e.pointerId !== id) return;
+    id = null;
+    pad.classList.remove('on');
+    knob.style.translate = '';
+    scene?.setStick(0, 0);
+  };
+  pad.addEventListener('pointerdown', (e) => {
+    if (id !== null) return;
+    id = e.pointerId;
+    pad.setPointerCapture(id);
+    pad.classList.add('on');
+    move(e);
+  });
+  pad.addEventListener('pointermove', (e) => e.pointerId === id && move(e));
+  pad.addEventListener('pointerup', end);
+  pad.addEventListener('pointercancel', end);
+};
+
 const bindUi = () => {
   bindDock();
+  bindStick();
+  $('#camBtn').addEventListener('click', () => scene?.toggleCamera());
+  addEventListener('keydown', (e) => {
+    if (e.code !== 'KeyC' || e.metaKey || e.ctrlKey || e.altKey || e.target.closest?.('input, textarea, select, [contenteditable]') || document.querySelector('dialog[open]') || scene?.focused()) return;
+    scene?.toggleCamera();
+  });
   $('#lowBtn').addEventListener('click', () => setLow(!lowPower));
   $('#shareBtn').addEventListener('click', share);
   $$('[data-open]').forEach((b) =>

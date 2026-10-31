@@ -4,7 +4,7 @@ import { mat, mesh, group, rand, smooth } from './kit.js';
 const FLOWER_COLORS = ['#f25f5c', '#ffe066', '#f7f7ff', '#c77dff', '#ff9f1c'];
 const { lerp, clamp } = THREE.MathUtils;
 
-export function createProps({ scene, island, chimney, pond, avoid = [], lowPower = false }) {
+export function createProps({ scene, island, chimney, pond, avoid = [], area = 5.3, lowPower = false }) {
   // Chimney smoke
   const puffGeo = smooth(new THREE.IcosahedronGeometry(0.14, 0));
   const puffs = Array.from({ length: lowPower ? 6 : 10 }, (_, i) => {
@@ -114,7 +114,7 @@ export function createProps({ scene, island, chimney, pond, avoid = [], lowPower
   const flowers = [];
   for (let tries = 0; flowers.length < (lowPower ? 16 : 28) && tries < 400; tries++) {
     const a = rand() * Math.PI * 2;
-    const d = 1 + Math.sqrt(rand()) * 5.3;
+    const d = 1 + Math.sqrt(rand()) * area;
     const x = Math.cos(a) * d;
     const z = Math.sin(a) * d;
     if (avoid.some(([ax, az, ar]) => Math.hypot(x - ax, z - az) < ar)) continue;
