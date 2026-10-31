@@ -55,7 +55,7 @@ const render = () => {
   $('#cond').textContent = Number.isFinite(w.temp) ? `${desc}, ${fmtTemp(w.temp)}` : desc;
   $$('[data-unit]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.unit === app.unit));
   $$('[data-mode]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.mode === app.mode));
-  scene?.setTempLabel(fmtTemp(w.temp), app.weather?.temp == null && app.mode === 'live' ? 'Loading weather' : W.describe(w.code));
+  scene?.setTempLabel(fmtTemp(w.temp), app.weather?.temp == null && app.mode === 'live' ? 'Loading weather' : W.describe(w.code), Number.isFinite(w.wind) ? `Wind ${Math.round(w.wind)} km/h` : '');
 };
 
 const tick = () => {

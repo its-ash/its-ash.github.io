@@ -1,11 +1,12 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { sunPosition, moonPosition, moonIllumination, toDirection } from './astro.js';
-import { rand, spread, mat, mesh, group, jitter, canvasTexture } from './kit.js';
+import { rand, spread, mat, mesh, group, jitter, smooth, canvasTexture } from './kit.js';
 import { createCharacter } from './character.js';
 import { createProps } from './props.js';
 import { createSkills } from './skills.js';
 import { createTemple } from './temple.js';
+import { createArena, pillarSpots } from './arena.js';
 
 const ORBIT_R = 80;
 const DEG = 180 / Math.PI;
@@ -60,19 +61,27 @@ const drawMoon = (ctx, s, _h, phase = 0.5) => {
   ctx.globalAlpha = 1;
 };
 
-const drawTemp = (ctx, w, h, main = '--', sub = 'Loading weather') => {
-  ctx.clearRect(0, 0, w, h);
-  ctx.fillStyle = 'rgba(14, 20, 32, 0.62)';
+const drawTemp = (ctx, w, h, main = '--', sub = 'Loading weather', wind = '') => {
+  ctx.fillStyle = '#5b3416';
+  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = '#121a28';
   ctx.beginPath();
-  ctx.roundRect(8, 8, w - 16, h - 16, 36);
+  ctx.roundRect(14, 14, w - 28, h - 28, 22);
   ctx.fill();
   ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#7cffb2';
+  ctx.font = '600 28px "JetBrains Mono", monospace';
+  ctx.fillText('WEATHER', w / 2, h * 0.16);
   ctx.fillStyle = '#f4f1ea';
-  ctx.font = '700 104px "JetBrains Mono", monospace';
-  ctx.fillText(main, w / 2, h * 0.56);
-  ctx.fillStyle = 'rgba(244, 241, 234, 0.75)';
-  ctx.font = '500 34px Outfit, sans-serif';
-  ctx.fillText(sub.slice(0, 26), w / 2, h * 0.82);
+  ctx.font = '700 112px "JetBrains Mono", monospace';
+  ctx.fillText(main, w / 2, h * 0.44);
+  ctx.fillStyle = 'rgba(244, 241, 234, 0.8)';
+  ctx.font = '500 36px Outfit, sans-serif';
+  ctx.fillText(sub.slice(0, 22), w / 2, h * 0.7);
+  ctx.fillStyle = 'rgba(244, 241, 234, 0.6)';
+  ctx.font = '500 28px "JetBrains Mono", monospace';
+  ctx.fillText(wind, w / 2, h * 0.86);
 };
 
 const BOARD_W = 1024;
@@ -136,45 +145,106 @@ const drawBoard = (ctx, w, h, items = [], hover = -1) => {
   });
 };
 
-const TEMPLE = { x: 1.0, z: -4.3, rot: Math.atan2(-1.0, 4.3) };
-const atTemple = (x, z) => {
-  const c = Math.cos(TEMPLE.rot);
-  const s = Math.sin(TEMPLE.rot);
-  return [TEMPLE.x + x * c + z * s, TEMPLE.z - x * s + z * c];
+const MAIN_R = 7;
+const VIEW = { x: 13.6, z: 17.2 };
+const along = ({ x, z }, d) => [(x / Math.hypot(x, z)) * d, (z / Math.hypot(x, z)) * d];
+const rotXZ = ({ x: cx, z: cz, rot }, x, z) => [cx + x * Math.cos(rot) + z * Math.sin(rot), cz - x * Math.sin(rot) + z * Math.cos(rot)];
+const segDist = (x, z, [ax, az], [bx, bz]) => {
+  const dx = bx - ax;
+  const dz = bz - az;
+  const t = clamp(((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz), 0, 1);
+  return Math.hypot(x - ax - dx * t, z - az - dz * t);
 };
+
+const TISLE = { x: 1.0, z: -12.4, r: 3.2 };
+const TECH = { x: -10.4, z: 8.3, r: 4.2 };
+TECH.rot = Math.atan2(VIEW.x - TECH.x, VIEW.z - TECH.z);
+const SAIYAN = { x: 12.4, z: -2.0, r: 3.2 };
+SAIYAN.rot = Math.atan2(VIEW.x - SAIYAN.x, VIEW.z - SAIYAN.z);
+const PAD_R = 1.25;
+const PAN_R = 18;
+const bridgeTo = (I) => ({ a: along(I, MAIN_R - 0.5), b: along(I, Math.hypot(I.x, I.z) - I.r + 0.5) });
+const T_BRIDGE = bridgeTo(TISLE);
+const K_BRIDGE = bridgeTo(TECH);
+const S_BRIDGE = bridgeTo(SAIYAN);
+const BRIDGES = [T_BRIDGE, K_BRIDGE, S_BRIDGE];
+const atSaiyan = (x, z) => rotXZ(SAIYAN, x, z);
+const onPad = (x, z) => Math.hypot(x - SAIYAN.x, z - SAIYAN.z) < PAD_R - 0.2;
+
+const [templeX, templeZ] = along(TISLE, Math.hypot(TISLE.x, TISLE.z) + 0.5);
+const TEMPLE = { x: templeX, z: templeZ, rot: Math.atan2(-templeX, -templeZ) };
+const atTemple = (x, z) => rotXZ(TEMPLE, x, z);
+const atTech = (x, z) => rotXZ(TECH, x, z);
 const PRAY_AT = atTemple(0.55, 1.05);
 const PRAY_LOOK = atTemple(-1.3, 1.8);
+const PEEPAL = atTemple(-1.8, -0.5);
+const techPose = (x, z, rot) => {
+  const [px, pz] = atTech(x, z);
+  return { x: px, z: pz, rot: TECH.rot + rot };
+};
+const SERVER = techPose(-2.1, -1.3, 0.6);
+const WALL = techPose(1.6, -1.6, -0.5);
+const TECH_AT = atTech(0.9, -0.1);
+const TECH_LOOK = rotXZ(WALL, 0, 0);
+const HOME = new THREE.Vector3(0, 1.5, 0);
+const xz = ([x, z]) => ({ x, z });
 
 const WAYPOINTS = [
   { name: 'door', x: -1.9, z: 0.35, look: [-2.06, -0.26], wait: [3, 5], line: 'Welcome to my island!' },
-  { name: 'pond', x: -2.4, z: 1.95, look: [-4, 1.6], wait: [3, 5], line: 'I like calm, simple code.' },
+  { name: 'pond', x: -2.4, z: 1.95, look: [-4, 1.6], wait: [3, 5], line: 'Meet my crocodile.' },
+  { name: 'tw1', x: -3.0, z: 3.2 },
+  { name: 'techHead', ...xz(K_BRIDGE.a) },
+  { name: 'techEnd', ...xz(K_BRIDGE.b) },
+  { name: 'tech', ...xz(TECH_AT), look: TECH_LOOK, wait: [4, 6], line: 'This is my tech stack.' },
+  { name: 'techEnd', ...xz(K_BRIDGE.b) },
+  { name: 'techHead', ...xz(K_BRIDGE.a) },
+  { name: 'tw2', x: -1.6, z: 2.3 },
   { name: 'mailbox', x: -0.55, z: 2.75, look: [-1.1, 3.3], wait: [2, 3], line: 'Got an idea? Send me a message.' },
   { name: 'path', x: 0.6, z: 3.9 },
   { name: 'board', x: 2.3, z: 3.5, look: [1.9, 2.8], wait: [3, 5], line: 'These are sites I shipped.' },
   { name: 'windmill', x: 3.7, z: 1.7, look: [4.6, 1.2], wait: [2, 4], line: 'I also do computer vision.' },
+  { name: 'sw1', x: 4.0, z: -0.2 },
+  { name: 'saiyanHead', ...xz(S_BRIDGE.a) },
+  { name: 'saiyanEnd', ...xz(S_BRIDGE.b) },
+  { name: 'saiyan', x: SAIYAN.x, z: SAIYAN.z, look: atSaiyan(0, 2), wait: [5, 7] },
+  { name: 'saiyanEnd', ...xz(S_BRIDGE.b) },
+  { name: 'saiyanHead', ...xz(S_BRIDGE.a) },
+  { name: 'sw2', x: 5.0, z: -0.6 },
   { name: 'bench', x: 2.0, z: -1.45, look: [2.0, 1], wait: [10, 16], sit: true, line: 'Building an AI agent in Rust...' },
-  { name: 'temple', x: PRAY_AT[0], z: PRAY_AT[1], look: PRAY_LOOK, wait: [4, 6], pray: true, line: 'Jai Bajrang Bali!' },
+  { name: 'templeHead', ...xz(T_BRIDGE.a) },
+  { name: 'templeEnd', ...xz(T_BRIDGE.b) },
+  { name: 'temple', ...xz(PRAY_AT), look: PRAY_LOOK, wait: [4, 6], pray: true, line: 'Jai Bajrang Bali!' },
+  { name: 'templeEnd', ...xz(T_BRIDGE.b) },
+  { name: 'templeHead', ...xz(T_BRIDGE.a) },
   { name: 'yard', x: -0.2, z: -0.3 }
 ];
 
 const OBSTACLES = [
   [-2.4, -1.2, 1.5], [3, -2.2, 0.55], [1.09, 3.29, 0.22], [1.9, 2.8, 0.25], [2.71, 2.31, 0.22], [-1.1, 3.3, 0.4], [0.9, 2.3, 0.2],
   [4.6, 1.2, 0.65], [-4, 1.6, 1.25], [2.0, -1.62, 0.3], [-5.6, 0.2, 0.4], [5.8, 0.4, 0.3], [-1.8, 1.7, 0.25], [5.2, -3.2, 0.45], [0.2, 5.6, 0.35],
-  [-5.2, -1.2, 0.4], [-4.6, -3.4, 0.4], [2.4, -5.4, 0.4], [TEMPLE.x, TEMPLE.z, 0.85], [5.6, -1.4, 0.35], [-3.2, 4.8, 0.35], [4.6, 3.8, 0.3], [-0.8, -3.2, 0.3]
+  [-5.2, -1.2, 0.4], [-4.6, -3.4, 0.4], [2.4, -5.4, 0.4], [5.6, -1.4, 0.35], [-3.2, 4.8, 0.35], [4.6, 3.8, 0.3], [-0.8, -3.2, 0.3],
+  [TEMPLE.x, TEMPLE.z, 0.85], [...PEEPAL, 0.5], ...[-0.8, 0, 0.8].map((x) => [...rotXZ(SERVER, x, 0), 0.55]),
+  ...[-1.1, -0.37, 0.37, 1.1].map((x) => [...rotXZ(WALL, x, 0.1), 0.42]),
+  ...pillarSpots(PAD_R).map(([x, z]) => [...atSaiyan(x, z), 0.2])
 ];
 
 const POIS = [
   { action: 'about', label: 'About me', x: -1.9, z: 0.35, r: 1.1 },
-  { action: 'stack', label: 'Tech stack', x: 2.0, z: -1.0, r: 1.1 },
   { action: 'projects', label: 'Projects', x: 2.3, z: 3.5, r: 1.2 },
   { action: 'contact', label: 'Contact', x: -0.55, z: 2.75, r: 1.0 },
   { action: 'windmill', label: 'Spin windmill', x: 3.7, z: 1.7, r: 0.9 },
   { action: 'lamp', label: 'Toggle lamp', x: 0.7, z: 1.8, r: 0.7 },
-  { action: 'temple', label: 'Hanuman Mandir', x: PRAY_AT[0], z: PRAY_AT[1], r: 1.0 }
+  { action: 'temple', label: 'Hanuman Mandir', ...xz(PRAY_AT), r: 1.1 },
+  { action: 'stack', label: 'Tech stack', ...xz(TECH_AT), r: 1.4 },
+  { action: 'saiyan', label: 'Power up', x: SAIYAN.x, z: SAIYAN.z, r: PAD_R }
 ];
 
 const KEYS = { ArrowUp: [0, 1], KeyW: [0, 1], ArrowDown: [0, -1], KeyS: [0, -1], ArrowLeft: [-1, 0], KeyA: [-1, 0], ArrowRight: [1, 0], KeyD: [1, 0] };
-const blocked = (x, z) => Math.hypot(x, z) > 6.3 || OBSTACLES.some(([ox, oz, r]) => Math.hypot(x - ox, z - oz) < r + 0.18);
+const walkable = (x, z) =>
+  Math.hypot(x, z) < MAIN_R - 0.7 ||
+  [TISLE, TECH, SAIYAN].some((I) => Math.hypot(x - I.x, z - I.z) < I.r - 0.45) ||
+  BRIDGES.some(({ a, b }) => segDist(x, z, a, b) < 0.3);
+const blocked = (x, z) => !walkable(x, z) || OBSTACLES.some(([ox, oz, r]) => Math.hypot(x - ox, z - oz) < r + 0.18);
 
 export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onNear, onBell, projects = [], reducedMotion = false, lowPower = false }) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: !lowPower, powerPreference: 'high-performance' });
@@ -188,15 +258,16 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
   const controls = new OrbitControls(camera, canvas);
   Object.assign(controls, {
     enableDamping: true,
-    enablePan: false,
+    enablePan: true,
+    screenSpacePanning: false,
     minDistance: 12,
-    maxDistance: 34,
+    maxDistance: 42,
     maxPolarAngle: 1.5,
     minPolarAngle: 0.35,
     autoRotate: !reducedMotion,
     autoRotateSpeed: 0.35
   });
-  controls.target.set(0, 1.5, 0);
+  controls.target.copy(HOME);
 
   const state = {
     lat: 26.9124,
@@ -284,8 +355,8 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
   const hemi = new THREE.HemisphereLight(0xbfe0fb, 0x4a3b2a, 1);
   const sunLight = new THREE.DirectionalLight(0xfff6e8, 2.2);
   sunLight.castShadow = !lowPower;
-  sunLight.shadow.mapSize.setScalar(lowPower ? 512 : 1024);
-  Object.assign(sunLight.shadow.camera, { left: -14, right: 14, top: 14, bottom: -14, near: 1, far: 80 });
+  sunLight.shadow.mapSize.setScalar(lowPower ? 1024 : 2048);
+  Object.assign(sunLight.shadow.camera, { left: -20, right: 20, top: 20, bottom: -20, near: 1, far: 90 });
   sunLight.shadow.bias = -0.0008;
   const moonLight = new THREE.DirectionalLight(0x9fb6ff, 0.4);
   scene.add(hemi, sunLight, moonLight);
@@ -349,6 +420,16 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
   [[-0.75, 1.15, 1.01], [0.75, 1.15, 1.01]].forEach((p) => house.add(mesh(new THREE.BoxGeometry(0.45, 0.45, 0.06), windowMat, p)));
   const sideWin = mesh(new THREE.BoxGeometry(0.06, 0.45, 0.45), windowMat, [1.21, 1.15, 0]);
   house.add(sideWin);
+  const frame = mat('#fbf6ec');
+  [-0.75, 0.75].forEach((x) => {
+    house.add(mesh(new THREE.BoxGeometry(0.56, 0.56, 0.04), frame, [x, 1.15, 1.0]));
+    house.add(mesh(new THREE.BoxGeometry(0.52, 0.1, 0.14), mat('#7a4e2c'), [x, 0.84, 1.08]));
+    [-0.15, 0, 0.15].forEach((dx, i) => house.add(mesh(new THREE.IcosahedronGeometry(0.06, 0), mat(['#f25f5c', '#ffd23f', '#c77dff'][i]), [x + dx, 0.93, 1.08])));
+  });
+  house.add(mesh(new THREE.BoxGeometry(0.04, 0.56, 0.56), frame, [1.2, 1.15, 0]));
+  house.add(mesh(new THREE.BoxGeometry(0.42, 0.06, 0.42), mat('#6f6358'), [0.7, 3.02, -0.4]));
+  house.add(mesh(new THREE.BoxGeometry(0.8, 0.08, 0.32), mat('#b9b2a6'), [0, 0.04, 1.16]));
+  house.add(mesh(new THREE.BoxGeometry(2.5, 0.12, 2.1), mat('#d9c9a8'), [0, 0.06, 0]));
   house.traverse((m) => m.material === windowMat && (m.userData.noHover = true));
   house.position.set(-2.4, 0.6, -1.2);
   house.rotation.y = 0.35;
@@ -418,6 +499,10 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
   }
   blades.position.set(0, 2.9, 0.42);
   mill.add(blades);
+  const tempTex = canvasTexture(512, 360, drawTemp);
+  const tempPanel = mesh(new THREE.CylinderGeometry(0.485, 0.555, 0.7, 32, 1, true, -1.0, 2.0), new THREE.MeshBasicMaterial({ map: tempTex, toneMapped: false }), [0, 0.9, 0]);
+  tempPanel.castShadow = false;
+  mill.add(tag(tempPanel, 'unit', 'Switch °C / °F'));
   mill.position.set(4.6, 0.6, 1.2);
   mill.rotation.y = -0.6;
   island.add(tag(mill, 'windmill', 'Spin windmill'));
@@ -432,6 +517,125 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
   [[-5.6, 0.75, 0.2, 0.35], [5.8, 0.7, 0.4, 0.25], [-1.8, 0.7, 1.7, 0.2], [5.2, 0.7, -3.2, 0.4], [0.2, 0.7, 5.6, 0.3]].forEach(([x, y, z, r]) =>
     island.add(mesh(new THREE.DodecahedronGeometry(r, 0), mat('#8d8a86'), [x, y, z]))
   );
+
+  const satellite = (I, rockColor = '#7b6650') => {
+    const g = group(I.x, 0, I.z);
+    g.add(mesh(new THREE.CylinderGeometry(I.r, I.r * 0.93, 1.0, 14), grassMat, [0, 0.1, 0]));
+    g.add(mesh(new THREE.CylinderGeometry(I.r * 0.93, I.r * 0.9, 0.5, 14), mat('#8a5a3c'), [0, -0.65, 0]));
+    const rock = new THREE.ConeGeometry(I.r * 0.9, I.r * 1.5, 14, 3);
+    jitter(rock, 0.6, (y) => y < -I.r * 0.75 + 0.01);
+    rock.rotateX(Math.PI);
+    g.add(mesh(rock, mat(rockColor), [0, -0.9 - I.r * 0.75, 0]));
+    island.add(g);
+    return g;
+  };
+  satellite(TISLE, '#8a7a6a');
+  satellite(TECH, '#6f6a72');
+  satellite(SAIYAN, '#7a6a8a');
+
+  const lanternMat = mat('#fff1c2', { emissive: '#ffb347', emissiveIntensity: 0 });
+  const bridge = ({ a: [ax, az], b: [bx, bz] }) => {
+    const len = Math.hypot(bx - ax, bz - az);
+    const g = group((ax + bx) / 2, 0.6, (az + bz) / 2);
+    g.rotation.y = Math.atan2(bx - ax, bz - az);
+    const plank = new THREE.BoxGeometry(0.9, 0.06, 0.18);
+    const woods = ['#9c6a37', '#8d5f31', '#a8743f'].map((c) => mat(c));
+    const n = Math.max(2, Math.floor(len / 0.21));
+    for (let i = 0; i <= n; i++) {
+      const p = mesh(plank, woods[i % 3], [spread(0.04), 0.015, -len / 2 + (i * len) / n]);
+      p.rotation.y = spread(0.06);
+      g.add(p);
+    }
+    const postMat = mat('#6b4a2f');
+    const ropeMat = mat('#d8c39a');
+    const posts = Math.max(2, Math.round(len / 0.9) + 1);
+    [1, -1].forEach((s) => {
+      g.add(mesh(new THREE.BoxGeometry(0.08, 0.1, len + 0.3), mat('#5b3a22'), [s * 0.4, -0.11, 0]));
+      for (let i = 0; i < posts; i++) g.add(mesh(new THREE.CylinderGeometry(0.035, 0.04, 0.55, 6), postMat, [s * 0.45, 0.25, -len / 2 + (i * len) / (posts - 1)]));
+      const rope = mesh(new THREE.CylinderGeometry(0.012, 0.012, len, 5), ropeMat, [s * 0.45, 0.46, 0]);
+      rope.rotation.x = Math.PI / 2;
+      g.add(rope);
+      [-1, 1].forEach((e) => g.add(mesh(new THREE.BoxGeometry(0.09, 0.12, 0.09), lanternMat, [s * 0.45, 0.6, (e * len) / 2])));
+    });
+    island.add(g);
+  };
+  BRIDGES.forEach(bridge);
+
+  const stoneGeo = new THREE.CylinderGeometry(0.16, 0.18, 0.05, 7);
+  const stoneMat = mat('#b9b2a6');
+  const path = (pts) => {
+    for (let i = 1; i < pts.length; i++) {
+      const [ax, az] = pts[i - 1];
+      const [bx, bz] = pts[i];
+      const steps = Math.max(1, Math.floor(Math.hypot(bx - ax, bz - az) / 0.42));
+      for (let j = 0; j < steps; j++) {
+        const u = (j + 0.5) / steps;
+        const st = mesh(stoneGeo, stoneMat, [lerp(ax, bx, u) + spread(0.08), 0.615, lerp(az, bz, u) + spread(0.08)]);
+        st.rotation.y = rand() * Math.PI;
+        st.castShadow = false;
+        island.add(st);
+      }
+    }
+  };
+  path([[-1.9, 0.6], [-0.2, -0.3], T_BRIDGE.a]);
+  path([[-2.4, 2.2], [-3.0, 3.2], K_BRIDGE.a]);
+  path([[-0.3, 2.6], [0.6, 3.9], [2.1, 3.7]]);
+  path([T_BRIDGE.b, atTemple(0.2, 1.3)]);
+  path([K_BRIDGE.b, TECH_AT]);
+  path([[3.8, 0.8], [4.0, -0.2], S_BRIDGE.a]);
+  path([S_BRIDGE.b, [lerp(SAIYAN.x, S_BRIDGE.b[0], 0.6), lerp(SAIYAN.z, S_BRIDGE.b[1], 0.6)]]);
+
+  const peepal = group(PEEPAL[0], 0.6, PEEPAL[1]);
+  peepal.add(mesh(new THREE.CylinderGeometry(0.2, 0.32, 1.6, 7), mat('#6b4a2f'), [0, 0.8, 0]));
+  const peepalLeaf = mat('#3d8f3f');
+  foliageMats.push(peepalLeaf);
+  foliageBase.push(peepalLeaf.color.clone());
+  [[0, 2.1, 0, 1.0], [0.7, 1.8, 0.2, 0.7], [-0.6, 1.9, -0.2, 0.75], [0.1, 2.6, -0.1, 0.7], [-0.2, 1.7, 0.6, 0.6]].forEach(([x, y, z, r]) =>
+    peepal.add(mesh(new THREE.IcosahedronGeometry(r, 0), peepalLeaf, [x, y, z]))
+  );
+  peepal.add(mesh(new THREE.TorusGeometry(0.33, 0.03, 4, 14), mat('#e2572b'), [0, 0.9, 0]));
+  peepal.children.at(-1).rotation.x = Math.PI / 2;
+  peepal.userData.sway = 2;
+  island.add(peepal);
+  trees.push(peepal);
+  [[-1.2, 1.4], [1.3, 1.5], [1.6, -0.9], [-0.4, -1.6]].forEach(([x, z], i) => {
+    const [px, pz] = atTemple(x, z);
+    const bush = group(px, 0.6, pz);
+    bush.add(mesh(new THREE.IcosahedronGeometry(0.22, 0), mat('#3f8f3f'), [0, 0.18, 0]));
+    for (let k = 0; k < 5; k++) bush.add(mesh(new THREE.IcosahedronGeometry(0.06, 0), mat(i % 2 ? '#ff9f1c' : '#ffd23f'), [spread(0.3), 0.28 + rand() * 0.1, spread(0.3)]));
+    island.add(bush);
+  });
+
+  [[-3.3, 1.0, 0.35], [3.3, 0.2, 0.28], [-2.4, 2.4, 0.3]].forEach(([x, z, r]) => {
+    const [px, pz] = atTech(x, z);
+    island.add(mesh(new THREE.DodecahedronGeometry(r, 0), mat('#8d8a86'), [px, 0.7, pz]));
+  });
+  const techTree = tree(...atTech(-0.5, -3.3), 0.8, '#4fae58');
+  island.add(techTree);
+  trees.push(techTree);
+
+  const tuftMat = mat('#5aa84a');
+  const TUFTS = lowPower ? 260 : 560;
+  const tufts = new THREE.InstancedMesh(new THREE.ConeGeometry(0.035, 0.16, 3), tuftMat, TUFTS);
+  const tm = new THREE.Matrix4();
+  const tq = new THREE.Quaternion();
+  const te = new THREE.Euler();
+  const tp = new THREE.Vector3();
+  const ts = new THREE.Vector3();
+  const lands = [{ x: 0, z: 0, r: MAIN_R - 0.4 }, { ...TISLE, r: TISLE.r - 0.3 }, { ...TECH, r: TECH.r - 0.3 }, { ...SAIYAN, r: SAIYAN.r - 0.3 }];
+  let placed = 0;
+  for (let tries = 0; placed < TUFTS && tries < TUFTS * 8; tries++) {
+    const L = lands[rand() < 0.64 ? 0 : 1 + Math.floor(rand() * 3)];
+    const a = rand() * Math.PI * 2;
+    const d = Math.sqrt(rand()) * L.r;
+    const x = L.x + Math.cos(a) * d;
+    const z = L.z + Math.sin(a) * d;
+    if (OBSTACLES.some(([ox, oz, r]) => Math.hypot(x - ox, z - oz) < r + 0.15) || Math.hypot(x + 2.4, z + 1.2) < 1.9 || Math.hypot(x - SAIYAN.x, z - SAIYAN.z) < PAD_R + 0.45) continue;
+    tufts.setMatrixAt(placed++, tm.compose(tp.set(x, 0.66, z), tq.setFromEuler(te.set(spread(0.4), rand() * 6, spread(0.4))), ts.setScalar(0.7 + rand() * 0.7)));
+  }
+  tufts.count = placed;
+  tufts.receiveShadow = true;
+  island.add(tufts);
 
   const bench = group(2.0, 0.6, -1.5);
   const benchWood = mat('#9c6a37');
@@ -459,12 +663,19 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
     },
     onLeave: (name) => name === 'door' && (doors.open = false),
     blocked,
+    powered: onPad,
     start: { name: 'temple', timer: 7 }
   });
   island.add(tag(me.root, 'me', 'Say hi'));
 
-  const skills = createSkills({ scene });
+  const arena = createArena({ padR: PAD_R });
+  arena.group.position.set(SAIYAN.x, 0.6, SAIYAN.z);
+  arena.group.rotation.y = SAIYAN.rot;
+  island.add(tag(arena.group, 'saiyan', 'Super Saiyan platform'));
+
+  const skills = createSkills({ parent: island, server: SERVER, wall: WALL });
   skills.items.forEach((s) => tag(s, 'skill', s.userData.skill.name));
+  tag(skills.server, 'stack', 'Tech stack');
   const meWorld = new THREE.Vector3();
   document.fonts?.ready.then(() => boardTex.userData.redraw(boardHover));
 
@@ -481,12 +692,6 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
   });
   island.add(tag(props.croc, 'croc', 'Crocodile'));
 
-  const tempTex = canvasTexture(512, 256, drawTemp);
-  const tempSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tempTex, depthWrite: false }));
-  tempSprite.scale.set(4, 2, 1);
-  tempSprite.position.set(0.4, 5.6, -3.4);
-  island.add(tag(tempSprite, 'unit', 'Switch °C / °F'));
-
   // Fireflies
   const flyGeo = new THREE.BufferGeometry();
   const flyBase = Float32Array.from({ length: 40 * 3 }, (_, i) => (i % 3 === 1 ? 0.9 + rand() * 1.8 : spread(11)));
@@ -495,7 +700,7 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
   island.add(flies);
 
   // Clouds
-  const puff = new THREE.IcosahedronGeometry(1, 0);
+  const puff = smooth(new THREE.IcosahedronGeometry(1, 0));
   const clouds = Array.from({ length: CLOUDS }, (_, i) => {
     const g = new THREE.Group();
     const m = mat('#ffffff', { transparent: true, opacity: 0, roughness: 1 });
@@ -690,6 +895,7 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
     if (action === 'about') doors.pulse = 2.5;
     if (action === 'croc') props.snap();
     if (action === 'temple') ringBell();
+    if (action === 'saiyan') me.say(me.power > 0.5 ? "It's over 9000!" : 'Walk me onto the platform to power up!', 3);
     onAction?.(action, o);
   };
 
@@ -702,6 +908,11 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
     idleAt = Infinity;
   });
   controls.addEventListener('end', () => (idleAt = performance.now() + 15000));
+  const panFix = new THREE.Vector3();
+  canvas.addEventListener('pointerdown', (e) => {
+    if (e.button === 1 || e.button === 2 || e.ctrlKey || e.metaKey || e.shiftKey) view.panned = true;
+  });
+  canvas.addEventListener('touchstart', (e) => e.touches.length > 1 && (view.panned = true), { passive: true });
 
   const held = new Set();
   let near = null;
@@ -857,11 +1068,13 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
     lampLight.intensity = lerp(lampLight.intensity, lit ? 8 : 0, 1 - Math.exp(-dt * 6));
     bulbMat.emissiveIntensity = lampLight.intensity / 4;
     windowMat.emissiveIntensity = s.night * 1.4;
+    lanternMat.emissiveIntensity = s.night * 1.6;
 
     const heat = clamp((state.temp - 30) / 8, 0, 1);
     const coverTarget = cur.snow > 0.1 ? 0.85 : state.temp < -2 ? 0.3 : 0;
     state.snowCover = lerp(state.snowCover, coverTarget, 1 - Math.exp(-dt * 0.25));
     grassMat.color.copy(grassBase).lerp(grassDry, heat).lerp(snowWhite, state.snowCover);
+    tuftMat.color.copy(grassMat.color).multiplyScalar(0.82);
     foliageMats.forEach((m, i) => m.color.copy(foliageBase[i]).lerp(snowWhite, state.snowCover * 0.55));
     pondMat.color.copy(state.temp < 0 ? ice : water);
     pondMat.roughness = state.temp < 0 ? 0.6 : 0.15;
@@ -876,7 +1089,6 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
     trees.forEach((g) => (g.rotation.z = Math.sin(t * (1 + windK) + g.userData.sway) * 0.03 * (0.3 + windK) * motion));
     state.spin = Math.max(0, state.spin - dt * 3);
     blades.rotation.z -= dt * (0.4 + state.wind * 0.06 + state.spin) * motion;
-    tempSprite.position.y = 5.6 + Math.sin(t * 1.2) * 0.12 * motion;
 
     doors.flag = Math.max(0, doors.flag - dt);
     doors.pulse = Math.max(0, doors.pulse - dt);
@@ -887,6 +1099,7 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
     me.update(dt, { t, motion, rain: cur.rain, snow: cur.snow, temp: state.temp, cam: camera.position });
     checkNear();
     skills.update(dt, { t, motion, target: me.root.getWorldPosition(meWorld) });
+    arena.update(dt, { t, motion, power: me.power });
     temple.update(dt, { t, night: s.night, motion, windK });
     props.update(dt, { t, motion, day: s.day, night: s.night, rain: cur.rain, snow: cur.snow, storm: cur.storm, windX: wx * windK, windZ: wz * windK, windK, temp: state.temp, snowCover: state.snowCover });
 
@@ -964,7 +1177,17 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
         tw.done?.();
       }
     }
-    if (view.mode === 'orbit' && !controls.autoRotate && !reducedMotion && performance.now() > idleAt) controls.autoRotate = true;
+    if (view.mode === 'orbit' && !view.intro && !view.tween && !view.panned) controls.target.lerp(HOME, 1 - Math.exp(-dt * 2));
+    if (view.mode === 'orbit' && !controls.autoRotate && !reducedMotion && performance.now() > idleAt) {
+      controls.autoRotate = true;
+      view.panned = false;
+    }
+    const off = Math.hypot(controls.target.x, controls.target.z);
+    if (off > PAN_R) {
+      panFix.set(controls.target.x, 0, controls.target.z).multiplyScalar(PAN_R / off - 1);
+      controls.target.add(panFix);
+      camera.position.add(panFix);
+    }
     controls.update(dt);
     renderer.render(scene, camera);
   };
@@ -987,9 +1210,8 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
 
   const start = () => {
     resize();
-    const far = innerWidth < 700 ? 30 : 22;
+    const far = innerWidth < 700 ? 36 : 27;
     const end = new THREE.Vector3(far * 0.62, far * 0.38, far * 0.78);
-    const home = new THREE.Vector3(0, 1.5, 0);
     const [fx, fz] = atTemple(0.2, 0.4);
     const focus = new THREE.Vector3(fx, 1.35, fz);
     const [cx, cz] = atTemple(-1.0, 4.2);
@@ -1003,7 +1225,7 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
     tweenTo(near, focus, 2400, () => {
       view.introTimer = setTimeout(() => {
         if (!view.intro || view.mode !== 'orbit') return endIntro();
-        tweenTo(end, home, 2800, endIntro);
+        tweenTo(end, HOME, 2800, endIntro);
       }, 4200);
     });
     renderer.setAnimationLoop(loop);
@@ -1030,8 +1252,8 @@ export function createScene(canvas, { onHover, onAction, onThunder, onFocus, onN
       state.offsetH = h;
       updateSky();
     },
-    setTempLabel(main, sub) {
-      tempTex.userData.redraw(main, sub);
+    setTempLabel(main, sub, wind) {
+      tempTex.userData.redraw(main, sub, wind);
     },
     focusProjects,
     unfocus,

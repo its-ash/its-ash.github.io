@@ -1,14 +1,14 @@
 import * as THREE from 'three';
-import { mat, mesh, group, rand } from './kit.js';
+import { mat, mesh, group, rand, smooth } from './kit.js';
 
 const FLOWER_COLORS = ['#f25f5c', '#ffe066', '#f7f7ff', '#c77dff', '#ff9f1c'];
 const { lerp, clamp } = THREE.MathUtils;
 
 export function createProps({ scene, island, chimney, pond, avoid = [], lowPower = false }) {
   // Chimney smoke
-  const puffGeo = new THREE.IcosahedronGeometry(0.14, 0);
+  const puffGeo = smooth(new THREE.IcosahedronGeometry(0.14, 0));
   const puffs = Array.from({ length: lowPower ? 6 : 10 }, (_, i) => {
-    const m = new THREE.Mesh(puffGeo, new THREE.MeshStandardMaterial({ color: '#e9e9e9', transparent: true, opacity: 0, roughness: 1, flatShading: true, depthWrite: false }));
+    const m = new THREE.Mesh(puffGeo, new THREE.MeshStandardMaterial({ color: '#e9e9e9', transparent: true, opacity: 0, roughness: 1, depthWrite: false }));
     m.userData = { life: i / 10, seed: rand() * 6 };
     island.add(m);
     return m;

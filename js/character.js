@@ -10,6 +10,20 @@ const SPEED = 0.85;
 const HIP_Y = 0.58;
 const SIT_DROP = 0.22;
 const NAMASTE = { ux: -0.4475, uz: 0.3175, fx: -2.0436, fz: 0.7621, twist: 0.341 };
+const SSJ_GOLD = new THREE.Color('#ffd23f');
+const SSJ_EYES = new THREE.Color('#18a999');
+const SPIKES = [
+  [0, 0.5, -0.02, -0.2, 0, 0.34, 0.07],
+  [0.12, 0.47, 0, -0.15, -0.55, 0.3, 0.065],
+  [-0.12, 0.47, 0, -0.15, 0.55, 0.3, 0.065],
+  [0.2, 0.38, -0.05, -0.1, -1.0, 0.26, 0.06],
+  [-0.2, 0.38, -0.05, -0.1, 1.0, 0.26, 0.06],
+  [0, 0.42, -0.16, -0.9, 0, 0.3, 0.07],
+  [0.12, 0.38, -0.15, -0.8, -0.5, 0.26, 0.06],
+  [-0.12, 0.38, -0.15, -0.8, 0.5, 0.26, 0.06],
+  [0.06, 0.44, 0.18, 0.5, -0.3, 0.16, 0.045],
+  [-0.08, 0.44, 0.18, 0.6, 0.4, 0.14, 0.04]
+];
 const { lerp, clamp } = THREE.MathUtils;
 
 const limb = (r, len, color) => {
@@ -35,7 +49,7 @@ const drawBubble = (ctx, w, h, text = '') => {
   ctx.fillText(text, w / 2, (h - 34) / 2 + 4, w - 60);
 };
 
-export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => false, reduced = false, start = null }) {
+export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => false, powered = () => false, reduced = false, start = null }) {
   const root = new THREE.Group();
   const body = new THREE.Group();
   root.add(body);
@@ -101,7 +115,21 @@ export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => 
     head.add(mesh(new THREE.IcosahedronGeometry(0.05, 1), skin, [s * 0.262, 0.22, -0.01]));
     head.add(mesh(new THREE.BoxGeometry(0.08, 0.018, 0.02), hairMat, [s * 0.09, 0.34, 0.245]));
   });
+  const hairBase = hairMat.color.clone();
+  const ssjMat = mat('#ffd23f', { emissive: '#ffb000', emissiveIntensity: 0.5, roughness: 0.5 });
+  const ssjHair = group();
+  SPIKES.forEach(([x, y, z, rx, rz, len, r]) => {
+    const geo = new THREE.ConeGeometry(r, len, 4);
+    geo.translate(0, len / 2, 0);
+    geo.userData.keep = true;
+    const sp = mesh(geo, ssjMat, [x, y, z]);
+    sp.rotation.set(rx, 0, rz);
+    ssjHair.add(sp);
+  });
+  ssjHair.visible = false;
+  head.add(ssjHair);
   const eyeMat = mat('#16110e', { roughness: 0.3, flatShading: false });
+  const eyeBase = eyeMat.color.clone();
   const eyes = [1, -1].map((s) => {
     const e = mesh(new THREE.SphereGeometry(0.034, 10, 8), eyeMat, [s * 0.09, 0.26, 0.235]);
     e.scale.z = 0.5;
@@ -137,6 +165,38 @@ export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => 
   laptop.add(lid);
   body.add(laptop);
 
+  const noPick = () => {};
+  const aura = group(0, 1.15, 0);
+  const auraGeo = new THREE.ConeGeometry(0.6, 2.4, 24, 1, true);
+  const auraMats = [0.32, 0.5].map((opacity) => new THREE.MeshBasicMaterial({ color: '#ffd23f', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, userData: { opacity } }));
+  const flames = auraMats.map((m, i) => {
+    const f = new THREE.Mesh(auraGeo, m);
+    f.scale.setScalar(i ? 0.72 : 1);
+    f.raycast = noPick;
+    aura.add(f);
+    return f;
+  });
+  const boltPts = new Float32Array(8 * 3);
+  const bolt = new THREE.Line(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(boltPts, 3)), new THREE.LineBasicMaterial({ color: '#d8f3ff', transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+  bolt.raycast = noPick;
+  bolt.frustumCulled = false;
+  aura.add(bolt);
+  const auraLight = new THREE.PointLight('#ffcc33', 0, 5, 1.5);
+  aura.add(auraLight);
+  aura.visible = false;
+  root.add(aura);
+  let boltT = 0;
+  const zap = () => {
+    let x = (rand() - 0.5) * 0.7;
+    let z = (rand() - 0.5) * 0.7;
+    for (let i = 0; i < 8; i++) {
+      x += (rand() - 0.5) * 0.18;
+      z += (rand() - 0.5) * 0.18;
+      boltPts.set([x, -0.9 + i * 0.28, z], i * 3);
+    }
+    bolt.geometry.attributes.position.needsUpdate = true;
+  };
+
   const bubbleTex = canvasTexture(1024, 170, drawBubble);
   const bubble = new THREE.Sprite(new THREE.SpriteMaterial({ map: bubbleTex, transparent: true, depthTest: false, opacity: 0 }));
   bubble.scale.set(3, 0.5, 1);
@@ -145,7 +205,7 @@ export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => 
   bubble.raycast = () => {};
   root.add(bubble);
 
-  const st = { mode: 'idle', target: 0, timer: 2, wave: 0, waveK: 0, talk: 0, talkK: 0, walk: 0, sit: 0, pray: 0, blink: 0, nextBlink: 2, phase: 0, umb: 0, scarf: 0, moving: false, manualIdle: 0 };
+  const st = { mode: 'idle', target: 0, timer: 2, wave: 0, waveK: 0, talk: 0, talkK: 0, walk: 0, sit: 0, pray: 0, blink: 0, nextBlink: 2, phase: 0, umb: 0, scarf: 0, moving: false, manualIdle: 0, ssj: 0, charged: false };
   const input = { x: 0, z: 0 };
   const wPos = new THREE.Vector3();
 
@@ -254,15 +314,21 @@ export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => 
     st.waveK = lerp(st.waveK, st.wave > 0 ? 1 : 0, k(8));
     st.umb = lerp(st.umb, (rain > 0.15 || snow > 0.3) && st.sit < 0.5 && st.pray < 0.5 ? 1 : 0, k(4));
     st.scarf = lerp(st.scarf, temp < 8 ? 1 : 0, k(3));
+    const charged = powered(root.position.x, root.position.z);
+    if (charged && !st.charged) say('Haaaaa! Super Saiyan!', 3);
+    st.charged = charged;
+    st.ssj = lerp(st.ssj, charged ? 1 : 0, k(charged ? 2.5 : 1.5));
 
     const s = Math.sin(st.phase);
     const w = st.walk;
     const sit = st.sit;
     const typing = Math.sin(t * 18) * 0.06 * sit;
+    const power = st.ssj * (1 - w) * (1 - sit);
 
     legs.forEach(({ thigh, shin, s: side }) => {
       const sw = s * side;
       thigh.rotation.x = lerp(sw * 0.6 * w, -Math.PI / 2, sit);
+      thigh.rotation.z = side * 0.18 * power;
       shin.rotation.x = lerp(Math.max(0, -sw) * 0.8 * w, Math.PI / 2, sit);
     });
 
@@ -290,11 +356,18 @@ export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => 
         fz = Math.sin(t * 14) * 0.45 * st.waveK * a.s;
         fx = lerp(fx, 0, st.waveK);
       }
+      if (power > 0.01) {
+        ux = lerp(ux, 0.3, power);
+        uz = lerp(uz, a.s * 0.55, power);
+        fx = lerp(fx, -1.5, power);
+        fz = lerp(fz, 0, power);
+      }
       a.upper.rotation.set(ux, 0, uz);
       a.fore.rotation.set(fx, 0, fz);
     });
 
-    body.position.y = Math.abs(s) * 0.035 * w - SIT_DROP * sit + Math.sin(t * 2) * 0.006;
+    body.position.y = Math.abs(s) * 0.035 * w - SIT_DROP * sit + Math.sin(t * 2) * 0.006 - 0.05 * power;
+    body.position.x = Math.sin(t * 55) * 0.008 * power * (reduced ? 0 : 1);
     body.rotation.x = 0.06 * w + 0.12 * st.pray;
     torso.scale.y = 1 + Math.sin(t * 2) * 0.012;
 
@@ -323,6 +396,29 @@ export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => 
     laptop.scale.setScalar(clamp((sit - 0.3) / 0.7, 0.001, 1));
     screenMat.emissiveIntensity = 0.7 + Math.sin(t * 3) * 0.1;
 
+    const ssj = st.ssj;
+    hairMat.color.copy(hairBase).lerp(SSJ_GOLD, ssj);
+    hairMat.emissive.copy(SSJ_GOLD).multiplyScalar(ssj * 0.35);
+    eyeMat.color.copy(eyeBase).lerp(SSJ_EYES, ssj);
+    ssjHair.visible = ssj > 0.02;
+    ssjHair.scale.setScalar(Math.max(0.001, ssj));
+    aura.visible = ssj > 0.02;
+    if (aura.visible) {
+      const flick = reduced ? 0 : 1;
+      flames.forEach((f, i) => {
+        const base = i ? 0.72 : 1;
+        f.scale.set(base * (1 + Math.sin(t * 21 + i) * 0.05 * flick), base * ssj * (1 + Math.sin(t * 13 + i * 2) * 0.08 * flick), base * (1 + Math.cos(t * 19 + i) * 0.05 * flick));
+        f.rotation.y += dt * (i ? -3 : 2) * flick;
+        f.material.opacity = f.material.userData.opacity * ssj;
+      });
+      auraLight.intensity = 5 * ssj;
+      if ((boltT -= dt) <= 0) {
+        boltT = 0.06;
+        bolt.visible = !reduced && ssj > 0.8 && rand() < 0.4;
+        if (bolt.visible) zap();
+      }
+    } else auraLight.intensity = 0;
+
     bubble.material.opacity = st.talkK;
     bubble.visible = st.talkK > 0.02;
     bubble.position.y = 2.35 - SIT_DROP * sit + Math.sin(t * 3) * 0.03;
@@ -336,6 +432,9 @@ export function createCharacter({ waypoints, onArrive, onLeave, blocked = () => 
     setInput: (x, z) => Object.assign(input, { x, z }),
     get pos() {
       return root.position;
+    },
+    get power() {
+      return st.ssj;
     },
     get manual() {
       return st.mode === 'manual';
